@@ -1,5 +1,8 @@
 { pkgs, config, ... }: {
-  home.packages = with pkgs; [ gnupg ];
+  home.packages = with pkgs; [
+    gnupg
+    pinentry
+  ];
   programs.gpg = {
     enable = true;
     homedir = "${config.xdg.dataHome}/gnupg";
@@ -86,5 +89,6 @@
     enable = true;
     enableScDaemon = true;
     enableSshSupport = true;
+    pinentryPackage = pkgs.pinentry;
   };
 }
