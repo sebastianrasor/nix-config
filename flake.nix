@@ -54,6 +54,9 @@
     # These are usually stuff you would upstream into home-manager
     homeManagerModules = import ./modules/home-manager;
 
+    # My personal modular configuration modules
+    homeManagerFeatures = import ./home-manager/features;
+
     # NixOS configuration entrypoint
     # Available through 'nixos-rebuild --flake .#your-hostname'
     nixosConfigurations = {
