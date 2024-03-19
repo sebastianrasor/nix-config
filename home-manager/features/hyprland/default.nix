@@ -26,10 +26,34 @@
   wayland.windowManager.hyprland = {
     enable = true;
     settings = {
+      bindm = [
+        "SUPER,mouse:272,movewindow"
+      ];
       bind = [
-        "SUPER, C, killactive,"
-        "SUPER_SHIFT, Escape, exit,"
+        "SUPER_SHIFT, Q, killactive,"
+        "SUPER_SHIFT, C, exec, hyprctl reload"
+        "SUPER_SHIFT, E, exit,"
         ", Print, exec, ${pkgs.grim}/bin/grim -g \"$(${pkgs.slurp}/bin/slurp -d)\" - | ${pkgs.wl-clipboard}/bin/wl-copy -t image/png"
+
+        "SUPER_SHIFT, H, movewindow, l"
+        "SUPER_SHIFT, L, movewindow, r"
+        "SUPER_SHIFT, K, movewindow, u"
+        "SUPER_SHIFT, J, movewindow, d"
+        "SUPER_SHIFT, left, movewindow, l"
+        "SUPER_SHIFT, right, movewindow, r"
+        "SUPER_SHIFT, up, movewindow, u"
+        "SUPER_SHIFT, down, movewindow, d"
+
+        "SUPER, H, movefocus, l"
+        "SUPER, L, movefocus, r"
+        "SUPER, K, movefocus, u"
+        "SUPER, J, movefocus, d"
+        "SUPER, left, movefocus, l"
+        "SUPER, right, movefocus, r"
+        "SUPER, up, movefocus, u"
+        "SUPER, down, movefocus, d"
+
+        "SUPER_SHIFT, Space, togglefloating,"
       ]
       ++ (
         # workspaces
