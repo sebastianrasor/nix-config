@@ -4,7 +4,7 @@
     enable = true;
     settings = {
       default = {
-        path = "${config.home.homeDirectory}/Pictures/Wallpapers";
+        path = "${config.home.homeDirectory}/pictures/wallpapers";
         sorting = "random";
       };
     };
