@@ -1,7 +1,10 @@
 { pkgs, ... }: {
-  home.packages = with pkgs; [ bemenu ];
+  home.packages = with pkgs; [
+    bemenu
+    j4-dmenu-desktop
+  ];
 
-  wayland.windowManager.hyprland.settings.bind = [ "SUPER, R, exec, ${pkgs.bemenu}/bin/bemenu-run" ];
+  wayland.windowManager.hyprland.settings.bind = [ "SUPER, R, exec, ${pkgs.j4-dmenu-desktop}/bin/j4-dmenu-desktop --no-generic --dmenu=bemenu" ];
 
   programs.bemenu = {
     enable = true;
