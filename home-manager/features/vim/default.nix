@@ -14,4 +14,16 @@
         set conceallevel=0
       '';
   };
+
+  xdg.desktopEntries = {
+    vim = {
+      name = "Vim";
+      noDisplay = true;
+    };
+
+    gvim = {
+      name = "GVim";
+      noDisplay = true;
+    };
+  };
 }
