@@ -1,5 +1,5 @@
 {
-  description = "Your new nix config";
+  description = "Sebastian's nix config";
 
   inputs = {
     # Nixpkgs
@@ -11,18 +11,14 @@
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    # TODO: Add any other flake you might need
-    # hardware.url = "github:nixos/nixos-hardware";
-
-    # Shameless plug: looking for a way to nixify your themes and make
-    # everything match nicely? Try nix-colors!
-    # nix-colors.url = "github:misterio77/nix-colors";
+    hardware.url = "github:nixos/nixos-hardware";
   };
 
   outputs = {
     self,
     nixpkgs,
     home-manager,
+    nixos-hardware,
     ...
   } @ inputs: let
     inherit (self) outputs;
@@ -41,15 +37,18 @@
     # Your custom packages
     # Accessible through 'nix build', 'nix shell', etc
     packages = forAllSystems (system: import ./pkgs nixpkgs.legacyPackages.${system});
+
     # Formatter for your nix files, available through 'nix fmt'
     # Other options beside 'alejandra' include 'nixpkgs-fmt'
     formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.alejandra);
 
     # Your custom packages and modifications, exported as overlays
     overlays = import ./overlays {inherit inputs;};
+
     # Reusable nixos modules you might want to export
     # These are usually stuff you would upstream into nixpkgs
     nixosModules = import ./modules/nixos;
+
     # Reusable home-manager modules you might want to export
     # These are usually stuff you would upstream into home-manager
     homeManagerModules = import ./modules/home-manager;
@@ -57,26 +56,21 @@
     # My personal modular configuration modules
     homeManagerFeatures = import ./home-manager/features;
 
-    # NixOS configuration entrypoint
-    # Available through 'nixos-rebuild --flake .#your-hostname'
     nixosConfigurations = {
       t480 = nixpkgs.lib.nixosSystem {
         specialArgs = {inherit inputs outputs;};
         modules = [
-          # > Our main nixos configuration file <
           ./nixos/t480/configuration.nix
+          nixos-hardware.nixosModules.lenovo-thinkpad-t480
         ];
       };
     };
 
-    # Standalone home-manager configuration entrypoint
-    # Available through 'home-manager --flake .#your-username@your-hostname'
     homeConfigurations = {
       "sebastian@t480" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-linux; # Home-manager requires 'pkgs' instance
         extraSpecialArgs = {inherit inputs outputs;};
         modules = [
-          # > Our main home-manager configuration file <
           ./home-manager/t480/sebastian/home.nix
         ];
       };
@@ -84,7 +78,6 @@
         pkgs = nixpkgs.legacyPackages.x86_64-linux; # Home-manager requires 'pkgs' instance
         extraSpecialArgs = {inherit inputs outputs;};
         modules = [
-          # > Our main home-manager configuration file <
           ./home-manager/framework/sebastian/home.nix
         ];
       };
