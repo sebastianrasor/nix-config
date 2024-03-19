@@ -18,8 +18,7 @@
     };
   };
   xdg.desktopEntries.fish = {
-    name = "";
-    exec = "";
+    name = "Fish";
     noDisplay = true;
   };
 }
