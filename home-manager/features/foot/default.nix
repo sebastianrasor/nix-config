@@ -26,17 +26,19 @@
     };
   };
 
-  xdg.desktopEntries.foot = {
-    name = "Foot";
-    noDisplay = true;
-  };
+  xdg.desktopEntries = {
+    "org.codeberg.dnkl.foot" = {
+      name = "Foot";
+      noDisplay = true;
+    };
 
-  xdg.desktopEntries.foot-server = {
-    name = "Foot Server";
-    noDisplay = true;
-  };
+    "org.codeberg.dnkl.foot-server" = {
+      name = "Foot Server";
+      noDisplay = true;
+    };
 
-  xdg.desktopEntries.footclient = {
-    name = "Foot"; # call it foot instead of foot client
+    "org.codeberg.dnkl.footclient" = {
+      name = "Foot"; # call it foot instead of foot client
+    };
   };
 }
