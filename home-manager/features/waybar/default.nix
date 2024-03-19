@@ -20,7 +20,7 @@
             "format" = "{icon} ";
             "format-muted" = "󰝟 ";
             "format-icons" = [ "󰕿" "󰖀" "󰕾"];
-            "on-click" = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+            "on-click" = "${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
         };
         "network" = {
           "tooltip" = true;
