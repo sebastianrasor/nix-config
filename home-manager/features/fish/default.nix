@@ -7,6 +7,12 @@
   ];
   programs.fish = {
     enable = true;
+    loginShellInit =
+      ''
+        if [ "$(tty)" = "/dev/tty1" ]; and [ -z "$WAYLAND_DISPLAY" ];
+          exec Hyprland;
+        end
+      '';
     functions = {
       fish_greeting = "${pkgs.fortune}/bin/fortune | ${pkgs.cowsay}/bin/cowsay -f (ls ${pkgs.cowsay}/share/cowsay/cows/*.cow | shuf -n 1) | ${pkgs.lolcat}/bin/lolcat";
     };
