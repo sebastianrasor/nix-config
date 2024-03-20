@@ -23,6 +23,8 @@
     ../../features/foot
     ../../features/git
     ../../features/gpg
+    ../../features/hide-cups-desktop
+    ../../features/hide-nixos-manual-desktop
     ../../features/hyprland
     ../../features/mako
     ../../features/pass
