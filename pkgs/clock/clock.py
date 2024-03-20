@@ -3,6 +3,10 @@
 import time
 
 def print_time(hour, minute):
+    if minute == 60:
+        hour += 1
+        minute = 0
+
     pm = hour >= 12
     if hour > 12:
         hour -= 12
