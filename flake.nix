@@ -57,6 +57,13 @@
     homeManagerFeatures = import ./home-manager/features;
 
     nixosConfigurations = {
+      framework = nixpkgs.lib.nixosSystem {
+        specialArgs = {inherit inputs outputs;};
+        modules = [
+          ./nixos/framework/configuration.nix
+          nixos-hardware.nixosModules.framework-11th-gen-intel
+        ];
+      };
       t480 = nixpkgs.lib.nixosSystem {
         specialArgs = {inherit inputs outputs;};
         modules = [
