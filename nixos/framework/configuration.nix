@@ -15,7 +15,7 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   boot.initrd.luks.devices."luks-6cd26df3-e20c-41c6-8529-c1adc81ad168".device = "/dev/disk/by-uuid/6cd26df3-e20c-41c6-8529-c1adc81ad168";
-  networking.hostName = "nixos"; # Define your hostname.
+  networking.hostName = "framework"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
@@ -52,6 +52,18 @@
   # Configure console keymap
   console.keyMap = "dvorak";
 
+  services.printing.enable = true;
+
+  sound.enable = true;
+  hardware.pulseaudio.enable = false;
+  security.rtkit.enable = true;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+  };
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.sebastian = {
     isNormalUser = true;
@@ -60,15 +72,31 @@
     packages = with pkgs; [];
   };
 
+  nix.settings.allowed-users = [ "sebastian" ];
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  #  wget
+    intel-gpu-tools
+    intel-media-driver
+    qt6.qtwayland
+    vim
+    xdg-desktop-portal-gtk
+    xdg-desktop-portal-hyprland
   ];
+
+  xdg.portal = {
+    enable = true;
+    extraPortals = [
+      pkgs.xdg-desktop-portal-gtk
+    ];
+  };
+
+  programs.hyprland.enable = true;
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -82,6 +110,44 @@
 
   # Enable the OpenSSH daemon.
   # services.openssh.enable = true;
+
+  services.pcscd.enable = true;
+
+  hardware.gpgSmartcards.enable = true;
+
+
+
+  powerManagement.enable = true;
+
+  services.thermald.enable = true;
+
+  services.auto-cpufreq.enable = true;
+  services.auto-cpufreq.settings = {
+    battery = {
+       governor = "powersave";
+       turbo = "never";
+    };
+    charger = {
+       governor = "performance";
+       turbo = "auto";
+    };
+  };
+
+  boot.kernelParams = [ "mem_sleep_default=deep" ];
+  services.logind = {
+    lidSwitch = "suspend-then-hibernate";
+    extraConfig = ''
+      HandlePowerKey=suspend-then-hibernate
+      IdleAction=suspend-then-hibernate
+      IdleActionSec=2m
+    '';
+  };
+  systemd.sleep.extraConfig =
+    ''
+      HibernateDelaySec=30m
+      SuspendState=mem
+    '';
+
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
