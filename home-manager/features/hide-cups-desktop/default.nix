@@ -1,6 +1,6 @@
 { pkgs, ... }: {
   xdg.desktopEntries.cups = {
-    name = "Manage Printing";
+    name = "";
     noDisplay = true;
   };
 }

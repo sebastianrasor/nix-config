@@ -1,7 +1,6 @@
 { pkgs, config, ... }: {
   home.packages = with pkgs; [
     gnupg
-    pinentry
   ];
   programs.gpg = {
     enable = true;
@@ -89,6 +88,5 @@
     enable = true;
     enableScDaemon = true;
     enableSshSupport = true;
-    pinentryPackage = pkgs.pinentry;
   };
 }

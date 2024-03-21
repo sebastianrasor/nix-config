@@ -11,14 +11,16 @@
 
   xdg.portal = { 
     enable = true;
+    configPackages = [
+      pkgs.hyprland
+    ];
     config = { 
       common = { 
-        default = [ 
-          "hyprland"
-        ];
+        default = [ "hyprland" ];
       };
     };
     extraPortals = [ 
+      pkgs.xdg-desktop-portal-hyprland
       pkgs.xdg-desktop-portal-gtk
     ];
   };
@@ -33,6 +35,9 @@
         "SUPER_SHIFT, Q, killactive,"
         "SUPER_SHIFT, C, exec, hyprctl reload"
         "SUPER_SHIFT, E, exit,"
+
+        "SUPER, L, exec, ${pkgs.systemd}/bin/loginctl lock-session"
+
         ", Print, exec, ${pkgs.grim}/bin/grim -g \"$(${pkgs.slurp}/bin/slurp -d)\" - | ${pkgs.wl-clipboard}/bin/wl-copy -t image/png"
 
         "SUPER_SHIFT, H, movewindow, l"
@@ -54,6 +59,10 @@
         "SUPER, down, movefocus, d"
 
         "SUPER_SHIFT, Space, togglefloating,"
+
+        ", xf86audioraisevolume, exec, wpctl set-volume -l 1.0 @DEFAULT_SINK@ 5%+"
+        ", xf86audiolowervolume, exec, wpctl set-volume -l 1.0 @DEFAULT_SINK@ 5%-"
+        ", xf86audiomute, exec, wpctl set-mute @DEFAULT_SINK@ toggle"
       ]
       ++ (
         # workspaces

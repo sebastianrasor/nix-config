@@ -1,6 +1,6 @@
 { pkgs, ... }: {
   xdg.desktopEntries.nixos-manual = {
-    name = "NixOS Manual";
+    name = "Hidden";
     noDisplay = true;
   };
 }

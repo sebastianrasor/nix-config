@@ -4,7 +4,7 @@
     j4-dmenu-desktop
   ];
 
-  wayland.windowManager.hyprland.settings.bind = [ "SUPER, D, exec, ${pkgs.j4-dmenu-desktop}/bin/j4-dmenu-desktop --no-generic --dmenu=bemenu" ];
+  wayland.windowManager.hyprland.settings.bind = [ "SUPER, D, exec, ${pkgs.j4-dmenu-desktop}/bin/j4-dmenu-desktop --no-generic --dmenu='${pkgs.bemenu}/bin/bemenu -p Launcher:'" ];
 
   programs.bemenu = {
     enable = true;
