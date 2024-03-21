@@ -11,6 +11,7 @@
     packages = with pkgs; [
       discord
       google-chrome
+      yubioath-flutter
     ];
   };
 
@@ -20,18 +21,20 @@
     ../../features/bemenu
     ../../features/bibata-cursors
     ../../features/brightnessctl
+    ../../features/dark
     ../../features/fish
     ../../features/foot
     ../../features/git
     ../../features/gpg
-    ../../features/hide-cups-desktop
-    ../../features/hide-nixos-manual-desktop
+    ../../features/gtk
     ../../features/hypridle
     ../../features/hyprland
     ../../features/hyprlock
     ../../features/mako
     ../../features/pass
     ../../features/pinentry-custom
+    ../../features/playerctld
+    ../../features/qt
     ../../features/starship
     ../../features/unfree-packages
     ../../features/vim
