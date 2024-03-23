@@ -9,7 +9,6 @@ let
 
     echo "OK Pleased to meet you"
     while read command args; do
-        echo $command $args >> /home/sebastian/pinentry
         command=$(echo "$command" | ${pkgs.coreutils-full}/bin/tr '[:lower:]' '[:upper:]')
         case $command in
             "GETPIN")
