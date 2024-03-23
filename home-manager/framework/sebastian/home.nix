@@ -35,8 +35,8 @@
     ../../features/hyprpaper
     ../../features/hyprpicker
     ../../features/mako
+    ../../features/mpc
     ../../features/mpd
-    ../../features/ncmpcpp
     ../../features/pass
     ../../features/pinentry-custom
     ../../features/playerctld
