@@ -1,10 +1,4 @@
-{ pkgs, config, ... }: {
-  home.packages = with pkgs; [
-    grim
-    slurp
-    wl-clipboard
-  ];
-
+{ pkgs, config, inputs, ... }: {
   home.sessionVariables = {
     NIXOS_OZONE_WL = "1";
   };
@@ -32,13 +26,14 @@
         "SUPER,mouse:272,movewindow"
       ];
       bind = [
+        "ALT, Tab, focusCurrentOrLast,"
+        "SUPER, Tab, focusCurrentOrLast,"
+
         "SUPER_SHIFT, Q, killactive,"
-        "SUPER_SHIFT, C, exec, hyprctl reload"
+        "SUPER_SHIFT, R, exec, hyprctl reload"
         "SUPER_SHIFT, E, exit,"
 
         "SUPER, L, exec, ${pkgs.systemd}/bin/loginctl lock-session"
-
-        ", Print, exec, ${pkgs.grim}/bin/grim -g \"$(${pkgs.slurp}/bin/slurp -d)\" - | ${pkgs.wl-clipboard}/bin/wl-copy -t image/png"
 
         "SUPER_SHIFT, H, movewindow, l"
         "SUPER_SHIFT, L, movewindow, r"

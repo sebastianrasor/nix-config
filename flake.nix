@@ -17,6 +17,16 @@
     hypridle.url = "github:hyprwm/hypridle";
     hypridle.inputs.nixpkgs.follows = "nixpkgs";
 
+    hyprpaper.url = "github:hyprwm/hyprpaper";
+    hyprpaper.inputs.nixpkgs.follows = "nixpkgs";
+
+    hyprpicker.url = "github:hyprwm/hyprpicker";
+    hyprpicker.inputs.nixpkgs.follows = "nixpkgs";
+
+    hypr-contrib.url = "github:hyprwm/contrib";
+    hypr-contrib.inputs.nixpkgs.follows = "nixpkgs";
+
+
     hardware.url = "github:nixos/nixos-hardware";
   };
 

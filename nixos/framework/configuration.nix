@@ -52,6 +52,8 @@
   # Configure console keymap
   console.keyMap = "dvorak";
 
+  hardware.brillo.enable = true;
+
   sound.enable = true;
   hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
@@ -163,6 +165,7 @@
       SuspendState=mem
     '';
 
+  security.pam.services.hyprlock = {};
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];

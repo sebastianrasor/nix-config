@@ -32,7 +32,7 @@
         font_color = "rgb(0,0,0)";
 
         fade_on_empty = false;
-        placeholder_text = ''<span font_family='Atkinson Hyperlegible'>Password...</span>'';
+        placeholder_text = ''<span foreground='##7F7F7F' font_family='Atkinson Hyperlegible'>Password...</span>'';
 
         dots_spacing = 0.3;
         dots_center = true;
