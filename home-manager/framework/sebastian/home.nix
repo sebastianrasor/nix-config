@@ -18,6 +18,7 @@
   imports = [
     ../../features/atkinson-hyperlegible-font
     ../../features/bash
+    ../../features/beets
     ../../features/bemenu
     ../../features/bibata-cursors
     ../../features/brillo
