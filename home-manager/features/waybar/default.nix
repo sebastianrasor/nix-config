@@ -1,5 +1,7 @@
 { pkgs, ... }: {
-  home.packages = with pkgs; [ waybar ];
+  home.packages = with pkgs; [
+    snooze
+  ];
   programs.waybar = {
     enable = true;
     systemd.enable = true;
@@ -78,7 +80,15 @@
           format = "{}";
           tooltip = false;
           restart-interval = 1;
-          exec = "${pkgs.clock}/bin/clock";
+          exec = ''
+            while :; do
+              ${pkgs.coreutils-full}/bin/date '+%-I:%M %p'
+              ${pkgs.snooze}/bin/snooze -H '*' -M '*' -S '0' &
+              snooze_pid=$!
+              echo $snooze_pid > /run/user/$UID/waybar-clock-snooze-pid
+              wait $snooze_pid
+            done
+          '';
         };
         "custom/launcher" = {
           format = "";
