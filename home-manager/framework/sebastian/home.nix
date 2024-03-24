@@ -39,7 +39,7 @@
     ../../features/mpd
     ../../features/pass
     ../../features/pinentry-custom
-    ../../features/playerctld
+    ../../features/playerctl
     ../../features/qt
     ../../features/starship
     ../../features/unfree-packages
