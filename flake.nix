@@ -80,23 +80,9 @@
           nixos-hardware.nixosModules.framework-11th-gen-intel
         ];
       };
-      t480 = nixpkgs.lib.nixosSystem {
-        specialArgs = {inherit inputs outputs;};
-        modules = [
-          ./nixos/t480/configuration.nix
-          nixos-hardware.nixosModules.lenovo-thinkpad-t480
-        ];
-      };
     };
 
     homeConfigurations = {
-      "sebastian@t480" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.x86_64-linux; # Home-manager requires 'pkgs' instance
-        extraSpecialArgs = {inherit inputs outputs;};
-        modules = [
-          ./home-manager/t480/sebastian/home.nix
-        ];
-      };
       "sebastian@framework" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-linux; # Home-manager requires 'pkgs' instance
         extraSpecialArgs = {inherit inputs outputs;};
