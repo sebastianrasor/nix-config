@@ -25,7 +25,7 @@
       {
         timeout = 300;
         onTimeout = ''
-          ${pkgs.brillo}/bin/brillo -u 10000000 -S 0 && ${pkgs.hyprland}/bin/hyprctl dispatch dpms off && ${pkgs.systemd}/bin/loginctl lock-session
+          ${pkgs.brillo}/bin/brillo -u 10000000 -S 0 && ${pkgs.systemd}/bin/loginctl lock-session && ${pkgs.hyprland}/bin/hyprctl dispatch dpms off
         '';
         onResume = "${pkgs.procps}/bin/pkill brillo; ${pkgs.brillo}/bin/brillo -I && ${pkgs.hyprland}/bin/hyprctl dispatch dpms on";
       }
