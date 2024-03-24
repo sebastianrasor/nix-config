@@ -83,11 +83,10 @@
         no_gaps_when_only = true;
       };
       misc = {
-        exec-once="${pkgs.wpaperd}/bin/wpaperd";
         disable_hyprland_logo = true;
         disable_splash_rendering = true;
         enable_swallow = true;
-        swallow_regex = "^(footclient)$";
+        swallow_regex = "^(footclient|foot)$";
       };
       animations = {
         enabled = true;

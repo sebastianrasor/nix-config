@@ -1,4 +1,4 @@
-{ pkgs, lib, config, inputs, ... }: {
+{ config, inputs, ... }: {
   imports = [
     inputs.hyprpaper.homeManagerModules.hyprpaper
   ];

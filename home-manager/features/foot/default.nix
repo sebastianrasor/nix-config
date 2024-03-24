@@ -1,15 +1,5 @@
-{ pkgs, ... }: {
-  home.packages = with pkgs; [
-    foot
-
-    (nerdfonts.override {
-      fonts = [
-        "IntelOneMono"
-      ];
-    })
-  ];
-
-  wayland.windowManager.hyprland.settings.bind = [ "SUPER, Return, exec, ${pkgs.foot}/bin/footclient" ];
+{ lib, pkgs, ... }: {
+  wayland.windowManager.hyprland.settings.bind = [ "SUPER, Return, exec, ${lib.getExe' pkgs.foot "footclient"}" ];
 
   programs.foot = {
     enable = true; 

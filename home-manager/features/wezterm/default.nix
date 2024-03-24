@@ -1,7 +1,5 @@
 { pkgs, ... }: {
   home.packages = with pkgs; [
-    wezterm
-
     (nerdfonts.override {
       fonts = [
         "IntelOneMono"
@@ -9,7 +7,7 @@
     })
   ];
 
-  wayland.windowManager.hyprland.settings.bind = [ "SUPER, Return, exec, ${pkgs.wezterm}/bin/wezterm" ];
+  wayland.windowManager.hyprland.settings.bind = [ "SUPER, Return, exec, ${lib.getExe pkgs.wezterm}" ];
 
   programs.wezterm = {
     enable = true; 

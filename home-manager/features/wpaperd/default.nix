@@ -1,5 +1,4 @@
-{ pkgs, config, ... }: {
-  home.packages = with pkgs; [ wpaperd ];
+{ config, ... }: {
   programs.wpaperd = {
     enable = true;
     settings = {

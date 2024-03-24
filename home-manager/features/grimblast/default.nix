@@ -1,13 +1,13 @@
-{ pkgs, inputs, ... }: {
-  home.packages = with pkgs; [
-    inputs.hypr-contrib.packages.${pkgs.system}.grimblast
-  ];
-
+{ lib, pkgs, inputs, ... }:
+let
+  grimblast = inputs.hypr-contrib.packages.${pkgs.system}.grimblast;
+in
+{
   wayland.windowManager.hyprland.settings.bind = [
-    ", Print, exec, ${inputs.hypr-contrib.packages.${pkgs.system}.grimblast}/bin/grimblast copy output"
-    "SUPER, Print, exec, ${inputs.hypr-contrib.packages.${pkgs.system}.grimblast}/bin/grimblast copysave output"
-    "ALT, Print, exec, ${inputs.hypr-contrib.packages.${pkgs.system}.grimblast}/bin/grimblast copy active"
-    "SUPER_ALT, Print, exec, ${inputs.hypr-contrib.packages.${pkgs.system}.grimblast}/bin/grimblast copysave active"
-    "SUPER_SHIFT, S, exec, ${inputs.hypr-contrib.packages.${pkgs.system}.grimblast}/bin/grimblast copy area"
+    ", Print, exec, ${lib.getExe grimblast} copy output"
+    "SUPER, Print, exec, ${lib.getExe grimblast} copysave output"
+    "ALT, Print, exec, ${lib.getExe grimblast} copy active"
+    "SUPER_ALT, Print, exec, ${lib.getExe grimblast} copysave active"
+    "SUPER_SHIFT, S, exec, ${lib.getExe grimblast} copy area"
   ];
 }

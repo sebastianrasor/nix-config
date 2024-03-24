@@ -1,4 +1,4 @@
-{ pkgs, inputs, config, ... }: {
+{ lib, pkgs, inputs, config, ... }: {
   imports = [
     inputs.hyprlock.homeManagerModules.hyprlock
   ];
@@ -43,7 +43,7 @@
         monitor = "";
         text =
         ''
-          cmd[update:1000] echo "<span font_family='Atkinson Hyperlegible'>''$(${pkgs.coreutils-full}/bin/date '+%-I:%M %p')</span>"
+          cmd[update:1000] echo "<span font_family='Atkinson Hyperlegible'>''$(${lib.getExe' pkgs.coreutils-full "date"} '+%-I:%M %p')</span>"
         '';
         #inherit font_family;
         font_size = 50;

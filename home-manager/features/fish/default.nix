@@ -1,10 +1,4 @@
-{ pkgs, ... }: {
-  home.packages = with pkgs; [
-    cowsay
-    fish
-    fortune
-    lolcat
-  ];
+{ lib, pkgs, ... }: {
   programs.fish = {
     enable = true;
     loginShellInit =
@@ -14,7 +8,7 @@
         end
       '';
     functions = {
-      fish_greeting = "${pkgs.fortune}/bin/fortune | ${pkgs.cowsay}/bin/cowsay -f (ls ${pkgs.cowsay}/share/cowsay/cows/*.cow | shuf -n 1) | ${pkgs.lolcat}/bin/lolcat";
+      fish_greeting = "${lib.getExe pkgs.fortune} -s | ${lib.getExe' pkgs.cowsay "cowsay"} -f (ls -1 ${pkgs.cowsay}/share/cowsay/cows/*.cow | shuf -n 1) | ${lib.getExe pkgs.lolcat}";
     };
     shellAbbrs = {
       vhm = "vim ~/.config/home-manager/home.nix";

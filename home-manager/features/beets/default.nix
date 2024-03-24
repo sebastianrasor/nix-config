@@ -1,4 +1,4 @@
-{ pkgs, config, ... }: {
+{ config, ... }: {
   programs.beets = {
     enable = true;
     settings = {

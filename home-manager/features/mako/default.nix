@@ -1,9 +1,3 @@
 { pkgs, ... }: {
-  home.packages = with pkgs; [
-    libnotify
-    mako
-  ];
-  services.mako = {
-    enable = true;
-  };
+  services.mako.enable = true;
 }

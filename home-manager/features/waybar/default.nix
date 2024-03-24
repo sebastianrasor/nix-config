@@ -1,7 +1,4 @@
-{ pkgs, ... }: {
-  home.packages = with pkgs; [
-    snooze
-  ];
+{ lib, pkgs, ... }: {
   programs.waybar = {
     enable = true;
     systemd.enable = true;
@@ -22,7 +19,7 @@
             "format" = "{icon} ";
             "format-muted" = "󰝟 ";
             "format-icons" = [ "󰕿" "󰖀" "󰕾"];
-            "on-click" = "${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+            "on-click" = "${lib.getExe' pkgs.wireplumber "wpctl"} set-mute @DEFAULT_AUDIO_SINK@ toggle";
         };
         "network" = {
           "tooltip" = true;
@@ -73,8 +70,8 @@
             "9" = "󰎼";
             "10" = "󰽽";
           };
-          "on-scroll-up" = "hyprctl dispatch workspace e+1";
-          "on-scroll-down" = "hyprctl dispatch workspace e-1";
+          "on-scroll-up" = "${lib.getExe' pkgs.hyprland "hyprctl"} dispatch workspace e+1";
+          "on-scroll-down" = "${lib.getExe' pkgs.hyprland "hyprctl"} dispatch workspace e-1";
         };
         "custom/clock" = {
           format = "{}";
@@ -82,8 +79,8 @@
           restart-interval = 1;
           exec = ''
             while :; do
-              ${pkgs.coreutils-full}/bin/date '+%-I:%M %p'
-              ${pkgs.snooze}/bin/snooze -H '*' -M '*' -S '0' &
+              ${lib.getExe' pkgs.coreutils-full "date"} '+%-I:%M %p'
+              ${lib.getExe pkgs.snooze} -H '*' -M '*' -S '0' &
               snooze_pid=$!
               echo $snooze_pid > /run/user/$UID/waybar-clock-snooze-pid
               wait $snooze_pid

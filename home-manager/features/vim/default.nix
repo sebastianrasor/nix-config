@@ -1,5 +1,4 @@
-{ pkgs, ... }: {
-  #home.packages = with pkgs; [ vim ];
+{ ... }: {
   programs.vim = {
     enable = true;
     defaultEditor = true;
