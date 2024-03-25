@@ -8,12 +8,14 @@
     general = {
       disable_loading_bar = true;
       hide_cursor = false;
-      no_fade_in = true;
+      no_fade_in = false;
     };
     backgrounds = [
       {
         monitor = "";
-        path = "${config.home.homeDirectory}/pictures/wallpapers/nix-wallpaper-nineish.png";
+        path = "screenshot";
+        blur_passes = 3;
+        #blur_size = 8;
       }
     ];
     input-fields = [
@@ -21,21 +23,22 @@
         #monitor = "";
 
         size = {
-          width = 300;
-          height = 50;
+          width = 250;
+          height = 60;
         };
 
         outline_thickness = 2;
 
-        outer_color = "rgb(0,0,0)";
-        inner_color = "rgb(255,255,255)";
-        font_color = "rgb(0,0,0)";
+        dots_size = 0.2;
+        dots_spacing = 0.2;
+        dots_center = true;
+
+        outer_color = "rgba(0,0,0,0)";
+        inner_color = "rgba(0,0,0,0.5)";
+        font_color = "rgb(255,255,255)";
 
         fade_on_empty = false;
-        placeholder_text = ''<span foreground='##7F7F7F' font_family='Atkinson Hyperlegible'>Password...</span>'';
-
-        dots_spacing = 0.3;
-        dots_center = true;
+        placeholder_text = ''<span foreground='##FFFFFF7F' font_family='Atkinson Hyperlegible'>Password...</span>'';
       }
     ];
     labels = [
@@ -43,18 +46,18 @@
         monitor = "";
         text =
         ''
-          cmd[update:1000] echo "<span font_family='Atkinson Hyperlegible'>''$(${lib.getExe' pkgs.coreutils-full "date"} '+%-I:%M %p')</span>"
+          cmd[update:1000] echo "<span>''$(${lib.getExe' pkgs.coreutils-full "date"} '+%-I:%M %p')</span>"
         '';
-        #inherit font_family;
-        font_size = 50;
-        color = "rgb(0,0,0)";
+        font_family = "Atkinson Hyperlegible";
+        font_size = 120;
+        color = "rgba(255,255,255,0.6)";
 
         position = {
           x = 0;
-          y = 80;
+          y = -240;
         };
 
-        valign = "center";
+        valign = "top";
         halign = "center";
       }
     ];
