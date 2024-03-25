@@ -1,6 +1,11 @@
-{ inputs, outputs, config, pkgs, lib, ... }:
-
 {
+  inputs,
+  outputs,
+  lib,
+  config,
+  pkgs,
+  ...
+}: {
   home = {
     username = "sebastian";
     homeDirectory = "/home/sebastian";
@@ -48,14 +53,6 @@
     ../../features/xdg-user-dirs
     ../../features/zoxide
   ];
-
-  nixpkgs = {
-    overlays = [
-      outputs.overlays.additions
-      outputs.overlays.modifications
-      outputs.overlays.unstable-packages
-    ];
-  };
 
   programs.home-manager.enable = true;
 }
