@@ -6,10 +6,10 @@
   services.hyprpaper = {
     enable = true;
     wallpapers = [
-      "eDP-1,${config.home.homeDirectory}/pictures/wallpapers/nix-wallpaper-nineish.png"
+      "eDP-1,${config.xdg.userDirs.pictures}/wallpapers/nix-wallpaper-nineish.png"
     ];
     preloads = [
-      "${config.home.homeDirectory}/pictures/wallpapers/nix-wallpaper-nineish.png"
+      "${config.xdg.userDirs.pictures}/wallpapers/nix-wallpaper-nineish.png"
     ];
   };
 }
