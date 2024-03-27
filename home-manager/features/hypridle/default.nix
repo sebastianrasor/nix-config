@@ -26,7 +26,7 @@
       }
       {
         timeout = 1200;
-        onTimeout = "${lib.getExe' pkgs.systemd "systemctl"} suspend";
+        onTimeout = "${lib.getExe' pkgs.systemd "systemctl"} suspend-then-hibernate";
       }
     ];
   };
