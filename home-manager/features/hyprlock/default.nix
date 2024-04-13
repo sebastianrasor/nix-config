@@ -8,12 +8,12 @@
     general = {
       disable_loading_bar = true;
       hide_cursor = false;
-      no_fade_in = true;
+      #no_fade_in = true;
     };
     backgrounds = [
       {
         monitor = "";
-        path = "screenshot";
+        path = "${config.xdg.userDirs.pictures}/wallpapers/nix-wallpaper-nineish.png";
         blur_passes = 3;
         #blur_size = 8;
       }

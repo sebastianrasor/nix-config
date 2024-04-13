@@ -6,7 +6,6 @@
   services.hypridle = {
     enable = true;
     beforeSleepCmd = "${lib.getExe' pkgs.systemd "loginctl"} lock-session";
-    afterSleepCmd = "${lib.getExe' pkgs.hyprland "hyprctl"} dispatch dpms on";
     lockCmd = "${lib.getExe' pkgs.procps "pidof"} hyprlock || ${lib.getExe config.programs.hyprlock.package}";
     unlockCmd = "${lib.getExe' pkgs.procps "pkill"} -USR1 hyprlock";
     listeners = [
@@ -22,7 +21,7 @@
         onTimeout = ''
           ${lib.getExe pkgs.brillo} -u 10000000 -S 0 && ${lib.getExe' pkgs.systemd "loginctl"} lock-session && ${lib.getExe' pkgs.hyprland "hyprctl"} dispatch dpms off
         '';
-        onResume = "${lib.getExe' pkgs.procps "pkill"} brillo; ${lib.getExe pkgs.brillo} -I && ${lib.getExe' pkgs.hyprland "hyprctl"} dispatch dpms on";
+        onResume = "${lib.getExe' pkgs.procps "pkill"} brillo; ${lib.getExe pkgs.brillo} -I";
       }
       {
         timeout = 1200;

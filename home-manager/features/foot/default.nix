@@ -1,6 +1,14 @@
 { lib, pkgs, ... }: {
   wayland.windowManager.hyprland.settings.bind = [ "SUPER, Return, exec, ${lib.getExe' pkgs.foot "footclient"}" ];
 
+  home.packages = with pkgs; [
+    (nerdfonts.override {
+      fonts = [
+        "IntelOneMono"
+      ];
+    })
+  ];
+
   programs.foot = {
     enable = true; 
     server.enable = true;

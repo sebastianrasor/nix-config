@@ -3,8 +3,13 @@
     NIXOS_OZONE_WL = "1";
   };
 
+  home.packages = with pkgs; [
+    xdg-utils
+  ];
+
   xdg.portal = { 
     enable = true;
+    xdgOpenUsePortal = true;
     configPackages = [
       pkgs.hyprland
     ];
@@ -85,11 +90,25 @@
       misc = {
         disable_hyprland_logo = true;
         disable_splash_rendering = true;
+        focus_on_activate = true;
+        key_press_enables_dpms = true;
+        mouse_move_enables_dpms = true;
         enable_swallow = true;
         swallow_regex = "^(footclient|foot)$";
       };
+      decoration = {
+        blur = {
+          popups = true;
+        };
+      };
+      layerrule = [
+        "blur, notifications"
+        "ignorezero, notifications"
+        "animation slide, notifications"
+      ];
       animations = {
         enabled = true;
+        first_launch_animation = false;
         animation = [
           "global, 1, 2, default"
         ];
