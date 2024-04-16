@@ -27,6 +27,7 @@
     ../../features/bemenu
     ../../features/bibata-cursors
     ../../features/brillo
+    ../../features/browserpass
     ../../features/dark
     ../../features/fish
     ../../features/foot
