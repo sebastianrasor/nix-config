@@ -15,7 +15,9 @@ stdenv.mkDerivation {
   '';
 
   installPhase = ''
-    mkdir -p $out/bin
+    mkdir -p $out/bin $out/share/man/man1
     cp dtach $out/bin
+    gzip dtach.1
+    cp dtach.1.gz $out/share/man/man1/
   '';
 }
