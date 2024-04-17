@@ -15,7 +15,6 @@
 
     packages = with pkgs; [
       discord
-      dtach
       google-chrome
       yubioath-flutter
     ];
