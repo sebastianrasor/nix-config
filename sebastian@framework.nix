@@ -14,8 +14,10 @@
     stateVersion = "23.11";
 
     packages = with pkgs; [
+      asciinema
       discord
       google-chrome
+      thunderbird
       yubioath-flutter
     ];
   };

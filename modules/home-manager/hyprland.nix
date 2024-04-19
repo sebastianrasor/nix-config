@@ -29,6 +29,7 @@
     settings = {
       bindm = [
         "SUPER,mouse:272,movewindow"
+        "SUPER,mouse:273,resizewindow"
       ];
       bind = [
         "ALT, Tab, focusCurrentOrLast,"
@@ -105,6 +106,9 @@
         "blur, notifications"
         "ignorezero, notifications"
         "animation slide, notifications"
+      ];
+      windowrulev2 = [
+        "float,class:thunderbird,title:^(?!Mozilla*)"
       ];
       animations = {
         enabled = true;
