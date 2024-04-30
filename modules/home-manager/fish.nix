@@ -13,10 +13,6 @@
       '';
     functions = {
       fish_greeting = "${lib.getExe pkgs.fortune} -s | ${lib.getExe' pkgs.cowsay "cowsay"} -f (ls -1 ${pkgs.cowsay}/share/cowsay/cows/*.cow | shuf -n 1) | ${lib.getExe pkgs.lolcat} -t";
-      normal_mode_by_default = {
-        body = "set fish_bind_mode default";
-        onEvent = "fish_prompt";
-      };
     };
   };
   xdg.desktopEntries.fish = {
