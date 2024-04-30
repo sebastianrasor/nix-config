@@ -1,12 +1,6 @@
 { inputs, lib, pkgs, ... }: {
   programs.fish = {
     enable = true;
-    loginShellInit =
-      ''
-        if [ "$(tty)" = "/dev/tty1" ]; and [ -z "$WAYLAND_DISPLAY" ];
-          exec ${lib.getExe pkgs.hyprland};
-        end
-      '';
     interactiveShellInit =
       ''
         set -g fish_key_bindings fish_vi_key_bindings

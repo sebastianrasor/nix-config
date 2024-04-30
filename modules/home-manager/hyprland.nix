@@ -1,4 +1,4 @@
-{ pkgs, config, inputs, ... }: {
+{ lib, pkgs, config, inputs, ... }: {
   home.sessionVariables = {
     NIXOS_OZONE_WL = "1";
   };
@@ -6,6 +6,13 @@
   home.packages = with pkgs; [
     xdg-utils
   ];
+
+  programs.bash.initExtra =
+    ''
+      if [ "$(tty)" = "/dev/tty1" ] && [ -z "$WAYLAND_DISPLAY" ]; then
+        exec ${lib.getExe pkgs.hyprland};
+      fi
+    '';
 
   xdg.portal = { 
     enable = true;
