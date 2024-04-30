@@ -6,6 +6,9 @@
       nix_shell = {
         heuristic = true;
       };
+      cmd_duration = {
+        show_notifications = true;
+      };
     };
   };
 }
