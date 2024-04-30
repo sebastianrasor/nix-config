@@ -11,6 +11,7 @@
     enable = true;
     xdgOpenUsePortal = true;
     configPackages = [
+      #inputs.hyprland.packages.${pkgs.system}.hyprland
       pkgs.hyprland
     ];
     config = { 
@@ -26,6 +27,7 @@
 
   wayland.windowManager.hyprland = {
     enable = true;
+    #package = inputs.hyprland.packages.${pkgs.system}.hyprland;
     settings = {
       bindm = [
         "SUPER,mouse:272,movewindow"
@@ -39,7 +41,7 @@
         "SUPER_SHIFT, R, exec, hyprctl reload"
         "SUPER_SHIFT, E, exit,"
 
-        "SUPER, L, exec, ${pkgs.systemd}/bin/loginctl lock-session"
+        "SUPER_ALT, L, exec, ${pkgs.systemd}/bin/loginctl lock-session"
 
         "SUPER_SHIFT, H, movewindow, l"
         "SUPER_SHIFT, L, movewindow, r"
@@ -76,6 +78,7 @@
                 builtins.toString (x + 1 - (c * 10));
             in [
               "SUPER, ${ws}, workspace, ${toString (x + 1)}"
+              "SUPER, ${ws}, moveworkspacetomonitor, ${toString (x + 1)} current"
               "SUPER_SHIFT, ${ws}, movetoworkspace, ${toString (x + 1)}"
             ]
           )
@@ -85,17 +88,17 @@
         kb_layout = "us";
         kb_variant = "${config.home.keyboard.variant}";
       };
-      dwindle = {
-        no_gaps_when_only = true;
-      };
+      #dwindle = {
+      #  no_gaps_when_only = true;
+      #};
       misc = {
+        enable_swallow = true;
+        swallow_regex = " ^footclient$";
         disable_hyprland_logo = true;
         disable_splash_rendering = true;
         focus_on_activate = true;
         key_press_enables_dpms = true;
         mouse_move_enables_dpms = true;
-        enable_swallow = true;
-        swallow_regex = "^(footclient|foot)$";
       };
       decoration = {
         blur = {
@@ -109,6 +112,11 @@
       ];
       windowrulev2 = [
         "float,class:thunderbird,title:^(?!Mozilla*)"
+      ];
+      monitor = [
+        "desc:Dell Inc. DELL P2723DE 996FLW3,preferred,-716x-720,2"
+        "desc:Dell Inc. DELL P2723DE 6ZRQCN3,preferred,564x-720,2"
+        "eDP-1,preferred,0x0,2"
       ];
       animations = {
         enabled = true;
