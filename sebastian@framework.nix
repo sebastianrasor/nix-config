@@ -16,7 +16,11 @@
     packages = with pkgs; [
       asciinema
       discord
-      google-chrome
+      (google-chrome.override {
+        commandLineArgs = [
+          "--ozone-platform=auto"
+        ];
+      })
       thunderbird
       yubioath-flutter
     ];
@@ -38,7 +42,10 @@
     outputs.homeManagerModules.grimblast
     outputs.homeManagerModules.gtk
     outputs.homeManagerModules.hypridle
-    outputs.homeManagerModules.hyprland
+    outputs.homeManagerModules.hyprland.config
+    outputs.homeManagerModules.hyprland.init
+    outputs.homeManagerModules.hyprland.monitor
+    outputs.homeManagerModules.hyprland.portal
     outputs.homeManagerModules.hyprlock
     outputs.homeManagerModules.hyprpaper
     outputs.homeManagerModules.hyprpicker

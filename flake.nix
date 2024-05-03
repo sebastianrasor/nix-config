@@ -5,91 +5,13 @@
     nixpkgs.url = github:NixOS/nixpkgs/nixos-unstable;
     nixos-hardware.url = github:nixos/nixos-hardware;
 
-    home-manager = {
-      url = github:nix-community/home-manager;
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    home-manager.url = github:nix-community/home-manager;
 
-    hypr-contrib = {
-      url = github:hyprwm/contrib;
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    hyprcursor = {
-      url = github:hyprwm/hyprcursor;
-      inputs.hyprlang.follows = "hyprlang";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.systems.follows = "systems";
-    };
-
-    hypridle = {
-      url = github:hyprwm/hypridle;
-      inputs.hyprlang.follows = "hyprlang";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.systems.follows = "systems";
-    };
-
-    hyprland = {
-      url = github:hyprwm/hyprland;
-      inputs.hyprcursor.follows = "hyprcursor";
-      inputs.hyprlang.follows = "hyprlang";
-      inputs.hyprland-protocols.follows = "hyprland-protocols";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.systems.follows = "systems";
-      inputs.wlroots.follows = "wlroots";
-      inputs.xdph.follows = "xdph";
-    };
-
-    hyprland-protocols = {
-      url = github:hyprwm/hyprland-protocols;
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.systems.follows = "systems";
-    };
-
-    hyprlang = {
-      url = github:hyprwm/hyprlang;
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.systems.follows = "systems";
-    };
-
-    hyprlock = {
-      url = github:hyprwm/hyprlock;
-      inputs.hyprlang.follows = "hyprlang";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.systems.follows = "systems";
-    };
-
-    hyprpaper = {
-      url = github:hyprwm/hyprpaper;
-      inputs.hyprlang.follows = "hyprlang";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.systems.follows = "systems";
-    };
-
-    hyprpicker = {
-      url = github:hyprwm/hyprpicker;
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    xdph = {
-      url = github:hyprwm/xdg-desktop-portal-hyprland;
-      inputs.hyprlang.follows = "hyprlang";
-      inputs.hyprland-protocols.follows = "hyprland-protocols";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.systems.follows = "systems";
-    };
-
-    systems = {
-      url = github:nix-systems/default;
-    };
-
-    wlroots = {
-      type = "gitlab";
-      host = "gitlab.freedesktop.org";
-      owner = "wlroots";
-      repo = "wlroots";
-      flake = false;
-    };
+    hypr-contrib.url = github:hyprwm/contrib;
+    hypridle.url = github:hyprwm/hypridle;
+    hyprlock.url = github:hyprwm/hyprlock;
+    hyprpaper.url = github:hyprwm/hyprpaper;
+    hyprpicker.url = github:hyprwm/hyprpicker;
   };
 
   outputs = {

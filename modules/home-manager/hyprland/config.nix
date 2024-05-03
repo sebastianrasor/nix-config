@@ -3,38 +3,8 @@
     NIXOS_OZONE_WL = "1";
   };
 
-  home.packages = with pkgs; [
-    xdg-utils
-  ];
-
-  programs.bash.initExtra =
-    ''
-      if [ "$(tty)" = "/dev/tty1" ] && [ -z "$WAYLAND_DISPLAY" ]; then
-        exec ${lib.getExe pkgs.hyprland};
-      fi
-    '';
-
-  xdg.portal = { 
-    enable = true;
-    xdgOpenUsePortal = true;
-    configPackages = [
-      #inputs.hyprland.packages.${pkgs.system}.hyprland
-      pkgs.hyprland
-    ];
-    config = { 
-      common = { 
-        default = [ "hyprland" ];
-      };
-    };
-    extraPortals = [ 
-      pkgs.xdg-desktop-portal-hyprland
-      pkgs.xdg-desktop-portal-gtk
-    ];
-  };
-
   wayland.windowManager.hyprland = {
     enable = true;
-    #package = inputs.hyprland.packages.${pkgs.system}.hyprland;
     settings = {
       bindm = [
         "SUPER,mouse:272,movewindow"
@@ -119,11 +89,6 @@
       ];
       windowrulev2 = [
         "float,class:thunderbird,title:^(?!Mozilla*)"
-      ];
-      monitor = [
-        "desc:Dell Inc. DELL P2723DE 996FLW3,preferred,-716x-720,2"
-        "desc:Dell Inc. DELL P2723DE 6ZRQCN3,preferred,564x-720,2"
-        "eDP-1,preferred,0x0,2"
       ];
       animations = {
         enabled = true;

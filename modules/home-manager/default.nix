@@ -16,7 +16,7 @@
   grimblast = import ./grimblast.nix;
   gtk = import ./gtk.nix;
   hypridle = import ./hypridle.nix;
-  hyprland = import ./hyprland.nix;
+  hyprland = import ./hyprland;
   hyprlock = import ./hyprlock.nix;
   hyprpaper = import ./hyprpaper.nix;
   hyprpicker = import ./hyprpicker.nix;
