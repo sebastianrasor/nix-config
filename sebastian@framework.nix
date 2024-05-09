@@ -18,7 +18,7 @@
       discord
       (google-chrome.override {
         commandLineArgs = [
-          "--ozone-platform=auto"
+          "--ozone-platform=wayland"
         ];
       })
       thunderbird

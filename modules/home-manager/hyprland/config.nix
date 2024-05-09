@@ -3,6 +3,10 @@
     NIXOS_OZONE_WL = "1";
   };
 
+  home.packages = with pkgs; [
+    xdg-utils
+  ];
+
   wayland.windowManager.hyprland = {
     enable = true;
     settings = {
