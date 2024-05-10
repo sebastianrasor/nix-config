@@ -16,11 +16,9 @@
     packages = with pkgs; [
       asciinema
       discord
-      (google-chrome.override {
-        commandLineArgs = [
-          "--ozone-platform=wayland"
-        ];
-      })
+      google-chrome
+      minecraft
+      piper
       thunderbird
       yubioath-flutter
     ];
@@ -44,6 +42,7 @@
     outputs.homeManagerModules.hypridle
     outputs.homeManagerModules.hyprland.config
     outputs.homeManagerModules.hyprland.init
+    outputs.homeManagerModules.hyprland.input
     outputs.homeManagerModules.hyprland.monitor
     outputs.homeManagerModules.hyprland.portal
     outputs.homeManagerModules.hyprlock

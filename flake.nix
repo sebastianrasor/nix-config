@@ -33,8 +33,16 @@
   in {
     packages = forAllSystems (system: import ./pkgs nixpkgs.legacyPackages.${system});
     homeManagerModules = import ./modules/home-manager;
+    nixosModules = import ./modules/nixos;
 
     nixosConfigurations = {
+      azalea = nixpkgs.lib.nixosSystem {
+        specialArgs = {inherit inputs outputs;};
+        modules = [
+          ./nixos/azalea/configuration.nix
+          nixos-hardware.nixosModules.framework-13-7040-amd
+        ];
+      };
       framework = nixpkgs.lib.nixosSystem {
         specialArgs = {inherit inputs outputs;};
         modules = [
@@ -45,11 +53,11 @@
     };
 
     homeConfigurations = {
-      "sebastian@framework" = home-manager.lib.homeManagerConfiguration {
+      "sebastian@azalea" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
         extraSpecialArgs = {inherit inputs outputs;};
         modules = [
-          ./${"sebastian@framework.nix"}
+          ./${"sebastian@azalea.nix"}
         ];
       };
     };
