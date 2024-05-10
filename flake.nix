@@ -6,12 +6,6 @@
     nixos-hardware.url = github:nixos/nixos-hardware;
 
     home-manager.url = github:nix-community/home-manager;
-
-    hypr-contrib.url = github:hyprwm/contrib;
-    hypridle.url = github:hyprwm/hypridle;
-    hyprlock.url = github:hyprwm/hyprlock;
-    hyprpaper.url = github:hyprwm/hyprpaper;
-    hyprpicker.url = github:hyprwm/hyprpicker;
   };
 
   outputs = {

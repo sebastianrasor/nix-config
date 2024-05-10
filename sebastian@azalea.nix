@@ -17,8 +17,7 @@
       asciinema
       discord
       google-chrome
-      minecraft
-      piper
+      solaar
       thunderbird
       yubioath-flutter
     ];
