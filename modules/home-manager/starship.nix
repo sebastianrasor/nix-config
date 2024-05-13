@@ -4,7 +4,6 @@
     enableTransience = true;
     settings = {
       nix_shell.heuristic = true;
-      sudo.disabled = false;
     };
   };
 }
