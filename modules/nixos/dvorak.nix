@@ -1,7 +1,7 @@
 {
   services.xserver = {
     layout = "us";
-    xkbVariant = "dvorak";
+    xkb.layout = "dvorak";
   };
 
   console.keyMap = "dvorak";

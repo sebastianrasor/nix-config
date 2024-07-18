@@ -1,6 +1,7 @@
 { lib, pkgs, config, inputs, ... }: {
   home.sessionVariables = {
     NIXOS_OZONE_WL = "1";
+    GDK_SCALE = "2";
   };
 
   home.packages = with pkgs; [
@@ -10,6 +11,9 @@
   wayland.windowManager.hyprland = {
     enable = true;
     settings = {
+      xwayland = {
+        force_zero_scaling = true;
+      };
       bindm = [
         "SUPER,mouse:272,movewindow"
         "SUPER,mouse:273,resizewindow"

@@ -9,7 +9,7 @@
     ];
 
   boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "thunderbolt" "usbhid" ];
-  boot.initrd.kernelModules = [ "amdgpu" ];
+  boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 
@@ -18,14 +18,7 @@
       fsType = "ext4";
     };
 
-  #boot.initrd.luks.devices."luks-c68578d7-7680-4fe5-9632-ef9674cccf93".device = "/dev/disk/by-uuid/c68578d7-7680-4fe5-9632-ef9674cccf93";
-  boot.initrd = {
-    luks.devices.root = {
-      crypttabExtraOpts = [ "fido2-device=auto" ];
-      device = "/dev/disk/by-uuid/c68578d7-7680-4fe5-9632-ef9674cccf93";
-    };
-    systemd.enable = true;
-  };
+  boot.initrd.luks.devices."luks-c68578d7-7680-4fe5-9632-ef9674cccf93".device = "/dev/disk/by-uuid/c68578d7-7680-4fe5-9632-ef9674cccf93";
 
   fileSystems."/boot" =
     { device = "/dev/disk/by-uuid/DFD9-B7CB";
@@ -33,10 +26,9 @@
       options = [ "fmask=0022" "dmask=0022" ];
     };
 
- swapDevices = [ {
-    device = "/var/lib/swapfile";
-    size = 65*1024;
-  } ];
+  swapDevices =
+    [ { device = "/dev/disk/by-uuid/a5d85cba-aba4-45b2-bbbc-667c634f20eb"; }
+    ];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
   # (the default) this is the recommended approach. When using systemd-networkd it's

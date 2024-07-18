@@ -8,11 +8,11 @@
   brillo = import ./brillo.nix;
   browserpass = import ./browserpass.nix;
   dark = import ./dark.nix;
-  default.nix = import ./default.nix.nix;
   fish = import ./fish.nix;
   foot = import ./foot.nix;
+  fzf = import ./fzf.nix;
   git = import ./git.nix;
-  gpg = import ./gpg.nix;
+  gpg = import ./gpg;
   grimblast = import ./grimblast.nix;
   gtk = import ./gtk.nix;
   hypridle = import ./hypridle.nix;
@@ -36,5 +36,6 @@
   wezterm = import ./wezterm.nix;
   wpaperd = import ./wpaperd.nix;
   xdg-user-dirs = import ./xdg-user-dirs.nix;
+  yubikey-touch-detector = import ./yubikey-touch-detector.nix;
   zoxide = import ./zoxide.nix;
 }

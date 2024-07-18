@@ -5,6 +5,7 @@
       general = {
         before_sleep_cmd = ''${lib.getExe' pkgs.systemd "loginctl"} lock-session'';
         ignore_dbus_inhibit = false;
+        after_sleep_cmd = ''${lib.getExe' pkgs.hyprland "hyprctl"} dispatch dpms on'';
       };
       listener = [
         {

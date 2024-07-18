@@ -24,7 +24,6 @@ let
                 echo "OK"
             ;;
             "BYE")
-                echo "$DESC" | ${lib.getExe pkgs.gnugrep} -i 'unlock the card' 1>/dev/null 2>&1 && ${lib.getExe' pkgs.libnotify "notify-send"} -t 5000 "Touch your security key"
                 echo "OK closing connection"
                 break
             ;;

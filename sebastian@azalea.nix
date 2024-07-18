@@ -17,6 +17,7 @@
       asciinema
       discord
       google-chrome
+      prismlauncher
       solaar
       thunderbird
       yubioath-flutter
@@ -34,6 +35,7 @@
     outputs.homeManagerModules.dark
     outputs.homeManagerModules.fish
     outputs.homeManagerModules.foot
+    outputs.homeManagerModules.fzf
     outputs.homeManagerModules.git
     outputs.homeManagerModules.gpg
     outputs.homeManagerModules.grimblast
@@ -59,6 +61,7 @@
     outputs.homeManagerModules.vim
     outputs.homeManagerModules.waybar
     outputs.homeManagerModules.xdg-user-dirs
+    outputs.homeManagerModules.yubikey-touch-detector
     outputs.homeManagerModules.zoxide
   ];
 

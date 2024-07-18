@@ -10,7 +10,7 @@
     };
     signing = {
       signByDefault = true;
-      key = "0878ED162F8B295F25AC197BF20DE4BA5B36D4E9";
+      key = "9CBD407F060D20898ED1F280E346A2A083D90F7D";
     };
     includes = [
       {
