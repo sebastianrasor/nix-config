@@ -11,6 +11,7 @@
     file.yubikey-touch-detector-config = {
       text = ''
         GNUPGHOME=${config.programs.gpg.homedir}
+        YUBIKEY_TOUCH_DETECTOR_LIBNOTIFY=false
       '';
       target = ".config/yubikey-touch-detector/service.conf";
     };

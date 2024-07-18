@@ -14,7 +14,7 @@
         padding-bottom = 0;
         modules-left = [ "custom/launcher" "hyprland/workspaces" ];
         modules-center = [];
-        modules-right = [ "wireplumber" "network" "battery" "custom/clock" ];
+        modules-right = [ "custom/yubikey" "wireplumber" "network" "battery" "custom/clock" ];
         "wireplumber" = {
             "format" = "{icon} ";
             "format-muted" = "󰝟 ";
@@ -90,6 +90,10 @@
         "custom/launcher" = {
           format = "";
           tooltip = false;
+        };
+        "custom/yubikey" = {
+          exec = builtins.readFile ./waybar-yubikey.sh;
+          return-type = "json";
         };
       };
     };

@@ -32,7 +32,7 @@
   starship = import ./starship.nix;
   unfree-packages = import ./unfree-packages.nix;
   vim = import ./vim.nix;
-  waybar = import ./waybar.nix;
+  waybar = import ./waybar;
   wezterm = import ./wezterm.nix;
   wpaperd = import ./wpaperd.nix;
   xdg-user-dirs = import ./xdg-user-dirs.nix;
