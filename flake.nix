@@ -64,6 +64,24 @@
       };
     in
     {
+      common = builtins.listToAttrs (
+        map (commonDir: {
+          name = commonDir;
+          value = builtins.listToAttrs (
+            map
+              (configModule: {
+                name = builtins.replaceStrings [ ".nix" ] [ "" ] configModule;
+                value = import ((./common + ("/" + commonDir)) + ("/" + configModule));
+              })
+              (
+                builtins.filter (f: f != "default.nix") (
+                  builtins.attrNames (builtins.readDir (./common + ("/" + commonDir)))
+                )
+              )
+          );
+        }) (builtins.attrNames (builtins.readDir ./common))
+      );
+
       devShells = forAllSystems (
         system:
         let
