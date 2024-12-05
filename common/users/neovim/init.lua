@@ -4,6 +4,8 @@
 
 require("hardtime").setup()
 
+vim.cmd [[colorscheme lunaperche]]
+
 vim.opt.number = true
 vim.opt.relativenumber = true
 

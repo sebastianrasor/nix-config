@@ -7,14 +7,15 @@
   programs.vim = {
     enable = true;
     extraConfig = ''
-              set viminfo+=n~/.local/state/viminfo
-      	syntax on
-      	set scrolloff=10
-      	filetype plugin indent on
-              let s:tabwidth=2
-              let &l:tabstop = s:tabwidth
-              let &l:shiftwidth = s:tabwidth
-              let &l:softtabstop = s:tabwidth
+      set viminfo+=n~/.local/state/viminfo
+      syntax on
+      colorscheme lunaperche
+      set scrolloff=10
+      filetype plugin indent on
+      let s:tabwidth=2
+      let &l:tabstop = s:tabwidth
+      let &l:shiftwidth = s:tabwidth
+      let &l:softtabstop = s:tabwidth
     '';
   };
 
