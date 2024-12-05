@@ -9,7 +9,7 @@
     extraConfig = ''
       set viminfo+=n~/.local/state/viminfo
       syntax on
-      colorscheme lunaperche
+      set t_Co=16
       set scrolloff=10
       filetype plugin indent on
       let s:tabwidth=2
