@@ -17,6 +17,7 @@
       hardtime-nvim
       nui-nvim
       plenary-nvim
+      solarized-nvim
     ];
   };
   programs.fish.shellAbbrs = {
