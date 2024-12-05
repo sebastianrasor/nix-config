@@ -26,4 +26,15 @@
       }
     ];
   };
+  programs.fish.shellAbbrs = {
+    ga = "git add";
+    gc = "git commit";
+    gca = "git commit --amend";
+    gcm = "git commit -m";
+    gd = "git diff";
+    gds = "git diff --staged";
+    gp = "git push";
+    gr = "git restore";
+    gs = "git status";
+  };
 }
