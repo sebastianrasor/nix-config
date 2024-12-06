@@ -14,7 +14,10 @@
   ];
 
   services = {
-    pcscd.enable = true;
+    pcscd = {
+      enable = true;
+      plugins = [ pkgs.yubikey-personalization ];
+    };
     udev.packages = [ pkgs.yubikey-personalization ];
   };
 
