@@ -35,6 +35,7 @@
     gds = "git diff --staged";
     gp = "git push";
     gr = "git restore";
+    grh = "git reset HEAD";
     gs = "git status";
   };
 }
