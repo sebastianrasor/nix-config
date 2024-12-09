@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-{ nixos-hardware, ... }:
+{ lib, nixos-hardware, ... }:
 {
   imports =
     map (configModule: ./. + ("/" + configModule)) (
@@ -13,6 +13,8 @@
     ];
 
   networking.hostName = "azalea";
+
+  hardware.bluetooth.powerOnBoot = lib.mkForce false;
 
   system.stateVersion = "23.11";
 }
