@@ -32,8 +32,6 @@
     fsType = "ext4";
   };
 
-  boot.initrd.luks.devices."root".device = "/dev/disk/by-uuid/c68578d7-7680-4fe5-9632-ef9674cccf93";
-
   fileSystems."/boot" = {
     device = "/dev/disk/by-uuid/DFD9-B7CB";
     fsType = "vfat";
