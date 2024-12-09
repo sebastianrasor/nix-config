@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 {
   programs.gpg = {
     enable = true;
@@ -34,6 +34,7 @@
     enable = true;
     enableScDaemon = true;
     enableSshSupport = true;
+    pinentryPackage = pkgs.pinentry-tty;
   };
 
   home.activation.removeGpgSmartCardPrompt = lib.hm.dag.entryAfter [ "importGpgKeys" ] ''
