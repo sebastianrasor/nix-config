@@ -27,6 +27,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    auto-cpufreq = {
+      url = "github:AdnanHodzic/auto-cpufreq";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     neovim-nightly-overlay = {
       url = "github:nix-community/neovim-nightly-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -43,6 +48,7 @@
       nixos-cosmic,
       home-manager,
       lanzaboote,
+      auto-cpufreq,
       ...
     }@inputs:
     let
@@ -60,6 +66,7 @@
           nixos-hardware
           nixos-cosmic
           lanzaboote
+          auto-cpufreq
           ;
       };
     in
@@ -107,11 +114,9 @@
             inherit specialArgs;
             modules = [
               home-manager.nixosModules.home-manager
-              {
-                home-manager.extraSpecialArgs = specialArgs;
-                home-manager.backupFileExtension = "bak";
-              }
+              { home-manager.extraSpecialArgs = specialArgs; }
               (./hosts + ("/" + hostModule))
+              auto-cpufreq.nixosModules.default
             ];
           };
         }) (builtins.attrNames (builtins.readDir ./hosts))
