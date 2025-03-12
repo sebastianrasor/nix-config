@@ -15,6 +15,7 @@
   sebastianrasor.acme.enable = true;
   sebastianrasor.frigate.enable = false;
   sebastianrasor.homebox.enable = true;
+  sebastianrasor.home-manager.enable = true;
   sebastianrasor.immich.enable = true;
   sebastianrasor.jellyfin.enable = true;
   sebastianrasor.nginx.enable = true;

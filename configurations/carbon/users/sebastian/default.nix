@@ -10,7 +10,5 @@
     ];
   };
 
-  # TODO: implement a global NixOS Home Manager config
-  # home-manager.users.sebastian = lib.mkIf config.sebastianrasor.home-manager.enable import ./home.nix;
-  home-manager.users.sebastian = import ./home.nix;
+  home-manager.users.sebastian = lib.mkIf config.sebastianrasor.home-manager.enable (import ./home.nix);
 }

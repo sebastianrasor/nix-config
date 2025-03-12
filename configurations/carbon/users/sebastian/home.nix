@@ -10,10 +10,5 @@
     stateVersion = "23.11";
   };
 
-  nixpkgs.config = {
-    allowUnfree = true;
-    allowUnfreePredicate = _: true;
-  };
-
   programs.home-manager.enable = true;
 }
