@@ -11,6 +11,7 @@
   sebastianrasor.avahi.enable = true;
   sebastianrasor.cosmic.enable = true;
   sebastianrasor.dvorak.enable = true;
+  sebastianrasor.home-manager.enable = true;
   sebastianrasor.lanzaboote.enable = true;
   sebastianrasor.makemkv.enable = true;
   sebastianrasor.pipewire.enable = true;
