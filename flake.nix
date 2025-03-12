@@ -39,7 +39,7 @@
       pkgs = nixpkgs.legacyPackages.${system};
     in
     {
-      # import all NixOS configurations from ./configurations/nixos/*
+      # import all NixOS configurations from ./configurations/*
       nixosConfigurations = builtins.listToAttrs (
         map (
           nixosConfiguration: with pkgs.lib; {
@@ -49,27 +49,40 @@
                 inherit inputs;
               };
               modules = [
-                (./configurations/nixos + ("/" + nixosConfiguration))
+                (./configurations + ("/" + nixosConfiguration))
               ] ++ attrsets.attrValues self.nixosModules;
             };
           }
-        ) (builtins.attrNames (builtins.readDir ./configurations/nixos))
+        ) (builtins.attrNames (builtins.readDir ./configurations))
       );
 
-      # import all Home Manager configurations from ./configurations/home-manager/*
-      homeConfigurations = builtins.listToAttrs (
-        map (
-          homeConfiguration: with pkgs.lib; {
-            name = removeSuffix ".nix" homeConfiguration;
-            value = home-manager.lib.homeManagerConfiguration {
-              inherit pkgs;
-              modules = [
-                (./configurations/home-manager + ("/" + homeConfiguration))
-              ] ++ attrsets.attrValues self.homeModules;
-            };
-          }
-        ) (builtins.attrNames (builtins.readDir ./configurations/home-manager))
-      );
+      # import all Home Manager configurations from ./configurations/*/users/*/home.nix
+      homeConfigurations =
+        with pkgs.lib;
+        concatMapAttrs
+          (
+            hostName: usernames:
+            builtins.listToAttrs (
+              map (username: {
+                name = username + "@" + hostName;
+                value = home-manager.lib.homeManagerConfiguration {
+                  inherit pkgs;
+                  extraSpecialArgs = inputs // {
+                    inherit inputs;
+                  };
+                  modules = [
+                    ./configurations/${hostName}/users/${username}/home.nix
+                  ] ++ attrsets.attrValues self.homeModules;
+                };
+              }) usernames
+            )
+          )
+          (
+            mapAttrs' (
+              hostName: _:
+              nameValuePair hostName (attrNames (builtins.readDir ./configurations/${hostName}/users))
+            ) (builtins.readDir ./configurations)
+          );
 
       # import all NixOS modules from ./modules/nixos/*
       nixosModules =

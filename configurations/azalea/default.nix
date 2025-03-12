@@ -24,24 +24,6 @@
   };
   sebastianrasor.unas-lazy-media.enable = true;
 
-  sebastianrasor.user-root.enable = true;
-  sebastianrasor.user-sebastian.enable = true;
-  home-manager.users.sebastian = {
-    sebastianrasor.atkinson-hyperlegible.enable = true;
-    sebastianrasor.bottom.enable = true;
-    sebastianrasor.discord.enable = true;
-    sebastianrasor.fish.bashInit = false;
-    sebastianrasor.git.enable = true;
-    sebastianrasor.google-chrome.enable = true;
-    sebastianrasor.gpg.enable = true;
-    sebastianrasor.jellyfin-media-player.enable = true;
-    sebastianrasor.monaspace.enable = true;
-    sebastianrasor.mpv.enable = true;
-    sebastianrasor.neovim.enable = true;
-    sebastianrasor.pass.enable = true;
-    sebastianrasor.thunderbird.enable = true;
-  };
-
   time.timeZone = "America/Chicago";
   hardware.bluetooth.powerOnBoot = lib.mkForce false;
   hardware.graphics.enable = true;
@@ -52,7 +34,7 @@
   imports = [
     nixos-hardware.nixosModules.framework-13-7040-amd
     ./hardware-configuration.nix
-  ];
+  ] ++ map (moduleFile: ./users + ("/" + moduleFile)) (builtins.attrNames (builtins.readDir ./users));
 
   system.stateVersion = "23.11";
 }
