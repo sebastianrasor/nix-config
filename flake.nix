@@ -119,6 +119,7 @@
           nixd
           nixfmt-rfc-style
           nixf
+          stylua
         ];
       };
     };
