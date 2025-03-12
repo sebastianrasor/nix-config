@@ -16,6 +16,7 @@
       extraLuaConfig = lib.fileContents ./init.lua;
       package = neovim-nightly-overlay.packages.${pkgs.system}.default;
       plugins = with pkgs.vimPlugins; [
+        conform-nvim
         hardtime-nvim
         nui-nvim
         plenary-nvim
