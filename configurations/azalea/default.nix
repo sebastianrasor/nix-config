@@ -30,6 +30,10 @@
   boot.kernelPackages = pkgs.linuxPackages_latest;
   nixpkgs.config.allowUnfree = true;
   networking.timeServers = [ "time.google.com" ];
+  environment.systemPackages = with pkgs; [
+    framework-tool
+    fw-ectool
+  ];
 
   imports = [
     nixos-hardware.nixosModules.framework-13-7040-amd
