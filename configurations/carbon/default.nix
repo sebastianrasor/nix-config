@@ -26,16 +26,9 @@
     host = "unas-pro.localdomain";
   };
 
-  sebastianrasor.user-sebastian.enable = true;
-  home-manager.users.sebastian = {
-    sebastianrasor.neovim.enable = true;
-  };
-
-  sebastianrasor.user-root.enable = true;
-
   imports = [
     ./hardware-configuration.nix
-  ];
+  ] ++ map (moduleFile: ./users + ("/" + moduleFile)) (builtins.attrNames (builtins.readDir ./users));
 
   nixpkgs.config.packageOverrides = pkgs: {
     vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
