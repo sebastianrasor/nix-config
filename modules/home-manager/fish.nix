@@ -17,11 +17,9 @@
   config = lib.mkIf config.sebastianrasor.fish.enable {
     programs.fish = {
       enable = true;
-      interactiveShellInit = ''
-        set -g fish_key_bindings fish_vi_key_bindings
-      '';
       functions = {
         fish_greeting = "test -e /etc/motd; and command cat /etc/motd";
+        fish_user_key_bindings = "fish_default_key_bindings -M insert; fish_vi_key_bindings --no-erase insert";
       };
     };
     programs.bash.initExtra = lib.mkIf config.sebastianrasor.fish.bashInit ''
