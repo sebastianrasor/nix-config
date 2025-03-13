@@ -1,4 +1,4 @@
-{ ... }:
+args@{ lib, ... }:
 {
   sebastianrasor.core.enable = true;
 
@@ -22,6 +22,11 @@
     keyboard.variant = "dvorak";
 
     stateVersion = "23.11";
+  };
+
+  nixpkgs.config = lib.mkIf (!builtins.hasAttr "nixosConfig" args) {
+    allowUnfree = true;
+    allowUnfreePredicate = _: true;
   };
 
   programs.home-manager.enable = true;
