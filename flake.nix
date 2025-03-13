@@ -11,16 +11,19 @@
       ...
     }:
     let
-      system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
+      forAllSystems =
+        function:
+        nixpkgs.lib.genAttrs [
+          "x86_64-linux"
+        ] (system: function nixpkgs.legacyPackages.${system});
     in
     {
       # import all NixOS configurations from ./configurations/*
       nixosConfigurations = builtins.listToAttrs (
         map (
-          nixosConfiguration: with pkgs.lib; {
+          nixosConfiguration: with nixpkgs.lib; {
             name = removeSuffix ".nix" nixosConfiguration;
-            value = nixpkgs.lib.nixosSystem {
+            value = nixosSystem {
               specialArgs = inputs // {
                 inherit inputs;
               };
@@ -34,7 +37,7 @@
 
       # import all Home Manager configurations from ./configurations/*/users/*/home.nix
       homeConfigurations =
-        with pkgs.lib;
+        with nixpkgs.lib;
         concatMapAttrs
           (
             hostName: usernames:
@@ -62,7 +65,7 @@
 
       # import all NixOS modules from ./modules/nixos/*
       nixosModules =
-        with pkgs.lib;
+        with nixpkgs.lib;
         attrsets.mapAttrs' (
           name: _: attrsets.nameValuePair (removeSuffix ".nix" name) (import (./modules/nixos + ("/" + name)))
         ) (builtins.readDir ./modules/nixos)
@@ -82,22 +85,24 @@
 
       # import all Home Manager modules from ./modules/home-manager/*
       homeModules =
-        with pkgs.lib;
+        with nixpkgs.lib;
         attrsets.mapAttrs' (
           name: _:
           attrsets.nameValuePair (removeSuffix ".nix" name) (import (./modules/home-manager + ("/" + name)))
         ) (builtins.readDir ./modules/home-manager);
 
       # create a simple development shell for working with Nix
-      devShells.${system}.default = pkgs.mkShell {
-        nativeBuildInputs = with pkgs; [
-          fd
-          nixd
-          nixfmt-rfc-style
-          nixf
-          stylua
-        ];
-      };
+      devShells = forAllSystems (pkgs: {
+        default = pkgs.mkShell {
+          nativeBuildInputs = with pkgs; [
+            fd
+            nixd
+            nixfmt-rfc-style
+            nixf
+            stylua
+          ];
+        };
+      });
     };
 
   inputs = {
