@@ -45,7 +45,7 @@
               map (username: {
                 name = username + "@" + hostName;
                 value = home-manager.lib.homeManagerConfiguration {
-                  inherit pkgs;
+                  pkgs = self.nixosConfigurations.${hostName}.pkgs;
                   extraSpecialArgs = inputs // {
                     inherit inputs;
                   };
