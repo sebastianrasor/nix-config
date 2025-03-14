@@ -11,9 +11,5 @@
 
   config = lib.mkIf config.sebastianrasor.home-manager.enable {
     environment.systemPackages = [ pkgs.home-manager ];
-    home-manager = {
-      useGlobalPkgs = true;
-      useUserPackages = true;
-    };
   };
 }

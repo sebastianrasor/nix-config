@@ -1,4 +1,4 @@
-args@{ lib, ... }:
+{ ... }:
 {
   sebastianrasor.core.enable = true;
 
@@ -24,7 +24,7 @@ args@{ lib, ... }:
     stateVersion = "23.11";
   };
 
-  nixpkgs.config = lib.mkIf (!builtins.hasAttr "nixosConfig" args) {
+  nixpkgs.config = {
     allowUnfree = true;
     allowUnfreePredicate = _: true;
   };
