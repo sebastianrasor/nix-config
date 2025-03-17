@@ -3,8 +3,7 @@
   lib,
   pkgs,
   ...
-}:
-{
+}: {
   options = {
     sebastianrasor.monaspace.enable = lib.mkEnableOption "";
   };

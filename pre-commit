@@ -7,7 +7,7 @@
 fd -t f -e nix -X nix-instantiate --parse {} >/dev/null || exit 1
 
 # Check whether nix files are formatted
-fd -t f -e nix -X nixfmt --check || exit 1
+fd -t f -e nix -X alejandra -q --check || exit 1
 
 # Check whether nix files have issues
 fd -t f -e nix -x sh -c "cat {} | nixf-tidy --variable-lookup | grep -q '^\[\]\$' || ( echo {/} has issues && exit 1 )" || exit 1

@@ -3,8 +3,7 @@
   lib,
   pkgs,
   ...
-}:
-{
+}: {
   options = {
     sebastianrasor.gpg.enable = lib.mkEnableOption "";
   };
@@ -46,17 +45,17 @@
     programs.ssh.matchBlocks.gpg-agent.match =
       lib.mkIf config.programs.ssh.enable "Host * exec \"gpg-connect-agent UPDATESTARTUPTTY /bye\"";
 
-    home.activation.removeGpgSmartCardPrompt = lib.hm.dag.entryAfter [ "importGpgKeys" ] ''
-          shopt -s nullglob
-          for key in ${config.programs.gpg.homedir}/private-keys-v1.d/*.key; do
-            if grep -q 'shadowed-private-key' $key && ! grep -q '^Prompt:' $key; then
-              if [ -z ''${DRY_RUN+x} ]; then
-      	  echo 'Prompt: no' >> $key
-      	else
-      	  printf "echo 'Prompt: no' >> $key\n"
-      	fi
-            fi
-          done
+    home.activation.removeGpgSmartCardPrompt = lib.hm.dag.entryAfter ["importGpgKeys"] ''
+         shopt -s nullglob
+         for key in ${config.programs.gpg.homedir}/private-keys-v1.d/*.key; do
+           if grep -q 'shadowed-private-key' $key && ! grep -q '^Prompt:' $key; then
+             if [ -z ''${DRY_RUN+x} ]; then
+        echo 'Prompt: no' >> $key
+      else
+        printf "echo 'Prompt: no' >> $key\n"
+      fi
+           fi
+         done
     '';
   };
 }

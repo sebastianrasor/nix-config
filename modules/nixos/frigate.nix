@@ -1,11 +1,14 @@
-{ config, lib, ... }:
 {
+  config,
+  lib,
+  ...
+}: {
   options = {
     sebastianrasor.frigate.enable = lib.mkEnableOption "";
   };
 
   config = lib.mkIf config.sebastianrasor.frigate.enable {
-    users.users.frigate.extraGroups = lib.mkIf config.sebastianrasor.unas.enable [ "unifi-drive-nfs" ];
+    users.users.frigate.extraGroups = lib.mkIf config.sebastianrasor.unas.enable ["unifi-drive-nfs"];
 
     security.acme.certs."frigate.sebastianrasor.com" = lib.mkIf config.sebastianrasor.acme.enable {
       dnsProvider = "cloudflare";
@@ -14,11 +17,11 @@
 
     services.nginx.virtualHosts."frigate.sebastianrasor.com" =
       lib.mkIf config.sebastianrasor.acme.enable
-        {
-          forceSSL = true;
-          enableACME = true;
-          acmeRoot = null;
-        };
+      {
+        forceSSL = true;
+        enableACME = true;
+        acmeRoot = null;
+      };
 
     services.frigate = {
       enable = true;
@@ -65,11 +68,11 @@
               inputs = [
                 {
                   path = "rtsp://admin:password1@10.0.108.219:554";
-                  roles = [ "record" ];
+                  roles = ["record"];
                 }
                 {
                   path = "rtsp://admin:password1@10.0.108.219:554/cam/realmonitor?channel=1&subtype=1";
-                  roles = [ "detect" ];
+                  roles = ["detect"];
                 }
               ];
             };
@@ -80,11 +83,11 @@
               inputs = [
                 {
                   path = "rtsp://admin:password1@10.0.108.189:554";
-                  roles = [ "record" ];
+                  roles = ["record"];
                 }
                 {
                   path = "rtsp://admin:password1@10.0.108.189:554/cam/realmonitor?channel=1&subtype=1";
-                  roles = [ "detect" ];
+                  roles = ["detect"];
                 }
               ];
             };
@@ -95,11 +98,11 @@
               inputs = [
                 {
                   path = "rtsp://admin:password1@10.0.108.237:554";
-                  roles = [ "record" ];
+                  roles = ["record"];
                 }
                 {
                   path = "rtsp://admin:password1@10.0.108.237:554/cam/realmonitor?channel=1&subtype=1";
-                  roles = [ "detect" ];
+                  roles = ["detect"];
                 }
               ];
             };
@@ -110,11 +113,11 @@
               inputs = [
                 {
                   path = "rtsp://admin:password1@10.0.108.225:554";
-                  roles = [ "record" ];
+                  roles = ["record"];
                 }
                 {
                   path = "rtsp://admin:password1@10.0.108.225:554/cam/realmonitor?channel=1&subtype=1";
-                  roles = [ "detect" ];
+                  roles = ["detect"];
                 }
               ];
             };
@@ -125,11 +128,11 @@
               inputs = [
                 {
                   path = "rtsp://admin:password1@10.0.108.214:554";
-                  roles = [ "record" ];
+                  roles = ["record"];
                 }
                 {
                   path = "rtsp://admin:password1@10.0.108.214:554/cam/realmonitor?channel=1&subtype=1";
-                  roles = [ "detect" ];
+                  roles = ["detect"];
                 }
               ];
             };
@@ -144,24 +147,24 @@
     };
 
     fileSystems."/var/lib/frigate/clips" = lib.mkIf config.sebastianrasor.unas.enable {
-      depends = [ "/media/frigate" ];
+      depends = ["/media/frigate"];
       device = "/media/frigate/clips";
       fsType = "none";
-      options = [ "bind" ];
+      options = ["bind"];
     };
 
     fileSystems."/var/lib/frigate/exports" = lib.mkIf config.sebastianrasor.unas.enable {
-      depends = [ "/media/frigate" ];
+      depends = ["/media/frigate"];
       device = "/media/frigate/exports";
       fsType = "none";
-      options = [ "bind" ];
+      options = ["bind"];
     };
 
     fileSystems."/var/lib/frigate/recordings" = lib.mkIf config.sebastianrasor.unas.enable {
-      depends = [ "/media/frigate" ];
+      depends = ["/media/frigate"];
       device = "/media/frigate/recordings";
       fsType = "none";
-      options = [ "bind" ];
+      options = ["bind"];
     };
   };
 }

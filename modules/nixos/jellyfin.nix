@@ -1,5 +1,8 @@
-{ config, lib, ... }:
 {
+  config,
+  lib,
+  ...
+}: {
   options = {
     sebastianrasor.jellyfin.enable = lib.mkEnableOption "";
   };
@@ -13,7 +16,7 @@
       configDir = lib.mkIf config.sebastianrasor.unas.enable "/media/jellyfin/config";
     };
 
-    users.users.jellyfin.extraGroups = lib.mkIf config.sebastianrasor.unas.enable [ "unifi-drive-nfs" ];
+    users.users.jellyfin.extraGroups = lib.mkIf config.sebastianrasor.unas.enable ["unifi-drive-nfs"];
 
     security.acme.certs."jellyfin.sebastianrasor.com" = lib.mkIf config.sebastianrasor.acme.enable {
       dnsProvider = "cloudflare";
@@ -23,7 +26,7 @@
     fileSystems."/media/jellyfin" = lib.mkIf config.sebastianrasor.unas.enable {
       device = "${config.sebastianrasor.unas.host}:${config.sebastianrasor.unas.basePath}/Jellyfin";
       fsType = "nfs";
-      options = [ "nolock" ];
+      options = ["nolock"];
     };
 
     fileSystems."/media/movies" = lib.mkIf config.sebastianrasor.unas.enable {

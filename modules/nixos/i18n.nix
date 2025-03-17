@@ -2,8 +2,7 @@
   config,
   lib,
   ...
-}:
-{
+}: {
   options = {
     sebastianrasor.i18n.enable = lib.mkEnableOption "";
   };

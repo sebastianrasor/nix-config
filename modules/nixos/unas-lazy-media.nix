@@ -3,8 +3,7 @@
   lib,
   pkgs,
   ...
-}:
-{
+}: {
   options = {
     sebastianrasor.unas-lazy-media.enable = lib.mkEnableOption "";
 
@@ -24,51 +23,43 @@
       nfs-utils
     ];
 
-    boot.supportedFilesystems = [ "nfs" ];
+    boot.supportedFilesystems = ["nfs"];
     services.rpcbind.enable = true; # needed for NFS
-    systemd.mounts =
-      let
-        commonMountOptions = {
-          type = "nfs";
-          mountConfig = {
-            Options = "noatime";
-          };
+    systemd.mounts = let
+      commonMountOptions = {
+        type = "nfs";
+        mountConfig = {
+          Options = "noatime";
         };
+      };
+    in [
+      (
+        commonMountOptions
+        // {
+          what = "${config.sebastianrasor.unas-lazy-media.host}:${config.sebastianrasor.unas-lazy-media.basePath}/Movies";
+          where = "/media/movies";
+        }
+      )
 
-      in
+      (
+        commonMountOptions
+        // {
+          what = "${config.sebastianrasor.unas-lazy-media.host}:${config.sebastianrasor.unas-lazy-media.basePath}/Shows";
+          where = "/media/shows";
+        }
+      )
+    ];
 
-      [
-        (
-          commonMountOptions
-          // {
-            what = "${config.sebastianrasor.unas-lazy-media.host}:${config.sebastianrasor.unas-lazy-media.basePath}/Movies";
-            where = "/media/movies";
-          }
-        )
-
-        (
-          commonMountOptions
-          // {
-            what = "${config.sebastianrasor.unas-lazy-media.host}:${config.sebastianrasor.unas-lazy-media.basePath}/Shows";
-            where = "/media/shows";
-          }
-        )
-      ];
-
-    systemd.automounts =
-      let
-        commonAutoMountOptions = {
-          wantedBy = [ "multi-user.target" ];
-          automountConfig = {
-            TimeoutIdleSec = "600";
-          };
+    systemd.automounts = let
+      commonAutoMountOptions = {
+        wantedBy = ["multi-user.target"];
+        automountConfig = {
+          TimeoutIdleSec = "600";
         };
-
-      in
-
-      [
-        (commonAutoMountOptions // { where = "/media/movies"; })
-        (commonAutoMountOptions // { where = "/media/shows"; })
-      ];
+      };
+    in [
+      (commonAutoMountOptions // {where = "/media/movies";})
+      (commonAutoMountOptions // {where = "/media/shows";})
+    ];
   };
 }
