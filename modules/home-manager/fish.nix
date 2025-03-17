@@ -3,8 +3,7 @@
   lib,
   pkgs,
   ...
-}:
-{
+}: {
   options = {
     sebastianrasor.fish.enable = lib.mkEnableOption "";
 

@@ -2,8 +2,7 @@
   config,
   lib,
   ...
-}:
-{
+}: {
   options = {
     sebastianrasor.sudo.enable = lib.mkEnableOption "";
   };

@@ -3,8 +3,7 @@
   lib,
   pkgs,
   ...
-}:
-{
+}: {
   options = {
     sebastianrasor.steam.enable = lib.mkEnableOption "";
   };

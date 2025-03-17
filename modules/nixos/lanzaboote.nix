@@ -3,8 +3,7 @@
   lib,
   pkgs,
   ...
-}:
-{
+}: {
   options = {
     sebastianrasor.lanzaboote.enable = lib.mkEnableOption "";
   };

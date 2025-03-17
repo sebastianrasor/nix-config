@@ -2,8 +2,7 @@
   config,
   lib,
   ...
-}:
-{
+}: {
   options = {
     sebastianrasor.networkmanager.enable = lib.mkEnableOption "";
   };

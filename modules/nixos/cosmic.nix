@@ -3,8 +3,7 @@
   lib,
   pkgs,
   ...
-}:
-{
+}: {
   options = {
     sebastianrasor.cosmic.enable = lib.mkEnableOption "";
   };

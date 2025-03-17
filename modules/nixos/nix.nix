@@ -3,15 +3,14 @@
   inputs,
   lib,
   ...
-}:
-{
+}: {
   options = {
     sebastianrasor.nix.enable = lib.mkEnableOption "";
   };
 
   config = lib.mkIf config.sebastianrasor.nix.enable {
     nix = {
-      registry = lib.mapAttrs (_: value: { flake = value; }) inputs;
+      registry = lib.mapAttrs (_: value: {flake = value;}) inputs;
       nixPath = lib.mapAttrsToList (key: value: "${key}=${value.to.path}") config.nix.registry;
 
       settings = {

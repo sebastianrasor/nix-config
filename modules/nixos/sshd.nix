@@ -1,5 +1,8 @@
-{ config, lib, ... }:
 {
+  config,
+  lib,
+  ...
+}: {
   options = {
     sebastianrasor.sshd.enable = lib.mkEnableOption "";
   };

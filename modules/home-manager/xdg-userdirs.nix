@@ -1,5 +1,8 @@
-{ config, lib, ... }:
 {
+  config,
+  lib,
+  ...
+}: {
   options = {
     sebastianrasor.xdg-userdirs.enable = lib.mkEnableOption "";
   };

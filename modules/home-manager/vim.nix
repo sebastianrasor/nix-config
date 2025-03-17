@@ -1,5 +1,8 @@
-{ config, lib, ... }:
 {
+  config,
+  lib,
+  ...
+}: {
   options = {
     sebastianrasor.vim.enable = lib.mkEnableOption "";
   };

@@ -2,8 +2,7 @@
   config,
   lib,
   ...
-}:
-{
+}: {
   options = {
     sebastianrasor.pipewire.enable = lib.mkEnableOption "";
   };

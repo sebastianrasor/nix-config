@@ -2,7 +2,7 @@ require("hardtime").setup()
 require("conform").setup({
 	formatters_by_ft = {
 		lua = { "stylua" },
-		nix = { "nixfmt", lsp_format = "fallback" },
+		nix = { "alejandra", lsp_format = "fallback" },
 		rust = { "rustfmt", lsp_format = "fallback" },
 	},
 	format_on_save = {
@@ -214,8 +214,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		keymap("<C-k>", vim.lsp.buf.signature_help, {})
 		keymap("<Leader>rn", vim.lsp.buf.rename, {})
 		keymap("<Leader>ca", vim.lsp.buf.code_action, {}, { "n", "v" })
-		keymap("<Leader>f", function()
-			vim.lsp.buf.format({ async = true })
 		end, {})
 	end,
 })

@@ -4,8 +4,7 @@
   neovim-nightly-overlay,
   pkgs,
   ...
-}:
-{
+}: {
   options = {
     sebastianrasor.neovim.enable = lib.mkEnableOption "";
   };

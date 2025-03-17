@@ -1,5 +1,8 @@
-{ config, lib, ... }:
 {
+  config,
+  lib,
+  ...
+}: {
   options = {
     sebastianrasor.bash.enable = lib.mkEnableOption "";
   };

@@ -1,5 +1,8 @@
-{ config, lib, ... }:
 {
+  config,
+  lib,
+  ...
+}: {
   options = {
     sebastianrasor.homebox.enable = lib.mkEnableOption "";
   };
@@ -7,7 +10,7 @@
   config = lib.mkIf config.sebastianrasor.homebox.enable {
     services.homebox.enable = true;
 
-    users.users.homebox.extraGroups = lib.mkIf config.sebastianrasor.unas.enable [ "unifi-drive-nfs" ];
+    users.users.homebox.extraGroups = lib.mkIf config.sebastianrasor.unas.enable ["unifi-drive-nfs"];
 
     fileSystems."/var/lib/homebox/data" = lib.mkIf config.sebastianrasor.unas.enable {
       device = "${config.sebastianrasor.unas.host}:${config.sebastianrasor.unas.basePath}/Homebox";

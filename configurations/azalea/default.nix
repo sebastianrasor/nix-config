@@ -3,8 +3,7 @@
   nixos-hardware,
   pkgs,
   ...
-}:
-{
+}: {
   networking.hostName = "azalea";
 
   sebastianrasor.core.enable = true;
@@ -30,16 +29,18 @@
   hardware.graphics.enable = true;
   boot.kernelPackages = pkgs.linuxPackages_latest;
   nixpkgs.config.allowUnfree = true;
-  networking.timeServers = [ "time.google.com" ];
+  networking.timeServers = ["time.google.com"];
   environment.systemPackages = with pkgs; [
     framework-tool
     fw-ectool
   ];
 
-  imports = [
-    nixos-hardware.nixosModules.framework-13-7040-amd
-    ./hardware-configuration.nix
-  ] ++ map (moduleFile: ./users + ("/" + moduleFile)) (builtins.attrNames (builtins.readDir ./users));
+  imports =
+    [
+      nixos-hardware.nixosModules.framework-13-7040-amd
+      ./hardware-configuration.nix
+    ]
+    ++ map (moduleFile: ./users + ("/" + moduleFile)) (builtins.attrNames (builtins.readDir ./users));
 
   system.stateVersion = "23.11";
 }

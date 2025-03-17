@@ -1,5 +1,4 @@
-{ ... }:
-{
+{...}: {
   sebastianrasor.core.enable = true;
 
   sebastianrasor.atkinson-hyperlegible.enable = true;
