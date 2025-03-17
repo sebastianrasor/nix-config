@@ -21,6 +21,7 @@
   sebastianrasor.nginx.enable = true;
   sebastianrasor.nix.enable = true;
   sebastianrasor.sshd.enable = true;
+  sebastianrasor.sudo.enable = true;
 
   sebastianrasor.unas = {
     enable = true;
