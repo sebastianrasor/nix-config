@@ -7,6 +7,7 @@
     home-manager,
     lanzaboote,
     nixos-cosmic,
+    nvf,
     ...
   }: let
     forAllSystems = function:
@@ -110,6 +111,15 @@
         ];
       };
     });
+
+    packages = forAllSystems (pkgs: {
+      neovim-sebastianrasor =
+        (nvf.lib.neovimConfiguration {
+          inherit pkgs;
+          modules = [./neovim.nix];
+        })
+        .neovim;
+    });
   };
 
   inputs = {
@@ -134,6 +144,11 @@
 
     nixos-cosmic = {
       url = "github:lilyinstarlight/nixos-cosmic";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nvf = {
+      url = "github:notashelf/nvf";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
