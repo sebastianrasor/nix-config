@@ -1,8 +1,8 @@
 {
   config,
   lib,
-  neovim-nightly-overlay,
   pkgs,
+  self,
   ...
 }: {
   options = {
@@ -10,17 +10,7 @@
   };
 
   config = lib.mkIf config.sebastianrasor.neovim.enable {
-    programs.neovim = {
-      enable = true;
-      extraLuaConfig = lib.fileContents ./init.lua;
-      package = neovim-nightly-overlay.packages.${pkgs.system}.default;
-      plugins = with pkgs.vimPlugins; [
-        conform-nvim
-        hardtime-nvim
-        nui-nvim
-        plenary-nvim
-      ];
-    };
+    home.packages = [self.packages.${pkgs.system}.neovim-sebastianrasor];
     programs.fish.shellAbbrs = lib.mkIf config.sebastianrasor.fish.enable {
       vim = "nvim";
     };

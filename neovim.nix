@@ -1,0 +1,89 @@
+{pkgs, ...}: {
+  config.vim = {
+    languages = {
+      enableLSP = true;
+      enableFormat = true;
+      enableTreesitter = true;
+
+      bash.enable = true;
+      html.enable = true;
+      markdown.enable = true;
+      nix.enable = true;
+      rust = {
+        enable = true;
+        crates.enable = true;
+      };
+      ts.enable = true;
+    };
+
+    autocomplete.nvim-cmp.enable = true;
+    autopairs.nvim-autopairs.enable = true;
+
+    notify.nvim-notify.enable = true;
+
+    lsp = {
+      formatOnSave = true;
+      lightbulb.enable = true;
+      trouble.enable = true;
+      lspSignature.enable = true;
+      otter-nvim.enable = true;
+      lsplines.enable = true;
+      nvim-docs-view.enable = true;
+    };
+
+    visuals = {
+      indent-blankline.enable = true;
+    };
+
+    treesitter = {
+      enable = true;
+      context.enable = true;
+    };
+    ui = {
+      fastaction.enable = true;
+    };
+
+    git = {
+      enable = true;
+    };
+
+    binds = {
+      whichKey.enable = true;
+    };
+
+    spellcheck.enable = true;
+
+    extraPlugins.hardtime = {
+      package = pkgs.vimPlugins.hardtime-nvim;
+      setup = "require('hardtime').setup()";
+    };
+
+    options = {
+      autoindent = false;
+      cindent = false;
+      ignorecase = true;
+      smartcase = true;
+      smartindent = false;
+      termguicolors = false;
+      vb = true;
+
+      expandtab = false;
+      shiftwidth = 4;
+      softtabstop = 4;
+      tabstop = 4;
+    };
+
+    pluginRC.nix = ''
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "nix",
+        callback = function(opts)
+          local bo = vim.bo[opts.buf]
+          bo.tabstop = 2
+          bo.shiftwidth = 2
+          bo.softtabstop = 2
+          bo.expandtab = true
+        end
+      })
+    '';
+  };
+}
