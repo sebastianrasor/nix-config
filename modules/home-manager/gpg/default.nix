@@ -43,6 +43,9 @@
       pinentryPackage = pkgs.pinentry-tty;
     };
 
+    programs.ssh.matchBlocks.gpg-agent.match =
+      lib.mkIf config.programs.ssh.enable "Host * exec \"gpg-connect-agent UPDATESTARTUPTTY /bye\"";
+
     home.activation.removeGpgSmartCardPrompt = lib.hm.dag.entryAfter [ "importGpgKeys" ] ''
           shopt -s nullglob
           for key in ${config.programs.gpg.homedir}/private-keys-v1.d/*.key; do
