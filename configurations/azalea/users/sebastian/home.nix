@@ -14,6 +14,7 @@
   sebastianrasor.mpv.enable = true;
   sebastianrasor.neovim.enable = true;
   sebastianrasor.pass.enable = true;
+  sebastianrasor.ssh.enable = true;
   sebastianrasor.thunderbird.enable = true;
 
   home = {
