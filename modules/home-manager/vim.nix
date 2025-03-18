@@ -22,16 +22,5 @@
         let &l:softtabstop = s:tabwidth
       '';
     };
-
-    xdg.desktopEntries = {
-      vim = {
-        name = "Vim";
-        noDisplay = true;
-      };
-      gvim = {
-        name = "GVim";
-        noDisplay = true;
-      };
-    };
   };
 }
