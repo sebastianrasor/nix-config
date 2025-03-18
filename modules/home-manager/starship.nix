@@ -11,7 +11,10 @@
     programs.starship = {
       enable = true;
       enableTransience = true;
-      settings.nix_shell.heuristic = true;
+      settings = {
+        nix_shell.heuristic = true;
+        shlvl.disabled = false;
+      };
     };
   };
 }
