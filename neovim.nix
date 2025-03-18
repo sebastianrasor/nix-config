@@ -45,13 +45,23 @@
       indent-blankline.enable = true;
     };
 
+    theme = {
+      enable = true;
+      name = "catppuccin";
+      style = "mocha";
+      transparent = true;
+    };
+
     treesitter = {
       enable = true;
       context.enable = true;
     };
     ui = {
+      colorizer.enable = true;
       fastaction.enable = true;
     };
+
+    utility.motion.precognition.enable = true;
 
     git = {
       enable = true;
@@ -74,7 +84,6 @@
       ignorecase = true;
       smartcase = true;
       smartindent = false;
-      termguicolors = false;
       vb = true;
 
       expandtab = false;
