@@ -1,5 +1,8 @@
 {pkgs, ...}: {
   config.vim = {
+    viAlias = false;
+    vimAlias = false;
+
     languages = {
       enableLSP = true;
       enableFormat = true;
