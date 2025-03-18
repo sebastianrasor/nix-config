@@ -28,9 +28,5 @@
         exec ${lib.getExe' config.programs.fish.package "fish"} $LOGIN_OPTION
       fi
     '';
-    xdg.desktopEntries.fish = {
-      name = "Fish";
-      noDisplay = true;
-    };
   };
 }

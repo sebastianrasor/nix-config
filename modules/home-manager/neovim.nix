@@ -18,9 +18,5 @@
       vim = "nvim";
       _vim = "${lib.getExe pkgs.vim}";
     };
-    xdg.desktopEntries.nvim = {
-      name = "Neovim";
-      noDisplay = true;
-    };
   };
 }
