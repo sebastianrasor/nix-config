@@ -23,10 +23,9 @@
       interactiveShellInit = "fish_config theme choose 'fish default'; set -g fish_color_command blue; set -g fish_color_keyword blue";
     };
     programs.bash.initExtra = lib.mkIf config.sebastianrasor.fish.bashInit ''
-      if [[ $(${pkgs.procps}/bin/ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
-      then
-        shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=""
-        exec ${config.programs.fish.package}/bin/fish $LOGIN_OPTION
+      if [[ $(${lib.getExe' pkgs.procps "ps"} --no-header --pid=$PPID --format=comm) != "fish" && -z ''\${BASH_EXECUTION_STRING} && ''\${SHLVL} == 1 ]]; then
+        shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=''\'''\'
+        exec ${lib.getExe' config.programs.fish.package "fish"} $LOGIN_OPTION
       fi
     '';
     xdg.desktopEntries.fish = {
