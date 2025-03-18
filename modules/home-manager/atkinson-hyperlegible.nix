@@ -10,6 +10,10 @@
 
   config = lib.mkIf config.sebastianrasor.atkinson-hyperlegible.enable {
     fonts.fontconfig.enable = true;
-    home.packages = [pkgs.atkinson-hyperlegible];
+    home.packages = with pkgs; [
+      atkinson-hyperlegible
+      atkinson-hyperlegible-next
+      atkinson-hyperlegible-mono
+    ];
   };
 }
