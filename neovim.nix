@@ -8,7 +8,17 @@
       bash.enable = true;
       html.enable = true;
       markdown.enable = true;
-      nix.enable = true;
+      nix = {
+        enable = true;
+        format.type = "alejandra";
+        lsp = {
+          server = "nixd";
+          options = {
+            nixos.expr = ''let lib = import <nixpkgs/lib>; in (lib.attrsets.mergeAttrsList(builtins.attrValues((builtins.getFlake ("git+file://" + toString ./.)).nixosConfigurations))).options'';
+            home_manager.expr = ''let lib = import <nixpkgs/lib>; in (lib.attrsets.mergeAttrsList(builtins.attrValues((builtins.getFlake ("git+file://" + toString ./.)).homeConfigurations))).options'';
+          };
+        };
+      };
       rust = {
         enable = true;
         crates.enable = true;
@@ -72,18 +82,5 @@
       softtabstop = 4;
       tabstop = 4;
     };
-
-    pluginRC.nix = ''
-      vim.api.nvim_create_autocmd("FileType", {
-        pattern = "nix",
-        callback = function(opts)
-          local bo = vim.bo[opts.buf]
-          bo.tabstop = 2
-          bo.shiftwidth = 2
-          bo.softtabstop = 2
-          bo.expandtab = true
-        end
-      })
-    '';
   };
 }
