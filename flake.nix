@@ -112,14 +112,16 @@
       };
     });
 
-    packages = forAllSystems (pkgs: {
-      neovim-sebastianrasor =
-        (nvf.lib.neovimConfiguration {
-          inherit pkgs;
-          modules = [./neovim.nix];
-        })
-        .neovim;
-    });
+    packages = with nixpkgs.lib;
+      forAllSystems (
+        pkgs:
+          attrsets.mapAttrs' (
+            name: _:
+              attrsets.nameValuePair
+              (removeSuffix ".nix" name)
+              (pkgs.callPackage (./packages + ("/" + name)) (inputs // {inherit inputs;}))
+          ) (builtins.readDir ./packages)
+      );
   };
 
   inputs = {
