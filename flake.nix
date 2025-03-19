@@ -7,7 +7,6 @@
     home-manager,
     lanzaboote,
     nixos-cosmic,
-    nvf,
     ...
   }: let
     forAllSystems = function:
