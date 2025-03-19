@@ -15,6 +15,9 @@
       settings = {
         limit-card-insert-tries = "1";
       };
+      scdaemonSettings = {
+        disable-ccid = true;
+      };
       publicKeys = [
         {
           trust = "ultimate";
