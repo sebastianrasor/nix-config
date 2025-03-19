@@ -28,6 +28,9 @@
     ]
     ++ map (moduleFile: ./users + ("/" + moduleFile)) (builtins.attrNames (builtins.readDir ./users));
 
+  nix.extraOptions = ''
+    build-dir = /nix/persist/nix-daemon
+  '';
   nixpkgs.config.packageOverrides = pkgs: {
     vaapiIntel = pkgs.vaapiIntel.override {enableHybridCodec = true;};
   };
