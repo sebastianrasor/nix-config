@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # This file should be symlinked to .git/hooks/pre-commit
-# $ ln -s pre-commit .git/hooks/pre-commit
+# $ ln -s ../../pre-commit .git/hooks/pre-commit
 
 # Check whether nix files are parseable
 fd -t f -e nix -X nix-instantiate --parse {} >/dev/null || exit 1
@@ -14,4 +14,3 @@ fd -t f -e nix -x sh -c "cat {} | nixf-tidy --variable-lookup | grep -q '^\[\]\$
 
 # Check whether nix flake evaluates
 nix --experimental-features 'nix-command flakes' flake check --all-systems --no-build . || exit 1
-
