@@ -22,8 +22,58 @@
   boot.extraModulePackages = [];
 
   fileSystems."/" = {
+    device = "none";
+    fsType = "tmpfs";
+    options = [
+      "defaults"
+      "mode=755"
+    ];
+  };
+  fileSystems."/nix/persist" = {
     device = "/dev/disk/by-uuid/3e50da91-9d68-4888-819f-0a9de1903be7";
     fsType = "ext4";
+    neededForBoot = true;
+    options = [
+      "defaults"
+      "x-mount.mkdir"
+      "nofail"
+    ];
+  };
+  fileSystems."/nix/store" = {
+    depends = ["/nix/persist"];
+    device = "/nix/persist/nix/store";
+    fsType = "none";
+    options = ["bind"];
+  };
+  fileSystems."/nix/var" = {
+    depends = ["/nix/persist"];
+    device = "/nix/persist/nix/var";
+    fsType = "none";
+    options = ["bind"];
+  };
+  fileSystems."/home" = {
+    depends = ["/nix/persist"];
+    device = "/nix/persist/home";
+    fsType = "none";
+    options = ["bind"];
+  };
+  fileSystems."/var/log" = {
+    depends = ["/nix/persist"];
+    device = "/nix/persist/var/log";
+    fsType = "none";
+    options = ["bind"];
+  };
+  fileSystems."/var/lib/sbctl" = {
+    depends = ["/nix/persist"];
+    device = "/nix/persist/var/lib/sbctl";
+    fsType = "none";
+    options = ["bind"];
+  };
+  fileSystems."/etc/NetworkManager/system-connections" = {
+    depends = ["/nix/persist"];
+    device = "/nix/persist/etc/NetworkManager/system-connections";
+    fsType = "none";
+    options = ["bind"];
   };
 
   fileSystems."/boot" = {
