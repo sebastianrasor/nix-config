@@ -7,7 +7,6 @@
   networking.hostName = "azalea";
 
   sebastianrasor.core.enable = true;
-  sebastianrasor.avahi.enable = true;
   sebastianrasor.cosmic.enable = true;
   sebastianrasor.dvorak.enable = true;
   sebastianrasor.home-manager.enable = true;
