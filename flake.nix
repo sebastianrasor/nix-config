@@ -9,6 +9,8 @@
     nixos-cosmic,
     ...
   }: let
+    inherit (self) outputs;
+
     forAllSystems = function:
       nixpkgs.lib.genAttrs [
         "x86_64-linux"
@@ -21,11 +23,7 @@
           with nixpkgs.lib; {
             name = removeSuffix ".nix" nixosConfiguration;
             value = nixosSystem {
-              specialArgs =
-                inputs
-                // {
-                  inherit inputs;
-                };
+              specialArgs = {inherit inputs outputs;};
               modules =
                 [
                   (./configurations + ("/" + nixosConfiguration))
@@ -46,11 +44,7 @@
               name = username + "@" + hostName;
               value = home-manager.lib.homeManagerConfiguration {
                 pkgs = self.nixosConfigurations.${hostName}.pkgs;
-                extraSpecialArgs =
-                  inputs
-                  // {
-                    inherit inputs;
-                  };
+                extraSpecialArgs = {inherit inputs outputs;};
                 modules =
                   [
                     ./configurations/${hostName}/users/${username}/home.nix
@@ -79,11 +73,7 @@
         flake-nixos-cosmic = nixos-cosmic.nixosModules.default;
         home-manager-extra = {
           home-manager = {
-            extraSpecialArgs =
-              inputs
-              // {
-                inherit inputs;
-              };
+            extraSpecialArgs = {inherit inputs outputs;};
             sharedModules = attrsets.attrValues self.homeModules;
           };
         };
@@ -118,7 +108,7 @@
             name: _:
               attrsets.nameValuePair
               (removeSuffix ".nix" name)
-              (pkgs.callPackage (./packages + ("/" + name)) (inputs // {inherit inputs;}))
+              (pkgs.callPackage (./packages + ("/" + name)) {inherit inputs outputs;})
           ) (builtins.readDir ./packages)
       );
   };

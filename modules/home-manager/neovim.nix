@@ -2,7 +2,7 @@
   config,
   lib,
   pkgs,
-  self,
+  outputs,
   ...
 }: {
   options = {
@@ -10,7 +10,7 @@
   };
 
   config = lib.mkIf config.sebastianrasor.neovim.enable {
-    home.packages = [self.packages.${pkgs.system}.neovim-sebastianrasor];
+    home.packages = [outputs.packages.${pkgs.system}.neovim-sebastianrasor];
     programs.fish.shellAbbrs = lib.mkIf config.sebastianrasor.fish.enable {
       vim = "nvim";
     };

@@ -1,5 +1,5 @@
 {
-  nvf,
+  inputs,
   pkgs,
   ...
 }: let
@@ -114,7 +114,7 @@
     };
   };
 in
-  (nvf.lib.neovimConfiguration {
+  (inputs.nvf.lib.neovimConfiguration {
     inherit pkgs;
     modules = [configuration];
   })
