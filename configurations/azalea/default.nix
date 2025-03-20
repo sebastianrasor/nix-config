@@ -1,6 +1,6 @@
 {
+  inputs,
   lib,
-  nixos-hardware,
   pkgs,
   ...
 }: {
@@ -43,7 +43,7 @@
 
   imports =
     [
-      nixos-hardware.nixosModules.framework-13-7040-amd
+      inputs.nixos-hardware.nixosModules.framework-13-7040-amd
       ./hardware-configuration.nix
     ]
     ++ map (moduleFile: ./users + ("/" + moduleFile)) (builtins.attrNames (builtins.readDir ./users));
