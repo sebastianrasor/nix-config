@@ -42,7 +42,7 @@
       enable = true;
       enableScDaemon = true;
       enableSshSupport = true;
-      pinentryPackage = pkgs.pinentry-tty;
+      pinentryPackage = pkgs.pinentry-qt;
     };
 
     programs.ssh.matchBlocks.gpg-agent.match =
