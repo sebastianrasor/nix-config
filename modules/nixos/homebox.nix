@@ -10,6 +10,8 @@
   config = lib.mkIf config.sebastianrasor.homebox.enable {
     services.homebox.enable = true;
 
+    systemd.services.homebox.after = ["var-lib-homebox-data.mount"];
+
     users.users.homebox.extraGroups = lib.mkIf config.sebastianrasor.unas.enable ["unifi-drive-nfs"];
 
     fileSystems."/var/lib/homebox/data" = lib.mkIf config.sebastianrasor.unas.enable {
