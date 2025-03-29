@@ -15,6 +15,7 @@
   sebastianrasor.jellyfin.enable = true;
   sebastianrasor.nginx.enable = true;
   sebastianrasor.nix.enable = true;
+  sebastianrasor.nut.enable = true;
   sebastianrasor.postgresql.enable = true;
   sebastianrasor.sshd.enable = true;
   sebastianrasor.sudo.enable = true;
