@@ -3,6 +3,7 @@
 
   sebastianrasor.atkinson-hyperlegible.enable = true;
   sebastianrasor.bottom.enable = true;
+  sebastianrasor.browserpass.enable = true;
   sebastianrasor.discord.enable = true;
   sebastianrasor.git.enable = true;
   sebastianrasor.google-chrome.enable = true;
