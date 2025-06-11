@@ -9,9 +9,7 @@
       vimAlias = false;
 
       languages = {
-        enableLSP = true;
         enableFormat = true;
-        enableTreesitter = true;
 
         bash.enable = true;
         html.enable = true;
@@ -20,6 +18,7 @@
           enable = true;
           format.type = "alejandra";
           lsp = {
+            enable = true;
             server = "nixd";
             options = {
               nixos.expr = ''let lib = import <nixpkgs/lib>; in (lib.attrsets.mergeAttrsList(builtins.attrValues((builtins.getFlake ("git+file://" + toString ./.)).nixosConfigurations))).options'';
@@ -30,6 +29,14 @@
         rust = {
           enable = true;
           crates.enable = true;
+          lsp.enable = true;
+          lsp.opts = ''
+            ['rust-analyzer'] = {
+              check = {
+                command = "clippy",
+              },
+            },
+          '';
         };
         ts.enable = true;
       };
