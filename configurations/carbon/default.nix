@@ -7,6 +7,7 @@
   networking.timeServers = ["time.google.com"];
 
   sebastianrasor.acme.enable = true;
+  sebastianrasor.actual.enable = true;
   sebastianrasor.frigate.enable = false;
   sebastianrasor.homebox.enable = true;
   sebastianrasor.home-manager.enable = true;
