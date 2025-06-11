@@ -17,10 +17,11 @@
   };
 
   config = lib.mkIf config.sebastianrasor.unas.enable {
-    users.groups = {
-      unifi-drive-nfs = {
-        gid = 988;
-      };
+    users.groups.unifi-drive.gid = 988;
+    users.users.unifi-drive-nfs = {
+      group = "unifi-drive";
+      isSystemUser = true;
+      uid = 977;
     };
   };
 }
