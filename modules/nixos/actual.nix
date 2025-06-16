@@ -8,10 +8,7 @@
   };
 
   config = lib.mkIf config.sebastianrasor.actual.enable {
-    services.actual = {
-      enable = true;
-      settings.dataDir = "/var/lib/actual";
-    };
+    services.actual.enable = true;
 
     systemd.services.actual = lib.mkIf config.sebastianrasor.unas.enable {
       after = ["var-lib-actual.mount"];
@@ -19,7 +16,6 @@
         DynamicUser = lib.mkForce false;
         User = lib.mkForce "unifi-drive-nfs";
         Group = lib.mkForce "unifi-drive";
-        WorkingDirectory = lib.mkForce config.services.actual.settings.dataDir;
       };
     };
 
