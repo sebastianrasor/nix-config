@@ -8,6 +8,7 @@
 
   sebastianrasor.acme.enable = true;
   sebastianrasor.actual.enable = true;
+  sebastianrasor.cloudflared.enable = true;
   sebastianrasor.frigate.enable = false;
   sebastianrasor.homebox.enable = true;
   sebastianrasor.home-manager.enable = true;
