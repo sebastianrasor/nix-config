@@ -22,6 +22,11 @@
   sebastianrasor.sshd.enable = true;
   sebastianrasor.sudo.enable = true;
 
+  sebastianrasor.tailscale = {
+    enable = true;
+    authKeyFile = "/nix/persist/tailscale_key";
+  };
+
   sebastianrasor.unas = {
     enable = true;
     host = "unas-pro.localdomain";

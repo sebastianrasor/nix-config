@@ -18,7 +18,7 @@
 
     users.users.jellyfin.extraGroups = lib.mkIf config.sebastianrasor.unas.enable ["unifi-drive-nfs"];
 
-    security.acme.certs."jellyfin.sebastianrasor.com" = lib.mkIf config.sebastianrasor.acme.enable {
+    security.acme.certs."jellyfin.rasor.us" = lib.mkIf config.sebastianrasor.acme.enable {
       dnsProvider = "cloudflare";
       environmentFile = "/nix/persist/acme-env";
     };
@@ -47,7 +47,7 @@
       ];
     };
 
-    services.nginx.virtualHosts."jellyfin.sebastianrasor.com" = {
+    services.nginx.virtualHosts."jellyfin.rasor.us" = {
       forceSSL = lib.mkIf config.sebastianrasor.acme.enable true;
       enableACME = lib.mkIf config.sebastianrasor.acme.enable true;
       acmeRoot = lib.mkIf config.sebastianrasor.acme.enable null;

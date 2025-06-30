@@ -18,6 +18,11 @@
   sebastianrasor.steam.enable = true;
   sebastianrasor.yubikey.enable = true;
 
+  sebastianrasor.tailscale = {
+    enable = true;
+    authKeyFile = "/nix/persist/tailscale_key";
+  };
+
   sebastianrasor.unas = {
     enable = true;
     host = "unas-pro.localdomain";

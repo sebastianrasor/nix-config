@@ -10,12 +10,12 @@
   config = lib.mkIf config.sebastianrasor.frigate.enable {
     users.users.frigate.extraGroups = lib.mkIf config.sebastianrasor.unas.enable ["unifi-drive-nfs"];
 
-    security.acme.certs."frigate.sebastianrasor.com" = lib.mkIf config.sebastianrasor.acme.enable {
+    security.acme.certs."frigate.rasor.us" = lib.mkIf config.sebastianrasor.acme.enable {
       dnsProvider = "cloudflare";
       environmentFile = "/nix/persist/acme-env";
     };
 
-    services.nginx.virtualHosts."frigate.sebastianrasor.com" =
+    services.nginx.virtualHosts."frigate.rasor.us" =
       lib.mkIf config.sebastianrasor.acme.enable
       {
         forceSSL = true;
@@ -25,7 +25,7 @@
 
     services.frigate = {
       enable = true;
-      hostname = "frigate.sebastianrasor.com";
+      hostname = "frigate.rasor.us";
       vaapiDriver = "iHD";
       settings = {
         database.path = lib.mkIf config.sebastianrasor.unas.enable "/media/frigate/frigate.db";

@@ -38,6 +38,12 @@
     options = ["bind"];
   };
 
+  fileSystems."/var/lib/headscale" = {
+    device = "/nix/persist/var/lib/headscale";
+    fsType = "none";
+    options = ["bind"];
+  };
+
   swapDevices = [];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking

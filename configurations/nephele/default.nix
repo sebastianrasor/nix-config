@@ -6,7 +6,10 @@
   time.timeZone = "America/Chicago";
   networking.timeServers = ["time.google.com"];
 
+  sebastianrasor.acme.enable = true;
+  sebastianrasor.headscale.enable = true;
   sebastianrasor.home-manager.enable = true;
+  sebastianrasor.nginx.enable = true;
   sebastianrasor.nix.enable = true;
   sebastianrasor.sshd.enable = true;
   sebastianrasor.sudo.enable = true;
