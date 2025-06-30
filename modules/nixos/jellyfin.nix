@@ -18,11 +18,6 @@
 
     users.users.jellyfin.extraGroups = lib.mkIf config.sebastianrasor.unas.enable ["unifi-drive-nfs"];
 
-    security.acme.certs."jellyfin.rasor.us" = lib.mkIf config.sebastianrasor.acme.enable {
-      dnsProvider = "cloudflare";
-      environmentFile = "/nix/persist/acme-env";
-    };
-
     fileSystems."/media/jellyfin" = lib.mkIf config.sebastianrasor.unas.enable {
       device = "${config.sebastianrasor.unas.host}:${config.sebastianrasor.unas.basePath}/Jellyfin";
       fsType = "nfs";

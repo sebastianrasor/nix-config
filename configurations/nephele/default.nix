@@ -11,6 +11,7 @@
   sebastianrasor.home-manager.enable = true;
   sebastianrasor.nginx.enable = true;
   sebastianrasor.nix.enable = true;
+  sebastianrasor.secrets.enable = true;
   sebastianrasor.sshd.enable = true;
   sebastianrasor.sudo.enable = true;
 
