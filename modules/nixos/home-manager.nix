@@ -10,5 +10,6 @@
 
   config = lib.mkIf config.sebastianrasor.home-manager.enable {
     environment.systemPackages = [pkgs.home-manager];
+    home-manager.backupFileExtension = "backup";
   };
 }
