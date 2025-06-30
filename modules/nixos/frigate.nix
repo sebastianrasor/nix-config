@@ -10,11 +10,6 @@
   config = lib.mkIf config.sebastianrasor.frigate.enable {
     users.users.frigate.extraGroups = lib.mkIf config.sebastianrasor.unas.enable ["unifi-drive-nfs"];
 
-    security.acme.certs."frigate.rasor.us" = lib.mkIf config.sebastianrasor.acme.enable {
-      dnsProvider = "cloudflare";
-      environmentFile = "/nix/persist/acme-env";
-    };
-
     services.nginx.virtualHosts."frigate.rasor.us" =
       lib.mkIf config.sebastianrasor.acme.enable
       {

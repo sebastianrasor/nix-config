@@ -19,13 +19,10 @@
   sebastianrasor.nix.enable = true;
   sebastianrasor.nut.enable = true;
   sebastianrasor.postgresql.enable = true;
+  sebastianrasor.secrets.enable = true;
   sebastianrasor.sshd.enable = true;
   sebastianrasor.sudo.enable = true;
-
-  sebastianrasor.tailscale = {
-    enable = true;
-    authKeyFile = "/nix/persist/tailscale_key";
-  };
+  sebastianrasor.tailscale.enable = true;
 
   sebastianrasor.unas = {
     enable = true;

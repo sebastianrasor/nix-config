@@ -16,12 +16,8 @@
   sebastianrasor.pipewire.enable = true;
   sebastianrasor.plymouth.enable = true;
   sebastianrasor.steam.enable = true;
+  sebastianrasor.tailscale.enable = true;
   sebastianrasor.yubikey.enable = true;
-
-  sebastianrasor.tailscale = {
-    enable = true;
-    authKeyFile = "/nix/persist/tailscale_key";
-  };
 
   sebastianrasor.unas = {
     enable = true;

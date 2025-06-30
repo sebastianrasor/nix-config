@@ -7,6 +7,7 @@
     home-manager,
     lanzaboote,
     nixos-cosmic,
+    sops-nix,
     ...
   }: let
     inherit (self) outputs;
@@ -71,6 +72,7 @@
         flake-home-manager = home-manager.nixosModules.home-manager;
         flake-lanzaboote = lanzaboote.nixosModules.lanzaboote;
         flake-nixos-cosmic = nixos-cosmic.nixosModules.default;
+        flake-sops-nix = sops-nix.nixosModules.sops;
         home-manager-extra = {
           home-manager = {
             extraSpecialArgs = {inherit inputs outputs;};
@@ -96,6 +98,7 @@
           fd
           nixd
           nixf
+          sops
           stylua
         ];
       };
@@ -128,6 +131,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    mysecrets = {
+      url = "git+ssh://git@github.com/sebastianrasor/nix-secrets.git?ref=main&shallow=1";
+      flake = false;
+    };
+
     nixos-cosmic = {
       url = "github:lilyinstarlight/nixos-cosmic";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -135,6 +143,11 @@
 
     nvf = {
       url = "github:notashelf/nvf";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

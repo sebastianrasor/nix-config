@@ -187,6 +187,24 @@
         "type": "github"
       }
     },
+    "mysecrets": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1751325612,
+        "narHash": "sha256-VHmY93Fpcne2NMkclyVcYYhwLMxi10SCyYdrSIGeLcI=",
+        "ref": "main",
+        "rev": "1420c7404958a50e86da26d3cfd0954ab1778bd2",
+        "shallow": true,
+        "type": "git",
+        "url": "ssh://git@github.com/sebastianrasor/nix-secrets.git"
+      },
+      "original": {
+        "ref": "main",
+        "shallow": true,
+        "type": "git",
+        "url": "ssh://git@github.com/sebastianrasor/nix-secrets.git"
+      }
+    },
     "nil": {
       "inputs": {
         "nixpkgs": [
@@ -366,10 +384,12 @@
       "inputs": {
         "home-manager": "home-manager",
         "lanzaboote": "lanzaboote",
+        "mysecrets": "mysecrets",
         "nixos-cosmic": "nixos-cosmic",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",
-        "nvf": "nvf"
+        "nvf": "nvf",
+        "sops-nix": "sops-nix"
       }
     },
     "rust-overlay": {
@@ -411,6 +431,26 @@
       "original": {
         "owner": "oxalica",
         "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "sops-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1750119275,
+        "narHash": "sha256-Rr7Pooz9zQbhdVxux16h7URa6mA80Pb/G07T4lHvh0M=",
+        "owner": "Mic92",
+        "repo": "sops-nix",
+        "rev": "77c423a03b9b2b79709ea2cb63336312e78b72e2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Mic92",
+        "repo": "sops-nix",
         "type": "github"
       }
     },
