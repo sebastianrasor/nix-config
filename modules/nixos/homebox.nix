@@ -19,12 +19,12 @@
       fsType = "nfs";
     };
 
-    security.acme.certs."homebox.sebastianrasor.com" = lib.mkIf config.sebastianrasor.acme.enable {
+    security.acme.certs."homebox.rasor.us" = lib.mkIf config.sebastianrasor.acme.enable {
       dnsProvider = "cloudflare";
       environmentFile = "/nix/persist/acme-env";
     };
 
-    services.nginx.virtualHosts."homebox.sebastianrasor.com" = {
+    services.nginx.virtualHosts."homebox.rasor.us" = {
       forceSSL = lib.mkIf config.sebastianrasor.acme.enable true;
       enableACME = lib.mkIf config.sebastianrasor.acme.enable true;
       acmeRoot = lib.mkIf config.sebastianrasor.acme.enable null;
