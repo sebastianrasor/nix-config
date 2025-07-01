@@ -18,6 +18,7 @@
   sebastianrasor.nix.enable = true;
   sebastianrasor.nut.enable = true;
   sebastianrasor.postgresql.enable = true;
+  sebastianrasor.radicale.enable = true;
   sebastianrasor.secrets.enable = true;
   sebastianrasor.sshd.enable = true;
   sebastianrasor.sudo.enable = true;
