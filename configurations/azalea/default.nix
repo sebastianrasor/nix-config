@@ -10,13 +10,11 @@
   sebastianrasor.cosmic.enable = true;
   sebastianrasor.dvorak.enable = true;
   sebastianrasor.fwupd.enable = true;
-  sebastianrasor.home-manager.enable = true;
   sebastianrasor.lanzaboote.enable = true;
   sebastianrasor.makemkv.enable = true;
+  sebastianrasor.networkmanager.enable = true;
   sebastianrasor.pipewire.enable = true;
   sebastianrasor.plymouth.enable = true;
-  sebastianrasor.secrets.enable = true;
-  sebastianrasor.sshd.enable = true;
   sebastianrasor.steam.enable = true;
   sebastianrasor.tailscale.enable = true;
   sebastianrasor.yubikey.enable = true;
