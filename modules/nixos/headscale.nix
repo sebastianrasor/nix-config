@@ -18,8 +18,9 @@
     };
 
     services.nginx.virtualHosts."headscale.rasor.us" = {
-      forceSSL = true;
-      enableACME = true;
+      forceSSL = lib.mkIf config.sebastianrasor.acme.enable true;
+      enableACME = lib.mkIf config.sebastianrasor.acme.enable true;
+      acmeRoot = lib.mkIf config.sebastianrasor.acme.enable null;
       locations."/" = {
         proxyPass = "http://127.0.0.1:${toString config.services.headscale.port}";
         proxyWebsockets = true;

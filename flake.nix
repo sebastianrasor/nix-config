@@ -4,6 +4,7 @@
   outputs = inputs @ {
     self,
     nixpkgs,
+    deploy-rs,
     home-manager,
     impermanence,
     lanzaboote,
@@ -35,6 +36,31 @@
           }
       ) (builtins.attrNames (builtins.readDir ./configurations))
     );
+
+    deploy = {
+      sshUser = "root";
+      user = "root";
+      fastConnection = true;
+      remoteBuild = true;
+      nodes = {
+        carbon = {
+          hostname = "carbon.rasor.us";
+          profiles.system = {
+            user = "root";
+            path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.carbon;
+          };
+        };
+        nephele = {
+          hostname = "nephele.rasor.us";
+          profiles.system = {
+            user = "root";
+            path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.nephele;
+          };
+        };
+      };
+    };
+
+    checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
 
     # import all Home Manager configurations from ./configurations/*/users/*/home.nix
     homeConfigurations = with nixpkgs.lib;
@@ -122,6 +148,8 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+
+    deploy-rs.url = "github:serokell/deploy-rs";
 
     home-manager = {
       url = "github:nix-community/home-manager";

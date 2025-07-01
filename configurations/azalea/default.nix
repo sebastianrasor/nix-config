@@ -16,6 +16,7 @@
   sebastianrasor.pipewire.enable = true;
   sebastianrasor.plymouth.enable = true;
   sebastianrasor.secrets.enable = true;
+  sebastianrasor.sshd.enable = true;
   sebastianrasor.steam.enable = true;
   sebastianrasor.tailscale.enable = true;
   sebastianrasor.yubikey.enable = true;
