@@ -95,6 +95,9 @@
       attrsets.mapAttrs' (
         name: _: attrsets.nameValuePair (removeSuffix ".nix" name) (import (./modules/nixos + ("/" + name)))
       ) (builtins.readDir ./modules/nixos)
+      // attrsets.mapAttrs' (
+        name: _: attrsets.nameValuePair (removeSuffix ".nix" name) (import (./modules + ("/" + name)))
+      ) (filterAttrs (name: _: strings.hasSuffix ".nix" name) (builtins.readDir ./modules))
       // {
         flake-home-manager = home-manager.nixosModules.home-manager;
         flake-impermanence = impermanence.nixosModules.impermanence;
@@ -114,7 +117,10 @@
       attrsets.mapAttrs' (
         name: _:
           attrsets.nameValuePair (removeSuffix ".nix" name) (import (./modules/home-manager + ("/" + name)))
-      ) (builtins.readDir ./modules/home-manager);
+      ) (builtins.readDir ./modules/home-manager)
+      // attrsets.mapAttrs' (
+        name: _: attrsets.nameValuePair (removeSuffix ".nix" name) (import (./modules + ("/" + name)))
+      ) (filterAttrs (name: _: strings.hasSuffix ".nix" name) (builtins.readDir ./modules));
 
     formatter = forAllSystems (pkgs: pkgs.alejandra);
 

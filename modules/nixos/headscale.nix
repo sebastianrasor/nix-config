@@ -11,13 +11,13 @@
     services.headscale = {
       enable = true;
       settings = {
-        server_url = "https://headscale.rasor.us:443";
+        server_url = "https://headscale.${config.sebastianrasor.domain}:443";
         dns.magic_dns = false;
         dns.override_local_dns = false;
       };
     };
 
-    services.nginx.virtualHosts."headscale.rasor.us" = {
+    services.nginx.virtualHosts."headscale.${config.sebastianrasor.domain}" = {
       forceSSL = lib.mkIf config.sebastianrasor.acme.enable true;
       enableACME = lib.mkIf config.sebastianrasor.acme.enable true;
       acmeRoot = lib.mkIf config.sebastianrasor.acme.enable null;

@@ -52,7 +52,7 @@
       ];
     };
 
-    services.nginx.virtualHosts."jellyfin.rasor.us" = {
+    services.nginx.virtualHosts."jellyfin.${config.sebastianrasor.domain}" = {
       forceSSL = lib.mkIf config.sebastianrasor.acme.enable true;
       enableACME = lib.mkIf config.sebastianrasor.acme.enable true;
       acmeRoot = lib.mkIf config.sebastianrasor.acme.enable null;

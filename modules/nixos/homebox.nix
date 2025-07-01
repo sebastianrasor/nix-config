@@ -13,7 +13,7 @@
       database.createLocally = true;
     };
 
-    services.nginx.virtualHosts."homebox.rasor.us" = {
+    services.nginx.virtualHosts."homebox.${config.sebastianrasor.domain}" = {
       forceSSL = lib.mkIf config.sebastianrasor.acme.enable true;
       enableACME = lib.mkIf config.sebastianrasor.acme.enable true;
       acmeRoot = lib.mkIf config.sebastianrasor.acme.enable null;

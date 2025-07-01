@@ -18,7 +18,7 @@
     services.tailscale = {
       enable = true;
       authKeyFile = lib.mkIf config.sebastianrasor.secrets.enable config.sops.secrets.tailscale_key.path;
-      extraUpFlags = ["--login-server=https://headscale.rasor.us"];
+      extraUpFlags = ["--login-server=https://headscale.${config.sebastianrasor.domain}"];
     };
   };
 }
