@@ -14,5 +14,7 @@
     sebastianrasor.secrets.enable = true;
     sebastianrasor.sshd.enable = true;
     sebastianrasor.sudo.enable = true;
+
+    networking.domain = config.sebastianrasor.domain;
   };
 }

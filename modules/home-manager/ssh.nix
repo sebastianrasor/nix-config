@@ -12,8 +12,10 @@
       enable = true;
       controlMaster = "auto";
       controlPersist = "10m";
-      matchBlocks."carbon.localdomain".forwardAgent = true;
-      matchBlocks."nephele.rasor.us".forwardAgent = true;
+      matchBlocks."carbon nephele" = {
+        hostname = "%h.${config.sebastianrasor.domain}";
+        forwardAgent = true;
+      };
     };
   };
 }
