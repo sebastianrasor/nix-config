@@ -18,6 +18,7 @@
     sebastianrasor.gitoxide.enable = true;
     sebastianrasor.gping.enable = true;
     sebastianrasor.hyperfine.enable = true;
+    sebastianrasor.miniserve.enable = true;
     sebastianrasor.monolith.enable = true;
     sebastianrasor.navi.enable = true;
     sebastianrasor.ripgrep.enable = true;
