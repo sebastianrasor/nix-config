@@ -19,6 +19,8 @@
       mediaLocation = lib.mkIf config.sebastianrasor.unas.enable "/media/immich";
     };
 
+    systemd.services.immich.unitConfig.RequiresMountsFor = lib.mkIf config.sebastianrasor.unas.enable ["/media/immich"];
+    systemd.services.immich.bindsTo = lib.mkIf config.sebastianrasor.unas.enable ["media-immich.mount"];
     fileSystems."/media/immich" = lib.mkIf config.sebastianrasor.unas.enable {
       device = "${config.sebastianrasor.unas.host}:${config.sebastianrasor.unas.basePath}/Immich";
       fsType = "nfs";

@@ -18,6 +18,16 @@
 
     users.users.jellyfin.extraGroups = lib.mkIf config.sebastianrasor.unas.enable ["unifi-drive-nfs"];
 
+    systemd.services.jellyfin.bindsTo = lib.mkIf config.sebastianrasor.unas.enable [
+      "media-jellyfin.mount"
+      "media-movies.mount"
+      "media-shows.mount"
+    ];
+    systemd.services.jellyfin.unitConfig.RequiresMountsFor = lib.mkIf config.sebastianrasor.unas.enable [
+      "/media/jellyfin"
+      "/media/movies"
+      "/media/shows"
+    ];
     fileSystems."/media/jellyfin" = lib.mkIf config.sebastianrasor.unas.enable {
       device = "${config.sebastianrasor.unas.host}:${config.sebastianrasor.unas.basePath}/Jellyfin";
       fsType = "nfs";

@@ -190,10 +190,10 @@
     "mysecrets": {
       "flake": false,
       "locked": {
-        "lastModified": 1751331579,
-        "narHash": "sha256-OWGMN84I74A05l7Dd8JzsvgMBYFdANRatucPz67EQJ8=",
+        "lastModified": 1751339095,
+        "narHash": "sha256-JgIP/hEQJ5v3qYf2i14jsWmHtxAikqKaKSh27Lzi9xM=",
         "ref": "main",
-        "rev": "fe90b350f2b06141c272ce74e96a36283888aaff",
+        "rev": "9968710db848ea0b82038caaf527260bdb8107b4",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/sebastianrasor/nix-secrets.git"

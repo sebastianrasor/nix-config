@@ -8,15 +8,9 @@
   };
 
   config = lib.mkIf config.sebastianrasor.homebox.enable {
-    services.homebox.enable = true;
-
-    systemd.services.homebox.after = ["var-lib-homebox-data.mount"];
-
-    users.users.homebox.extraGroups = lib.mkIf config.sebastianrasor.unas.enable ["unifi-drive-nfs"];
-
-    fileSystems."/var/lib/homebox/data" = lib.mkIf config.sebastianrasor.unas.enable {
-      device = "${config.sebastianrasor.unas.host}:${config.sebastianrasor.unas.basePath}/Homebox";
-      fsType = "nfs";
+    services.homebox = {
+      enable = true;
+      database.createLocally = true;
     };
 
     services.nginx.virtualHosts."homebox.rasor.us" = {
