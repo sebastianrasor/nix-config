@@ -15,6 +15,7 @@
     sebastianrasor.dust.enable = true;
     sebastianrasor.eza.enable = true;
     sebastianrasor.fish.enable = true;
+    sebastianrasor.gitoxide.enable = true;
     sebastianrasor.gping.enable = true;
     sebastianrasor.hyperfine.enable = true;
     sebastianrasor.monolith.enable = true;
