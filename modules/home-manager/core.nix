@@ -14,6 +14,7 @@
     sebastianrasor.dust.enable = true;
     sebastianrasor.eza.enable = true;
     sebastianrasor.fish.enable = true;
+    sebastianrasor.hyperfine.enable = true;
     sebastianrasor.ripgrep.enable = true;
     sebastianrasor.starship.enable = true;
     sebastianrasor.vim.enable = true;
