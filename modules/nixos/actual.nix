@@ -11,7 +11,8 @@
     services.actual.enable = true;
 
     systemd.services.actual = lib.mkIf config.sebastianrasor.unas.enable {
-      after = ["var-lib-actual.mount"];
+      bindsTo = ["var-lib-actual.mount"];
+      unitConfig.RequiresMountsFor = ["/var/lib/actual"];
       serviceConfig = {
         DynamicUser = lib.mkForce false;
         User = lib.mkForce "unifi-drive-nfs";

@@ -14,6 +14,8 @@
     };
 
     users.users.radicale.extraGroups = lib.mkIf config.sebastianrasor.unas.enable ["unifi-drive-nfs"];
+    systemd.services.radicale.unitConfig.RequiresMountsFor = lib.mkIf config.sebastianrasor.unas.enable ["/media/radicale"];
+    systemd.services.radicale.bindsTo = lib.mkIf config.sebastianrasor.unas.enable ["media-radicale.mount"];
     fileSystems."/media/radicale" = lib.mkIf config.sebastianrasor.unas.enable {
       device = "${config.sebastianrasor.unas.host}:${config.sebastianrasor.unas.basePath}/Radicale";
       fsType = "nfs";

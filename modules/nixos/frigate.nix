@@ -136,6 +136,8 @@
       };
     };
 
+    systemd.services.frigate.unitConfig.RequiresMountsFor = lib.mkIf config.sebastianrasor.unas.enable ["/media/frigate"];
+    systemd.services.frigate.bindsTo = lib.mkIf config.sebastianrasor.unas.enable ["media-frigate.mount"];
     fileSystems."/media/frigate" = lib.mkIf config.sebastianrasor.unas.enable {
       device = "${config.sebastianrasor.unas.host}:${config.sebastianrasor.unas.basePath}/Frigate";
       fsType = "nfs";
