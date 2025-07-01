@@ -18,6 +18,7 @@
     sebastianrasor.starship.enable = true;
     sebastianrasor.vim.enable = true;
     sebastianrasor.xdg-userdirs.enable = true;
+    sebastianrasor.yazi.enable = true;
     sebastianrasor.zoxide.enable = true;
   };
 }
