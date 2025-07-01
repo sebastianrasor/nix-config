@@ -5,6 +5,7 @@
     self,
     nixpkgs,
     home-manager,
+    impermanence,
     lanzaboote,
     nixos-cosmic,
     sops-nix,
@@ -70,6 +71,7 @@
       ) (builtins.readDir ./modules/nixos)
       // {
         flake-home-manager = home-manager.nixosModules.home-manager;
+        flake-impermanence = impermanence.nixosModules.impermanence;
         flake-lanzaboote = lanzaboote.nixosModules.lanzaboote;
         flake-nixos-cosmic = nixos-cosmic.nixosModules.default;
         flake-sops-nix = sops-nix.nixosModules.sops;
@@ -125,6 +127,8 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    impermanence.url = "github:nix-community/impermanence";
 
     lanzaboote = {
       url = "github:nix-community/lanzaboote/v0.4.2";

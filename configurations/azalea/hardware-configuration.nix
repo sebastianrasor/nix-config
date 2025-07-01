@@ -51,31 +51,6 @@
     fsType = "none";
     options = ["bind"];
   };
-  fileSystems."/home" = {
-    depends = ["/nix/persist"];
-    device = "/nix/persist/home";
-    fsType = "none";
-    options = ["bind"];
-  };
-  fileSystems."/var/log" = {
-    depends = ["/nix/persist"];
-    device = "/nix/persist/var/log";
-    fsType = "none";
-    options = ["bind"];
-  };
-  fileSystems."/var/lib/sbctl" = {
-    depends = ["/nix/persist"];
-    device = "/nix/persist/var/lib/sbctl";
-    fsType = "none";
-    options = ["bind"];
-  };
-  fileSystems."/etc/NetworkManager/system-connections" = {
-    depends = ["/nix/persist"];
-    device = "/nix/persist/etc/NetworkManager/system-connections";
-    fsType = "none";
-    options = ["bind"];
-  };
-
   fileSystems."/boot" = {
     device = "/dev/disk/by-uuid/DFD9-B7CB";
     fsType = "vfat";

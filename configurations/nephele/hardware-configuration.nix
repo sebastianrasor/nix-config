@@ -26,24 +26,6 @@
     fsType = "ext4";
   };
 
-  fileSystems."/etc/nixos" = {
-    device = "/nix/persist/etc/nixos";
-    fsType = "none";
-    options = ["bind"];
-  };
-
-  fileSystems."/var/log" = {
-    device = "/nix/persist/var/log";
-    fsType = "none";
-    options = ["bind"];
-  };
-
-  fileSystems."/var/lib/headscale" = {
-    device = "/nix/persist/var/lib/headscale";
-    fsType = "none";
-    options = ["bind"];
-  };
-
   swapDevices = [];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking

@@ -45,30 +45,6 @@
     fsType = "ext4";
   };
 
-  fileSystems."/etc/nixos" = {
-    device = "/nix/persist/etc/nixos";
-    fsType = "none";
-    options = ["bind"];
-  };
-
-  fileSystems."/var/log" = {
-    device = "/nix/persist/var/log";
-    fsType = "none";
-    options = ["bind"];
-  };
-
-  fileSystems."/var/lib/acme" = {
-    device = "/nix/persist/var/lib/acme";
-    fsType = "none";
-    options = ["bind"];
-  };
-
-  fileSystems."/var/cache/jellyfin/transcodes" = {
-    device = "/nix/persist/jellyfin-transcodes";
-    fsType = "none";
-    options = ["bind"];
-  };
-
   swapDevices = [];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
