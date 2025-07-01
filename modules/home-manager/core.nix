@@ -19,6 +19,7 @@
     sebastianrasor.navi.enable = true;
     sebastianrasor.ripgrep.enable = true;
     sebastianrasor.starship.enable = true;
+    sebastianrasor.tokei.enable = true;
     sebastianrasor.vim.enable = true;
     sebastianrasor.xdg-userdirs.enable = true;
     sebastianrasor.yazi.enable = true;
