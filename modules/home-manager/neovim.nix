@@ -17,12 +17,12 @@
 
   config = lib.mkIf config.sebastianrasor.neovim.enable {
     home.packages = [config.sebastianrasor.neovim.package];
+    home.sessionVariables.EDITOR = "nvim";
     programs.fish.shellAbbrs = lib.mkIf config.sebastianrasor.fish.enable {
       vim = "nvim";
     };
     home.shellAliases = lib.mkIf (!config.sebastianrasor.fish.enable) {
       vim = "nvim";
-      _vim = "${lib.getExe pkgs.vim}";
     };
   };
 }
