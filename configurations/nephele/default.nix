@@ -7,13 +7,9 @@
   networking.timeServers = ["time.google.com"];
 
   sebastianrasor.acme.enable = true;
+  sebastianrasor.core.enable = true;
   sebastianrasor.headscale.enable = true;
-  sebastianrasor.home-manager.enable = true;
   sebastianrasor.nginx.enable = true;
-  sebastianrasor.nix.enable = true;
-  sebastianrasor.secrets.enable = true;
-  sebastianrasor.sshd.enable = true;
-  sebastianrasor.sudo.enable = true;
 
   imports =
     [

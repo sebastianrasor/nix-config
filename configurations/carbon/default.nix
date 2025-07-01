@@ -8,20 +8,16 @@
 
   sebastianrasor.acme.enable = true;
   sebastianrasor.actual.enable = true;
+  sebastianrasor.core.enable = true;
   sebastianrasor.frigate.enable = false;
   sebastianrasor.homebox.enable = true;
-  sebastianrasor.home-manager.enable = true;
   sebastianrasor.immich.enable = true;
   sebastianrasor.intel-arc-a380.enable = true;
   sebastianrasor.jellyfin.enable = true;
   sebastianrasor.nginx.enable = true;
-  sebastianrasor.nix.enable = true;
   sebastianrasor.nut.enable = true;
   sebastianrasor.postgresql.enable = true;
   sebastianrasor.radicale.enable = true;
-  sebastianrasor.secrets.enable = true;
-  sebastianrasor.sshd.enable = true;
-  sebastianrasor.sudo.enable = true;
   sebastianrasor.tailscale.enable = true;
 
   sebastianrasor.unas = {
