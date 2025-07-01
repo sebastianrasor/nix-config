@@ -8,6 +8,7 @@
   };
 
   config = lib.mkIf config.sebastianrasor.core.enable {
+    sebastianrasor.bandwhich.enable = true;
     sebastianrasor.bash.enable = true;
     sebastianrasor.bat.enable = true;
     sebastianrasor.direnv.enable = true;
