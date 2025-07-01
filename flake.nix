@@ -123,10 +123,10 @@
       default = pkgs.mkShell {
         nativeBuildInputs = with pkgs; [
           alejandra
+          pkgs.deploy-rs
           fd
           nixd
           nixf
-          sops
           stylua
         ];
       };
