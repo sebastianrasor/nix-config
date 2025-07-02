@@ -30,5 +30,7 @@
     sebastianrasor.xdg-userdirs.enable = true;
     sebastianrasor.yazi.enable = true;
     sebastianrasor.zoxide.enable = true;
+
+    programs.home-manager.enable = true;
   };
 }
