@@ -4,9 +4,10 @@
 {...}: {
   networking.hostName = "carbon";
 
+  sebastianrasor.core.enable = true;
+
   sebastianrasor.acme.enable = true;
   sebastianrasor.actual.enable = true;
-  sebastianrasor.core.enable = true;
   sebastianrasor.frigate.enable = false;
   sebastianrasor.homebox.enable = true;
   sebastianrasor.immich.enable = true;
