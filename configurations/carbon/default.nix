@@ -23,12 +23,6 @@
     host = "unas-pro.localdomain";
   };
 
-  imports =
-    [
-      ./hardware-configuration.nix
-    ]
-    ++ map (moduleFile: ./users + ("/" + moduleFile)) (builtins.attrNames (builtins.readDir ./users));
-
   nix.extraOptions = ''
     build-dir = /nix/persist/nix-daemon
   '';
@@ -54,6 +48,12 @@
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+
+  imports =
+    [
+      ./hardware-configuration.nix
+    ]
+    ++ map (moduleFile: ./users + ("/" + moduleFile)) (builtins.attrNames (builtins.readDir ./users));
 
   system.stateVersion = "25.05";
 }
