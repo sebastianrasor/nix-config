@@ -9,6 +9,7 @@
   sebastianrasor.core.enable = true;
   sebastianrasor.headscale.enable = true;
   sebastianrasor.nginx.enable = true;
+  sebastianrasor.systemd-boot.enable = true;
 
   nix.extraOptions = ''
     build-dir = /nix/persist/nix-daemon
@@ -31,9 +32,6 @@
       "/etc/ssh/ssh_host_ed25519_key.pub"
     ];
   };
-
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
 
   imports =
     [

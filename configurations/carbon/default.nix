@@ -16,6 +16,7 @@
   sebastianrasor.nut.enable = true;
   sebastianrasor.postgresql.enable = true;
   sebastianrasor.radicale.enable = true;
+  sebastianrasor.systemd-boot.enable = true;
   sebastianrasor.tailscale.enable = true;
 
   sebastianrasor.unas = {
@@ -45,9 +46,6 @@
       "/var/lib/tailscale/tailscaled.state"
     ];
   };
-
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
 
   imports =
     [
