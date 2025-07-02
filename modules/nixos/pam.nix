@@ -27,8 +27,8 @@
                 ]
             )
             [
-              "root"
               "sebastian"
+              # more users if needed
             ]
           )
         );

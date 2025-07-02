@@ -13,12 +13,8 @@
       settings = {
         KbdInteractiveAuthentication = false;
         PasswordAuthentication = false;
-        PermitRootLogin = "prohibit-password";
+        PermitRootLogin = "no";
       };
     };
-
-    users.users."root".openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG71B1X8QTaPtldyB7UvST8bzYBLSyXHkKJG2BbT0tkG"
-    ];
   };
 }
