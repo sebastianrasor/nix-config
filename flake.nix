@@ -155,6 +155,11 @@
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
+    checkemail = {
+      url = "github:sebastianrasor/checkemail";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     deploy-rs.url = "github:serokell/deploy-rs";
 
     home-manager = {
