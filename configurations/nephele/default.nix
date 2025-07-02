@@ -12,10 +12,6 @@
   sebastianrasor.nginx.enable = true;
   sebastianrasor.systemd-boot.enable = true;
 
-  nix.extraOptions = ''
-    build-dir = /nix/persist/nix-daemon
-  '';
-
   environment.persistence."/nix/persist" = {
     hideMounts = true;
     directories = [
