@@ -7,6 +7,7 @@
   networking.timeServers = ["time.google.com"];
 
   sebastianrasor.acme.enable = true;
+  sebastianrasor.checkemail.enable = true;
   sebastianrasor.core.enable = true;
   sebastianrasor.headscale.enable = true;
   sebastianrasor.nginx.enable = true;
