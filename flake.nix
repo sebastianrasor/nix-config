@@ -8,7 +8,6 @@
     home-manager,
     impermanence,
     lanzaboote,
-    nixos-cosmic,
     sops-nix,
     ...
   }: let
@@ -102,7 +101,6 @@
         flake-home-manager = home-manager.nixosModules.home-manager;
         flake-impermanence = impermanence.nixosModules.impermanence;
         flake-lanzaboote = lanzaboote.nixosModules.lanzaboote;
-        flake-nixos-cosmic = nixos-cosmic.nixosModules.default;
         flake-sops-nix = sops-nix.nixosModules.sops;
         home-manager-extra = {
           home-manager = {
@@ -177,11 +175,6 @@
     mysecrets = {
       url = "git+ssh://git@github.com/sebastianrasor/nix-secrets.git?ref=main&shallow=1";
       flake = false;
-    };
-
-    nixos-cosmic = {
-      url = "github:lilyinstarlight/nixos-cosmic";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     nvf = {
