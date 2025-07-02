@@ -38,20 +38,20 @@
     );
 
     deploy = {
-      sshUser = "root";
+      sshUser = "sebastian";
       user = "root";
       fastConnection = true;
       remoteBuild = true;
       nodes = {
         carbon = {
-          hostname = "carbon.rasor.us";
+          hostname = "carbon";
           profiles.system = {
             user = "root";
             path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.carbon;
           };
         };
         nephele = {
-          hostname = "nephele.rasor.us";
+          hostname = "nephele";
           profiles.system = {
             user = "root";
             path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.nephele;
