@@ -3,8 +3,6 @@
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 {...}: {
   networking.hostName = "carbon";
-  time.timeZone = "America/Chicago";
-  networking.timeServers = ["time.google.com"];
 
   sebastianrasor.acme.enable = true;
   sebastianrasor.actual.enable = true;

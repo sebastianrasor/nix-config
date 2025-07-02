@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: {
   options = {
@@ -14,8 +15,14 @@
     sebastianrasor.pam.enable = true;
     sebastianrasor.secrets.enable = true;
     sebastianrasor.sshd.enable = true;
-    sebastianrasor.sudo.enable = true;
 
+    time.timeZone = "America/Chicago";
+    networking.timeServers = ["pool.ntp.org"];
     networking.domain = config.sebastianrasor.domain;
+    users.mutableUsers = false;
+    users.users.root = {
+      hashedPassword = "!";
+      shell = pkgs.shadow;
+    };
   };
 }

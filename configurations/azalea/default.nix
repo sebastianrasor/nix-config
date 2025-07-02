@@ -25,12 +25,10 @@
   };
   sebastianrasor.unas-lazy-media.enable = true;
 
-  time.timeZone = "America/Chicago";
   hardware.bluetooth.powerOnBoot = lib.mkForce false;
   hardware.graphics.enable = true;
   boot.kernelPackages = pkgs.linuxPackages_latest;
   nixpkgs.config.allowUnfree = true;
-  networking.timeServers = ["time.google.com"];
   environment.systemPackages = with pkgs; [
     framework-tool
     fw-ectool
