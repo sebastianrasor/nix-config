@@ -25,10 +25,6 @@
     host = "unas-pro.localdomain";
   };
 
-  nix.extraOptions = ''
-    build-dir = /nix/persist/nix-daemon
-  '';
-
   environment.persistence."/nix/persist" = {
     hideMounts = true;
     directories = [
