@@ -28,7 +28,6 @@
   hardware.bluetooth.powerOnBoot = lib.mkForce false;
   hardware.graphics.enable = true;
   boot.kernelPackages = pkgs.linuxPackages_latest;
-  nixpkgs.config.allowUnfree = true;
   environment.systemPackages = with pkgs; [
     framework-tool
     fw-ectool

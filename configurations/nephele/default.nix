@@ -20,8 +20,6 @@
     build-dir = /nix/persist/nix-daemon
   '';
 
-  nixpkgs.config.allowUnfree = true;
-
   environment.persistence."/nix/persist" = {
     hideMounts = true;
     directories = [
