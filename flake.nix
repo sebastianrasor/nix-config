@@ -40,9 +40,9 @@
       sshUser = "sebastian";
       user = "root";
       fastConnection = true;
-      remoteBuild = true;
       nodes = {
         carbon = {
+          remoteBuild = true;
           hostname = "carbon";
           profiles.system = {
             user = "root";
@@ -50,6 +50,7 @@
           };
         };
         nephele = {
+          remoteBuild = false;
           hostname = "nephele";
           profiles.system = {
             user = "root";
