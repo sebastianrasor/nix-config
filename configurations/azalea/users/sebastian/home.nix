@@ -15,6 +15,7 @@
   sebastianrasor.pass.enable = true;
   sebastianrasor.ssh.enable = true;
   sebastianrasor.thunderbird.enable = true;
+  sebastianrasor.yubikey-touch-detector.enable = true;
 
   home = {
     username = "sebastian";
