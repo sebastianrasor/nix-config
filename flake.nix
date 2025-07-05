@@ -187,5 +187,10 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    yubikey-touch-detector = {
+      url = "github:maximbaz/yubikey-touch-detector";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 }

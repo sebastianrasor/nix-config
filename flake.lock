@@ -459,7 +459,8 @@
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_3",
         "nvf": "nvf",
-        "sops-nix": "sops-nix"
+        "sops-nix": "sops-nix",
+        "yubikey-touch-detector": "yubikey-touch-detector"
       }
     },
     "rust-overlay": {
@@ -596,6 +597,26 @@
       "original": {
         "owner": "numtide",
         "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "yubikey-touch-detector": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1749061849,
+        "narHash": "sha256-aHR/y8rAKS+dMvRdB3oAmOiI7hTA6qlF4Z05OjwYOO4=",
+        "owner": "maximbaz",
+        "repo": "yubikey-touch-detector",
+        "rev": "83d8df88807ecdad4ec6c695901275ffdb4474c6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "maximbaz",
+        "repo": "yubikey-touch-detector",
         "type": "github"
       }
     }
