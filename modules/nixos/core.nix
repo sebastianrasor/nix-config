@@ -15,6 +15,7 @@
     sebastianrasor.pam.enable = true;
     sebastianrasor.secrets.enable = true;
     sebastianrasor.sshd.enable = true;
+    sebastianrasor.sudo-rs.enable = true;
 
     time.timeZone = "America/Chicago";
     networking.timeServers = ["pool.ntp.org"];
