@@ -15,6 +15,7 @@
 
   config = lib.mkIf config.sebastianrasor.tailscale.enable {
     sops.secrets.tailscale_key = lib.mkIf config.sebastianrasor.secrets.enable {};
+    networking.firewall.trustedInterfaces = ["tailscale0"];
     services.tailscale = {
       enable = true;
       authKeyFile = lib.mkIf config.sebastianrasor.secrets.enable config.sops.secrets.tailscale_key.path;
