@@ -24,6 +24,7 @@
     sebastianrasor.monolith.enable = true;
     sebastianrasor.navi.enable = true;
     sebastianrasor.ripgrep.enable = true;
+    sebastianrasor.ssh.enable = true;
     sebastianrasor.starship.enable = true;
     sebastianrasor.tokei.enable = true;
     sebastianrasor.vim.enable = true;

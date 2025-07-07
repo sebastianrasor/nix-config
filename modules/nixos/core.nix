@@ -16,10 +16,12 @@
     sebastianrasor.secrets.enable = true;
     sebastianrasor.sshd.enable = true;
     sebastianrasor.sudo-rs.enable = true;
+    sebastianrasor.tailscale.enable = true;
 
     time.timeZone = "America/Chicago";
     networking.timeServers = ["pool.ntp.org"];
     networking.domain = config.sebastianrasor.domain;
+    networking.search = [config.sebastianrasor.domain];
     users.mutableUsers = false;
     users.users.root = {
       hashedPassword = "!";
