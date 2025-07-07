@@ -18,7 +18,6 @@
   sebastianrasor.postgresql.enable = true;
   sebastianrasor.radicale.enable = true;
   sebastianrasor.systemd-boot.enable = true;
-  sebastianrasor.tailscale.enable = true;
 
   sebastianrasor.unas = {
     enable = true;

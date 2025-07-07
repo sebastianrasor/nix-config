@@ -12,8 +12,8 @@
       enable = true;
       controlMaster = "auto";
       controlPersist = "10m";
-      matchBlocks."carbon nephele" = {
-        hostname = "%h.${config.sebastianrasor.domain}";
+      matchBlocks.tailnet = {
+        match = "localnetwork 100.64.0.0/10";
         forwardAgent = true;
       };
     };
