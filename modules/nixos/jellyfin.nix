@@ -10,7 +10,6 @@
   config = lib.mkIf config.sebastianrasor.jellyfin.enable {
     services.jellyfin = {
       enable = true;
-      openFirewall = true;
       logDir = lib.mkIf config.sebastianrasor.unas.enable "/media/jellyfin/log";
       dataDir = lib.mkIf config.sebastianrasor.unas.enable "/media/jellyfin";
       configDir = lib.mkIf config.sebastianrasor.unas.enable "/media/jellyfin/config";
