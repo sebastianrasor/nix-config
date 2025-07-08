@@ -30,7 +30,7 @@
             {
               name = "headscale.rasor.us";
               type = "A";
-              value = "100.64.0.5";
+              value = "137.220.49.126";
             }
             {
               name = "homeassistant.rasor.us";
