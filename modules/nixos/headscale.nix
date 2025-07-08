@@ -33,6 +33,11 @@
               value = "100.64.0.5";
             }
             {
+              name = "homeassistant.rasor.us";
+              type = "A";
+              value = "100.64.0.6";
+            }
+            {
               name = "homebox.rasor.us";
               type = "A";
               value = "100.64.0.3";
