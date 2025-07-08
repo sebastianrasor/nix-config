@@ -28,6 +28,11 @@
               value = "100.64.0.3";
             }
             {
+              name = "headscale.rasor.us";
+              type = "A";
+              value = "100.64.0.5";
+            }
+            {
               name = "homebox.rasor.us";
               type = "A";
               value = "100.64.0.3";
