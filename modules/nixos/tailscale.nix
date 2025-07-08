@@ -21,10 +21,5 @@
       authKeyFile = lib.mkIf config.sebastianrasor.secrets.enable config.sops.secrets.tailscale_key.path;
       extraUpFlags = ["--login-server=https://headscale.${config.sebastianrasor.domain}"];
     };
-    networking.hosts = {
-      "100.64.0.1" = ["azalea" "azalea.rasor.us"];
-      "100.64.0.3" = ["carbon" "carbon.rasor.us"];
-      "100.64.0.5" = ["nephele" "nephele.rasor.us"];
-    };
   };
 }

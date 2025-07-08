@@ -12,8 +12,43 @@
       enable = true;
       settings = {
         server_url = "https://headscale.${config.sebastianrasor.domain}:443";
-        dns.magic_dns = false;
-        dns.override_local_dns = false;
+        dns = {
+          magic_dns = true;
+          base_domain = "rasor.us";
+          override_local_dns = false;
+          extra_records = [
+            {
+              name = "actual.rasor.us";
+              type = "A";
+              value = "100.64.0.3";
+            }
+            {
+              name = "frigate.rasor.us";
+              type = "A";
+              value = "100.64.0.3";
+            }
+            {
+              name = "homebox.rasor.us";
+              type = "A";
+              value = "100.64.0.3";
+            }
+            {
+              name = "immich.rasor.us";
+              type = "A";
+              value = "100.64.0.3";
+            }
+            {
+              name = "jellyfin.rasor.us";
+              type = "A";
+              value = "100.64.0.3";
+            }
+            {
+              name = "radicale.rasor.us";
+              type = "A";
+              value = "100.64.0.3";
+            }
+          ];
+        };
       };
     };
 
