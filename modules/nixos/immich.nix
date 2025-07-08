@@ -8,10 +8,16 @@
   };
 
   config = lib.mkIf config.sebastianrasor.immich.enable {
-    users.users.immich.extraGroups = [
-      "video"
-      "render"
-    ];
+    users.users.immich = {
+      # https://github.com/nixos/nixpkgs/issues/418799
+      home = "/var/lib/immich";
+      createHome = true;
+
+      extraGroups = [
+        "video"
+        "render"
+      ];
+    };
 
     services.immich = {
       accelerationDevices = null;
