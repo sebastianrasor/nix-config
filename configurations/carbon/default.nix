@@ -8,6 +8,7 @@
 
   sebastianrasor.acme.enable = true;
   sebastianrasor.actual.enable = true;
+  sebastianrasor.authentik.enable = true;
   sebastianrasor.frigate.enable = false;
   sebastianrasor.homebox.enable = true;
   sebastianrasor.immich.enable = true;

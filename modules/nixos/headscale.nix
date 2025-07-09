@@ -23,6 +23,11 @@
               value = "100.64.0.3";
             }
             {
+              name = "authentik.rasor.us";
+              type = "A";
+              value = "100.64.0.3";
+            }
+            {
               name = "frigate.rasor.us";
               type = "A";
               value = "100.64.0.3";
