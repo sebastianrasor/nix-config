@@ -6,6 +6,7 @@
 
   sebastianrasor.core.enable = true;
 
+  sebastianrasor.authentik-public-proxy.enable = true;
   sebastianrasor.acme.enable = true;
   sebastianrasor.checkemail.enable = true;
   sebastianrasor.headscale.enable = true;
