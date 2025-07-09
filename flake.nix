@@ -4,6 +4,7 @@
   outputs = inputs @ {
     self,
     nixpkgs,
+    authentik-nix,
     deploy-rs,
     home-manager,
     impermanence,
@@ -83,6 +84,7 @@
 
         # flake modules
         {
+          flake-authentik-nix = authentik-nix.nixosModules.default;
           flake-home-manager = home-manager.nixosModules.home-manager;
           flake-impermanence = impermanence.nixosModules.impermanence;
           flake-lanzaboote = lanzaboote.nixosModules.lanzaboote;
@@ -172,6 +174,10 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+
+    authentik-nix = {
+      url = "github:nix-community/authentik-nix";
+    };
 
     checkemail = {
       url = "github:sebastianrasor/checkemail";
