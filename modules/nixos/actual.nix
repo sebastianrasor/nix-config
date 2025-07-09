@@ -8,7 +8,13 @@
   };
 
   config = lib.mkIf config.sebastianrasor.actual.enable {
-    services.actual.enable = true;
+    services.actual = {
+      enable = true;
+      settings = {
+        loginMethod = "openid";
+        allowedLoginMethods = ["openid"];
+      };
+    };
 
     systemd.services.actual = lib.mkIf config.sebastianrasor.unas.enable {
       bindsTo = ["var-lib-actual.mount"];

@@ -8,10 +8,18 @@
   };
 
   config = lib.mkIf config.sebastianrasor.headscale.enable {
+    sops.secrets.headscale-openid-client-secret = lib.mkIf config.sebastianrasor.secrets.enable {
+      owner = config.systemd.services.headscale.serviceConfig.User;
+    };
     services.headscale = {
       enable = true;
       settings = {
         server_url = "https://headscale.${config.sebastianrasor.domain}:443";
+        oidc = lib.mkIf config.sebastianrasor.secrets.enable {
+          issuer = "https://authentik.rasor.us/application/o/headscale/";
+          client_id = "t5tdQYkn2zReh1DCHhTwMNiZnSIq5nvLMjsT13nQ";
+          client_secret_path = config.sops.secrets.headscale-openid-client-secret.path;
+        };
         dns = {
           magic_dns = true;
           base_domain = "rasor.us";
