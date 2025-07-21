@@ -30,7 +30,6 @@
     fileSystems."/media/jellyfin" = lib.mkIf config.sebastianrasor.unas.enable {
       device = "${config.sebastianrasor.unas.host}:${config.sebastianrasor.unas.basePath}/Jellyfin";
       fsType = "nfs";
-      options = ["nolock"];
     };
 
     fileSystems."/media/movies" = lib.mkIf config.sebastianrasor.unas.enable {
