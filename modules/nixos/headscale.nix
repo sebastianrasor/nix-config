@@ -11,14 +11,24 @@
     sops.secrets.headscale-openid-client-secret = lib.mkIf config.sebastianrasor.secrets.enable {
       owner = config.systemd.services.headscale.serviceConfig.User;
     };
+    networking.firewall.allowedUDPPorts = [3478];
     services.headscale = {
       enable = true;
       settings = {
         server_url = "https://headscale.${config.sebastianrasor.domain}:443";
         oidc = lib.mkIf config.sebastianrasor.secrets.enable {
+          only_start_if_oidc_is_available = false;
           issuer = "https://authentik.rasor.us/application/o/headscale/";
           client_id = "t5tdQYkn2zReh1DCHhTwMNiZnSIq5nvLMjsT13nQ";
           client_secret_path = config.sops.secrets.headscale-openid-client-secret.path;
+        };
+        derp.urls = [];
+        derp.server = {
+          enabled = true;
+          stun_listen_addr = "0.0.0.0:3478";
+          region_id = 999;
+          region_code = "headscale";
+          region_name = "Headscale Embedded DERP";
         };
         dns = {
           magic_dns = true;
