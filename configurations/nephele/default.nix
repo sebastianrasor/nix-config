@@ -13,6 +13,7 @@
   sebastianrasor.immich-public-proxy.enable = true;
   sebastianrasor.nginx.enable = true;
   sebastianrasor.systemd-boot.enable = true;
+  sebastianrasor.tailscale.exitNode = true;
 
   environment.persistence."/nix/persist" = {
     hideMounts = true;
