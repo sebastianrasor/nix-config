@@ -13,6 +13,7 @@
   sebastianrasor.mpv.enable = true;
   sebastianrasor.neovim.enable = true;
   sebastianrasor.pass.enable = true;
+  sebastianrasor.posy-cursors.enable = true;
   sebastianrasor.thunderbird.enable = true;
   sebastianrasor.yubikey-touch-detector.enable = true;
 
