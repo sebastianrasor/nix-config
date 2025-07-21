@@ -44,6 +44,7 @@
         derp.urls = [];
         derp.server = {
           enabled = true;
+          verify_clients = true;
           stun_listen_addr = "0.0.0.0:3478";
           region_id = 999;
           region_code = "headscale";
