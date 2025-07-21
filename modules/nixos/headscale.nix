@@ -34,10 +34,10 @@
     services.headscale = {
       enable = true;
       settings = {
-        server_url = "https://headscale.${config.sebastianrasor.domain}:443";
+        server_url = "https://headscale.${config.sebastianrasor.domain}";
         oidc = lib.mkIf config.sebastianrasor.secrets.enable {
           only_start_if_oidc_is_available = false;
-          issuer = "https://authentik.rasor.us/application/o/headscale/";
+          issuer = "https://authentik.${config.sebastianrasor.domain}/application/o/headscale/";
           client_id = "t5tdQYkn2zReh1DCHhTwMNiZnSIq5nvLMjsT13nQ";
           client_secret_path = config.sops.secrets.headscale-openid-client-secret.path;
         };
@@ -52,8 +52,12 @@
         };
         dns = {
           magic_dns = true;
-          base_domain = "rasor.us";
+          # https://github.com/juanfont/headscale/blob/3123d5286bbeb1d4958cec3c92d5a0969b201a9b/hscontrol/types/config_test.go#L414
+          base_domain = "ts.${config.sebastianrasor.domain}";
           override_local_dns = false;
+          # eventually I'd like to set these to CNAMES to the magic dns records
+          # for the respective nodes on the tailnet. that's not currently
+          # possible, though. :(
           extra_records = [
             {
               name = "actual.rasor.us";
