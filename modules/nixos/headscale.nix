@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: {
   options = {
@@ -12,6 +13,24 @@
       owner = config.systemd.services.headscale.serviceConfig.User;
     };
     networking.firewall.allowedUDPPorts = [3478];
+    systemd.services.headscale-oidc-restart = {
+      after = ["headscale.service"];
+      wantedBy = ["headscale.service"];
+      serviceConfig.ExecStart = pkgs.writeShellScript "headscale-oidc-restart" ''
+        STATUS_CODE="$(${lib.getExe pkgs.curl} -o /dev/null --silent --write-out "%{http_code}" "${config.services.headscale.settings.server_url}/oidc/callback")"
+
+        if [ "$STATUS_CODE" = "400" ]; then
+          exit 0
+        fi
+
+        until ${lib.getExe pkgs.curl} -o /dev/null -s "${config.services.headscale.settings.oidc.issuer}/.well-known/openid-configuration"
+        do
+          sleep 30
+        done
+
+        systemctl restart headscale.service
+      '';
+    };
     services.headscale = {
       enable = true;
       settings = {
