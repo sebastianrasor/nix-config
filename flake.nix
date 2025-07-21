@@ -127,7 +127,6 @@
           fd
           nixd
           nixf
-          stylua
         ];
       };
     });
