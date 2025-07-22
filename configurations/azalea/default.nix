@@ -21,7 +21,7 @@
 
   sebastianrasor.unas = {
     enable = true;
-    host = "unas-pro.localdomain";
+    host = "unas-pro.internal";
   };
   sebastianrasor.unas-lazy-media.enable = true;
 

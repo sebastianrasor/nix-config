@@ -22,7 +22,7 @@
 
   sebastianrasor.unas = {
     enable = true;
-    host = "unas-pro.localdomain";
+    host = "unas-pro.internal";
   };
 
   environment.persistence."/nix/persist" = {
