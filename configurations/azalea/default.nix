@@ -1,19 +1,16 @@
-{
-  inputs,
-  lib,
-  pkgs,
-  ...
-}: {
+{inputs, ...}: {
   networking.hostName = "azalea";
 
   sebastianrasor.core.enable = true;
 
+  sebastianrasor.bluetooth.enable = true;
   sebastianrasor.cosmic.enable = true;
   sebastianrasor.dvorak.enable = true;
   sebastianrasor.fwupd.enable = true;
   sebastianrasor.lanzaboote.enable = true;
   sebastianrasor.makemkv.enable = true;
   sebastianrasor.networkmanager.enable = true;
+  sebastianrasor.persistence.enable = true;
   sebastianrasor.pipewire.enable = true;
   sebastianrasor.plymouth.enable = true;
   sebastianrasor.steam.enable = true;
@@ -24,35 +21,6 @@
     host = "unas-pro.internal";
   };
   sebastianrasor.unas-lazy-media.enable = true;
-
-  hardware.bluetooth.powerOnBoot = lib.mkForce false;
-  hardware.graphics.enable = true;
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-  environment.systemPackages = with pkgs; [
-    framework-tool
-    fw-ectool
-  ];
-
-  environment.persistence."/nix/persist" = {
-    hideMounts = true;
-    directories = [
-      "/etc/NetworkManager/system-connections"
-      "/var/lib/sbctl"
-      "/var/lib/nixos"
-      "/var/lib/bluetooth"
-      "/var/lib/systemd/coredump"
-      "/var/log"
-      "/home"
-    ];
-    files = [
-      "/etc/machine-id"
-      "/etc/ssh/ssh_host_rsa_key"
-      "/etc/ssh/ssh_host_rsa_key.pub"
-      "/etc/ssh/ssh_host_ed25519_key"
-      "/etc/ssh/ssh_host_ed25519_key.pub"
-      "/var/lib/tailscale/tailscaled.state"
-    ];
-  };
 
   imports =
     [
