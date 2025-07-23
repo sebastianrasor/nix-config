@@ -13,6 +13,7 @@
       owner = config.systemd.services.headscale.serviceConfig.User;
     };
     networking.firewall.allowedUDPPorts = [3478];
+    environment.persistence."${config.sebastianrasor.persistence.storagePath}".directories = lib.mkIf config.sebastianrasor.persistence.enable ["/var/lib/headscale"];
     systemd.services.headscale-oidc-restart = {
       after = ["headscale.service"];
       wantedBy = ["headscale.service"];

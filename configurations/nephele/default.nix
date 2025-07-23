@@ -12,27 +12,9 @@
   sebastianrasor.headscale.enable = true;
   sebastianrasor.immich-public-proxy.enable = true;
   sebastianrasor.nginx.enable = true;
+  sebastianrasor.persistence.enable = true;
   sebastianrasor.systemd-boot.enable = true;
   sebastianrasor.tailscale.exitNode = true;
-
-  environment.persistence."/nix/persist" = {
-    hideMounts = true;
-    directories = [
-      "/var/lib/nixos"
-      "/var/lib/systemd/coredump"
-      "/var/log"
-      "/var/lib/acme"
-      "/var/lib/headscale"
-    ];
-    files = [
-      "/etc/machine-id"
-      "/etc/ssh/ssh_host_rsa_key"
-      "/etc/ssh/ssh_host_rsa_key.pub"
-      "/etc/ssh/ssh_host_ed25519_key"
-      "/etc/ssh/ssh_host_ed25519_key.pub"
-      "/var/lib/tailscale/tailscaled.state"
-    ];
-  };
 
   imports =
     [

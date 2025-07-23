@@ -8,6 +8,12 @@
   };
 
   config = lib.mkIf config.sebastianrasor.sshd.enable {
+    environment.persistence."${config.sebastianrasor.persistence.storagePath}".files = lib.mkIf config.sebastianrasor.persistence.enable [
+      "/etc/ssh/ssh_host_rsa_key"
+      "/etc/ssh/ssh_host_rsa_key.pub"
+      "/etc/ssh/ssh_host_ed25519_key"
+      "/etc/ssh/ssh_host_ed25519_key.pub"
+    ];
     services.openssh = {
       enable = true;
       openFirewall = false;
