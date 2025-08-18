@@ -6,6 +6,7 @@
     nixpkgs,
     authentik-nix,
     deploy-rs,
+    disko,
     home-manager,
     impermanence,
     lanzaboote,
@@ -85,6 +86,7 @@
         # flake modules
         {
           flake-authentik-nix = authentik-nix.nixosModules.default;
+          flake-disko = disko.nixosModules.disko;
           flake-home-manager = home-manager.nixosModules.home-manager;
           flake-impermanence = impermanence.nixosModules.impermanence;
           flake-lanzaboote = lanzaboote.nixosModules.lanzaboote;
@@ -184,6 +186,11 @@
     };
 
     deploy-rs.url = "github:serokell/deploy-rs";
+
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     home-manager = {
       url = "github:nix-community/home-manager";

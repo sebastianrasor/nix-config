@@ -14,6 +14,9 @@
     security.pam.u2f = lib.mkIf config.sebastianrasor.yubikey.enable {
       enable = true;
       settings = {
+        # Origin is set to azalea for all hosts because credentials were generated for the first time on azalea
+        origin = "pam://azalea";
+        appid = "pam://azalea";
         authfile = lib.mkDefault (
           builtins.toFile "u2f_mappings" (
             lib.concatMapStringsSep "\n"
