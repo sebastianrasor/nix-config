@@ -9,7 +9,6 @@
   };
 
   config = lib.mkIf config.sebastianrasor.core.enable {
-    sebastianrasor.automatic-timezoned.enable = true;
     sebastianrasor.home-manager.enable = true;
     sebastianrasor.i18n.enable = true;
     sebastianrasor.nix.enable = true;
@@ -22,6 +21,7 @@
     networking.timeServers = ["pool.ntp.org"];
     networking.domain = config.sebastianrasor.domain;
     networking.search = [config.sebastianrasor.domain];
+    time.timeZone = lib.mkIf (!config.sebastianrasor.automatic-timezoned.enable) "America/Chicago";
     users.mutableUsers = false;
     users.users.root = {
       hashedPassword = "!";

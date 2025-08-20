@@ -3,6 +3,7 @@
 
   sebastianrasor.core.enable = true;
 
+  sebastianrasor.automatic-timezoned.enable = true;
   sebastianrasor.bluetooth.enable = true;
   sebastianrasor.cosmic.enable = true;
   sebastianrasor.dvorak.enable = true;
