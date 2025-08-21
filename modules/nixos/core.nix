@@ -48,6 +48,10 @@
         plymouth.enable = true;
         yubikey.enable = true;
       };
+      boot = {
+        kernelParams = ["mem_sleep_default=deep"];
+        initrd.systemd.enable = true;
+      };
       services.logind = let
         suspendBehavior = "suspend-then-hibernate";
       in {
@@ -55,7 +59,6 @@
         powerKey = suspendBehavior;
         powerKeyLongPress = "poweroff";
       };
-      boot.kernelParams = ["mem_sleep_default=deep"];
       systemd.sleep.extraConfig = ''
         HibernateDelaySec=30m
         SuspendState=mem
