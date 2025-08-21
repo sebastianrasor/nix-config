@@ -2,18 +2,7 @@
   networking.hostName = "sunflower";
 
   sebastianrasor.core.enable = true;
-
-  sebastianrasor.automatic-timezoned.enable = true;
-  sebastianrasor.bluetooth.enable = true;
-  sebastianrasor.cosmic.enable = true;
-  sebastianrasor.dvorak.enable = true;
-  sebastianrasor.fwupd.enable = true;
-  sebastianrasor.lanzaboote.enable = true;
-  sebastianrasor.networkmanager.enable = true;
-  sebastianrasor.persistence.enable = true;
-  sebastianrasor.pipewire.enable = true;
-  sebastianrasor.plymouth.enable = true;
-  sebastianrasor.yubikey.enable = true;
+  sebastianrasor.core.laptop = true;
 
   imports =
     [
