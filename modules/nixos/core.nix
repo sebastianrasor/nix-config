@@ -4,28 +4,62 @@
   pkgs,
   ...
 }: {
-  options = {
-    sebastianrasor.core.enable = lib.mkEnableOption "";
+  options.sebastianrasor.core = {
+    enable = lib.mkEnableOption "";
+    laptop = lib.mkEnableOption "";
   };
 
-  config = lib.mkIf config.sebastianrasor.core.enable {
-    sebastianrasor.home-manager.enable = true;
-    sebastianrasor.i18n.enable = true;
-    sebastianrasor.nix.enable = true;
-    sebastianrasor.pam.enable = true;
-    sebastianrasor.secrets.enable = true;
-    sebastianrasor.sshd.enable = true;
-    sebastianrasor.sudo-rs.enable = true;
-    sebastianrasor.tailscale.enable = true;
+  config = lib.mkMerge [
+    (lib.mkIf config.sebastianrasor.core.enable {
+      sebastianrasor = {
+        home-manager.enable = true;
+        i18n.enable = true;
+        nix.enable = true;
+        pam.enable = true;
+        secrets.enable = true;
+        sshd.enable = true;
+        sudo-rs.enable = true;
+        tailscale.enable = true;
+      };
 
-    networking.timeServers = ["pool.ntp.org"];
-    networking.domain = config.sebastianrasor.domain;
-    networking.search = [config.sebastianrasor.domain];
-    time.timeZone = lib.mkIf (!config.sebastianrasor.automatic-timezoned.enable) "America/Chicago";
-    users.mutableUsers = false;
-    users.users.root = {
-      hashedPassword = "!";
-      shell = pkgs.shadow;
-    };
-  };
+      networking = {
+        timeServers = ["pool.ntp.org"];
+        domain = config.sebastianrasor.domain;
+        search = [config.sebastianrasor.domain];
+      };
+      time.timeZone = lib.mkIf (!config.sebastianrasor.automatic-timezoned.enable) "America/Chicago";
+      users.mutableUsers = false;
+      users.users.root = {
+        hashedPassword = "!";
+        shell = pkgs.shadow;
+      };
+    })
+    (lib.mkIf config.sebastianrasor.core.laptop {
+      sebastianrasor = {
+        automatic-timezoned.enable = true;
+        bluetooth.enable = true;
+        cosmic.enable = true;
+        dvorak.enable = true;
+        fwupd.enable = true;
+        lanzaboote.enable = true;
+        networkmanager.enable = true;
+        persistence.enable = true;
+        pipewire.enable = true;
+        plymouth.enable = true;
+        yubikey.enable = true;
+      };
+      services.logind = let
+        suspendBehavior = "suspend-then-hibernate";
+      in {
+        lidSwitch = suspendBehavior;
+        powerKey = suspendBehavior;
+        powerKeyLongPress = "poweroff";
+      };
+      boot.kernelParams = ["mem_sleep_default=deep"];
+      systemd.sleep.extraConfig = ''
+        HibernateDelaySec=30m
+        SuspendState=mem
+      '';
+    })
+  ];
 }
