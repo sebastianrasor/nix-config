@@ -13,7 +13,6 @@
   sebastianrasor.persistence.enable = true;
   sebastianrasor.pipewire.enable = true;
   sebastianrasor.plymouth.enable = true;
-  sebastianrasor.systemd-boot.enable = true;
   sebastianrasor.yubikey.enable = true;
 
   imports =
