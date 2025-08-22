@@ -5,6 +5,7 @@
     self,
     nixpkgs,
     authentik-nix,
+    cosmic-manager,
     deploy-rs,
     disko,
     home-manager,
@@ -116,6 +117,12 @@
           (mapAttrs' (module: _:
               nameValuePair (removeSuffix ".nix" module) (import ./modules/${module})))
         ])
+
+        # flake modules
+        {
+          flake-cosmic-manager = cosmic-manager.homeManagerModules.cosmic-manager;
+          flake-impermanence = impermanence.homeManagerModules.impermanence;
+        }
       ];
 
     formatter = forAllSystems (pkgs: pkgs.alejandra);
@@ -183,6 +190,14 @@
     checkemail = {
       url = "github:sebastianrasor/checkemail";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    cosmic-manager = {
+      url = "github:HeitorAugustoLN/cosmic-manager";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        home-manager.follows = "home-manager";
+      };
     };
 
     deploy-rs.url = "github:serokell/deploy-rs";

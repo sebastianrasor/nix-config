@@ -19,5 +19,15 @@
       templates = "${config.home.homeDirectory}/templates";
       videos = "${config.home.homeDirectory}/videos";
     };
+    home.persistence."${config.sebastianrasor.persistence.storagePath}".directories = lib.mkIf config.sebastianrasor.persistence.enable (builtins.map (lib.strings.removePrefix config.home.homeDirectory) [
+      config.xdg.userDirs.desktop
+      config.xdg.userDirs.documents
+      config.xdg.userDirs.download
+      config.xdg.userDirs.music
+      config.xdg.userDirs.pictures
+      config.xdg.userDirs.publicShare
+      config.xdg.userDirs.templates
+      config.xdg.userDirs.videos
+    ]);
   };
 }
