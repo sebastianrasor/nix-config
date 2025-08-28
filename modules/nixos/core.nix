@@ -38,6 +38,7 @@
       sebastianrasor = {
         automatic-timezoned.enable = true;
         bluetooth.enable = true;
+        bolt.enable = true;
         cosmic.enable = true;
         dvorak.enable = true;
         fwupd.enable = true;
