@@ -42,6 +42,7 @@
         dvorak.enable = true;
         fwupd.enable = true;
         lanzaboote.enable = true;
+        logitech.enable = true;
         networkmanager.enable = true;
         persistence.enable = true;
         pipewire.enable = true;
