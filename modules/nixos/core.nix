@@ -53,12 +53,12 @@
         kernelParams = ["mem_sleep_default=deep"];
         initrd.systemd.enable = true;
       };
-      services.logind = let
+      services.logind.settings.Login = let
         suspendBehavior = "suspend-then-hibernate";
       in {
-        lidSwitch = suspendBehavior;
-        powerKey = suspendBehavior;
-        powerKeyLongPress = "poweroff";
+        HandleLidSwitch = suspendBehavior;
+        HandlePowerKey = suspendBehavior;
+        HandlePowerKeyLongPress = "poweroff";
       };
       systemd.sleep.extraConfig = ''
         HibernateDelaySec=30m

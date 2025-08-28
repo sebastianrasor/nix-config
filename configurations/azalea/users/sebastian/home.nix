@@ -8,7 +8,6 @@
   sebastianrasor.git.enable = true;
   sebastianrasor.google-chrome.enable = true;
   sebastianrasor.gpg.enable = true;
-  sebastianrasor.jellyfin-media-player.enable = true;
   sebastianrasor.monaspace.enable = true;
   sebastianrasor.mpv.enable = true;
   sebastianrasor.neovim.enable = true;

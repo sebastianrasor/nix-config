@@ -1,3 +1,4 @@
+# https://github.com/nixos/nixpkgs/issues/437865
 {
   config,
   lib,
