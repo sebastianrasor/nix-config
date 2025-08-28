@@ -48,6 +48,11 @@
           variant = "dvorak";
         };
       };
+      idle = {
+        screen_off_time = cosmicLib.cosmic.mkRON "optional" 900000;
+        suspend_on_ac_time = cosmicLib.cosmic.mkRON "optional" 3600000;
+        suspend_on_battery_time = cosmicLib.cosmic.mkRON "optional" 1800000;
+      };
       panels = [
         {
           name = "Panel";
