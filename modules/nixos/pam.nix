@@ -14,9 +14,8 @@
     security.pam.u2f = lib.mkIf config.sebastianrasor.yubikey.enable {
       enable = true;
       settings = {
-        # Origin is set to azalea for all hosts because credentials were generated for the first time on azalea
-        origin = "pam://azalea";
-        appid = "pam://azalea";
+        origin = "pam://sebastianrasor";
+        appid = "pam://sebastianrasor";
         authfile = lib.mkDefault (
           builtins.toFile "u2f_mappings" (
             lib.concatMapStringsSep "\n"
@@ -24,9 +23,11 @@
               user:
                 lib.concatStringsSep ":" [
                   user
-                  "XC0l4rvWz1xsxAMV6ZwwBDwPhfccEyotFazdVduuBmb6uDJyFHPYR+mi0EO+1Ba0/NlLEi+GUzxSEuJX9DVqKw==,uEZrLrjqmSUPyKpXFSmRn9T/93Q7J0/LjuDlcrpxi7B3cpovlMDMvGDc+J6PEze5S0BNaijl8jIQ35htP0CAsw==,es256,+presence"
-                  "e+WSTsiq3LiJqYKG42qYinuYkyNaNdY4sIhKujZ0ipaZXAVSL04VyenxrlAYWJhYzD7AhvItbqVUpCfyP4/asw==,2YUV0VnvmZcZU6rRGIAqVywUnLANAO6AwJ4/TGbQmH8XZFr2Jb0EaPi2JnYXoAVpWvXnh8XwHd42d2wbNAwc9A==,es256,+presence"
-                  "/nLLVK7JLYamFX6KbIDni6+TqZ6NbllqQt98Z3kdSsp8q9J51sUA+iTXPu4ZKScQK3B3Y0BSVnJbVPK9V/pUOw==,8Jc9aDZ3k3Z6xABVk0X6WbC5ihhgUPY+zc6DB8vzxr2gh01AiVxGRL9kTNU8hdyEhnNCuaYJ7PZgP6Z4kWsdwA==,es256,+presence"
+                  "+RUZCkSEWmTZHmgH0Ht0x2KMvJSRwgO8/+UOl7ew8FBP5neEtkOCGvq1ez9vGWQjRz6HAm7dG58BzMlNZ2T5ow==,oqGhe0jguLbpzShd4pL3O8AwiUTnmwbXttJMWDUGQyTkibwySDs2N/QvpSfDpKWJk5/6AOPCxb/1qfVuRSG2fA==,es256,+presence"
+                  "iQCjhuV/mErNOZfGsCocSZi72e2eXT8MZJKWeIekN5SLgTsIAuqd/UNW3qzNdVqSpYLbnO9tZETtsNPcJR6POg==,EvrmUWX9Yh0mpry0CSHfz/mLTC8FpOqoaI65Nk1wQ9bmyPFBL91Z/weNLVYMsTh9lG7UehY8K1ePBIVn0QqK3g==,es256,+presence"
+                  "7x2gUIu8nEHbTlWYxMJ4So0PCP4osYDrkquqSFXvXtsR4KG1OZX3yX8iQ1OO0daYUhkyWMSRm7cQEbg60fg9AA==,wHzUMdF3sult3309R0HyylZ94W7PXq1hdMHEzmKcrzzLaBeOLZH6opiOm/m9Rs/rxU5ixh4YZeqciUSoxMuysw==,es256,+presence"
+                  "TbSWNmShaEjbISE1SVS9kgD+Li6L3iz9D3an7w3UTGfo8JBhOqBiT3eJBOrNptc8ewCfstNmylLRDsiBO86sCA==,WNOaGRBebrl+dHkTs7T/Ws8gh0mnlC9Rz1YLq5E6DVjyRAQq1UoJCQnag2FYLYmh/CQzGnhn2r5VQeGPH5U7ow==,es256,+presence"
+                  "4ech4nXbYMeqL3rXT7C0oFqvTJ686u5XR+MO2IKIG1VVH7SuXfTFGSPruW2I8hZn8xGxqOHUiBAODLSwRg+Mdg==,S2+pqucnawDCNNOet2dBgsueIUdy9ZFh0oVoNlmQeQt/KJPXUTDKrcAeD0u9l0yRGkbz0rcG2WadKni6hQUtRQ==,es256,+presence"
                 ]
             )
             [
