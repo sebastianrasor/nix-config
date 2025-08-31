@@ -129,7 +129,7 @@
 
     # create a simple development shell for working with Nix
     devShells = forAllSystems (pkgs: {
-      default = pkgs.mkShell {
+      default = pkgs.mkShellNoCC {
         nativeBuildInputs = with pkgs; [
           alejandra
           pkgs.deploy-rs
