@@ -5,6 +5,7 @@
 }: let
   configuration = {
     config.vim = {
+      package = inputs.neovim-nightly-overlay.packages.${pkgs.stdenv.system}.neovim;
       viAlias = false;
       vimAlias = false;
 
