@@ -3,6 +3,7 @@
 
   sebastianrasor.atkinson-hyperlegible.enable = true;
   sebastianrasor.bottom.enable = true;
+  sebastianrasor.cosmic.enable = true;
   sebastianrasor.browserpass.enable = true;
   sebastianrasor.discord.enable = true;
   sebastianrasor.git.enable = true;
@@ -12,6 +13,7 @@
   sebastianrasor.mpv.enable = true;
   sebastianrasor.neovim.enable = true;
   sebastianrasor.pass.enable = true;
+  sebastianrasor.persistence.enable = true;
   sebastianrasor.posy-cursors.enable = true;
   sebastianrasor.thunderbird.enable = true;
   sebastianrasor.yubikey-touch-detector.enable = true;
