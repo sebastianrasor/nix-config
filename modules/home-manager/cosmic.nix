@@ -91,9 +91,21 @@
         }
       ];
     };
-    programs.cosmic-term.settings = {
-      font_name = "Atkinson Hyperlegible Mono";
-      font_size = 16;
+    programs.cosmic-term = {
+      enable = true;
+      profiles = [
+        {
+          is_default = true;
+          hold = false;
+          name = "Default";
+          syntax_theme_dark = "COSMIC Dark";
+          syntax_theme_light = "COSMIC Light";
+        }
+      ];
+      settings = {
+        font_name = "Atkinson Hyperlegible Mono";
+        font_size = 16;
+      };
     };
   };
 }
