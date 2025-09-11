@@ -134,9 +134,13 @@
           alejandra
           pkgs.deploy-rs
           fd
+          nh
           nixd
           nixf
         ];
+        shellHook = ''
+          export NH_FLAKE=".";
+        '';
       };
     });
 
