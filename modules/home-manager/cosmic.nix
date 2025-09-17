@@ -2,6 +2,7 @@
   config,
   cosmicLib,
   lib,
+  pkgs,
   ...
 }: {
   options = {
@@ -96,6 +97,25 @@
         {
           action = cosmicLib.cosmic.mkRON "enum" "Disable";
           key = "Super";
+        }
+      ];
+      wallpapers = [
+        {
+          filter_by_theme = false;
+          rotation_frequency = 300;
+          filter_method = cosmicLib.cosmic.mkRON "enum" "Lanczos";
+          scaling_mode = cosmicLib.cosmic.mkRON "enum" "Zoom";
+          sampling_method = cosmicLib.cosmic.mkRON "enum" "Alphanumeric";
+          output = "all";
+          source = cosmicLib.cosmic.mkRON "enum" {
+            value = [
+              (pkgs.fetchurl {
+                url = "https://archive.org/download/bliss-600dpi/bliss-600dpi.png";
+                sha256 = "1nj75n9dbacdladdmig849ppzg9li3yfg53shfwa21n483p48bd7";
+              }).outPath
+            ];
+            variant = "Path";
+          };
         }
       ];
     };
