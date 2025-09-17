@@ -14,9 +14,9 @@
       enable = true;
       appearance = {
         theme.dark.accent = cosmicLib.cosmic.mkRON "optional" {
-          red = 0.57254905;
-          green = 0.8117647;
-          blue = 0.6117647;
+          red = cosmicLib.cosmic.mkRON "raw" "0.57254905";
+          green = cosmicLib.cosmic.mkRON "raw" "0.8117647";
+          blue = cosmicLib.cosmic.mkRON "raw" "0.6117647";
         };
         toolkit = {
           interface_font = {
