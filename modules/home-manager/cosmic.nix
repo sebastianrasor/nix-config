@@ -67,6 +67,7 @@
           name = "Panel";
           autohide = cosmicLib.cosmic.mkRON "optional" null;
           anchor = cosmicLib.cosmic.mkRON "enum" "Top";
+          border_radius = 0;
           output = cosmicLib.cosmic.mkRON "raw" "All";
           anchor_gap = false;
           expand_to_edges = true;
