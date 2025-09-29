@@ -49,9 +49,22 @@
         };
         input_touchpad = {
           state = cosmicLib.cosmic.mkRON "enum" "Enabled";
+          click_method = cosmicLib.cosmic.mkRON "optional" (cosmicLib.cosmic.mkRON "enum" "Clickfinger");
           acceleration = cosmicLib.cosmic.mkRON "optional" {
             profile = cosmicLib.cosmic.mkRON "optional" (cosmicLib.cosmic.mkRON "enum" "Adaptive");
             speed = 0.0;
+          };
+          scroll_config = cosmicLib.cosmic.mkRON "optional" {
+            method = cosmicLib.cosmic.mkRON "optional" (cosmicLib.cosmic.mkRON "enum" "TwoFinger");
+            natural_scroll = cosmicLib.cosmic.mkRON "optional" false;
+            scroll_button = cosmicLib.cosmic.mkRON "optional" null;
+            scroll_factor = cosmicLib.cosmic.mkRON "optional" null;
+          };
+          tap_config = cosmicLib.cosmic.mkRON "optional" {
+            enabled = true;
+            button_map = cosmicLib.cosmic.mkRON "optional" (cosmicLib.cosmic.mkRON "enum" "LeftRightMiddle");
+            drag = true;
+            drag_lock = false;
           };
         };
         xkb_config = {
