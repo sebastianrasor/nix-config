@@ -12,6 +12,10 @@
     services.desktopManager.cosmic.enable = true;
     services.displayManager.cosmic-greeter.enable = true;
 
+    # I don't actually mind that gnome-keyring is enabled, but I have to disable it until cosmic-session fixes SSH:
+    # https://github.com/pop-os/cosmic-session/issues/148
+    services.gnome.gnome-keyring.enable = false;
+
     environment.systemPackages = with pkgs; [
       ffmpegthumbnailer
       wl-clipboard
