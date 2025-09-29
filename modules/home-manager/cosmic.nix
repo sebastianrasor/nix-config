@@ -40,13 +40,19 @@
           workspace_layout = cosmicLib.cosmic.mkRON "enum" "Horizontal";
           workspace_mode = cosmicLib.cosmic.mkRON "enum" "OutputBound";
         };
-        input_default.acceleration = cosmicLib.cosmic.mkRON "optional" {
-          profile = cosmicLib.cosmic.mkRON "optional" (cosmicLib.cosmic.mkRON "enum" "Flat");
-          speed = 0.0;
+        input_default = {
+          state = cosmicLib.cosmic.mkRON "enum" "Enabled";
+          acceleration = cosmicLib.cosmic.mkRON "optional" {
+            profile = cosmicLib.cosmic.mkRON "optional" (cosmicLib.cosmic.mkRON "enum" "Flat");
+            speed = 0.0;
+          };
         };
-        input_touchpad.acceleration = cosmicLib.cosmic.mkRON "optional" {
-          profile = cosmicLib.cosmic.mkRON "optional" (cosmicLib.cosmic.mkRON "enum" "Adaptive");
-          speed = 0.0;
+        input_touchpad = {
+          state = cosmicLib.cosmic.mkRON "enum" "Enabled";
+          acceleration = cosmicLib.cosmic.mkRON "optional" {
+            profile = cosmicLib.cosmic.mkRON "optional" (cosmicLib.cosmic.mkRON "enum" "Adaptive");
+            speed = 0.0;
+          };
         };
         xkb_config = {
           layout = "us";
