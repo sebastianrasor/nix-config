@@ -10,6 +10,7 @@
   };
 
   config = lib.mkIf config.sebastianrasor.cosmic.enable {
+    home.file.".config/cosmic-initial-setup-done".text = "";
     wayland.desktopManager.cosmic = {
       enable = true;
       appearance = {
@@ -70,6 +71,7 @@
           border_radius = 0;
           output = cosmicLib.cosmic.mkRON "raw" "All";
           anchor_gap = false;
+          margin = 0;
           expand_to_edges = true;
           #background = cosmicLib.cosmic.mkRON "raw" "ThemeDefault";
           size = cosmicLib.cosmic.mkRON "raw" "XS";
@@ -98,6 +100,12 @@
         {
           action = cosmicLib.cosmic.mkRON "enum" "Disable";
           key = "Super";
+        }
+      ];
+      systemActions = cosmicLib.cosmic.mkRON "map" [
+        {
+          key = cosmicLib.cosmic.mkRON "enum" "Terminal";
+          value = "cosmic-term";
         }
       ];
       wallpapers = [
