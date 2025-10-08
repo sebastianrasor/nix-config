@@ -481,11 +481,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1759711004,
-        "narHash": "sha256-B39NxeKCnK3DJlmJKIts6njcXcVVASLUChDNmRl4dxQ=",
+        "lastModified": 1759853171,
+        "narHash": "sha256-uqbhyXtqMbYIiMqVqUhNdSuh9AEEkiasoK3mIPIVRhk=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "6f4021da5d2bb5ea7cb782ff413ecb7062066820",
+        "rev": "1a09eb84fa9e33748432a5253102d01251f72d6d",
         "type": "github"
       },
       "original": {
@@ -605,11 +605,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1759709172,
-        "narHash": "sha256-2aW1xnaKgeV09jGHijD090F+6dHwE/LLxaVjcfYVsGQ=",
+        "lastModified": 1759881893,
+        "narHash": "sha256-Kfq5VGzYyYvOJh//cz6+UXbwv8CRoSXjl+ynOknyP9Y=",
         "owner": "nix-community",
         "repo": "neovim-nightly-overlay",
-        "rev": "00e7d4ab17e88a4c342555c18ad09faefb6f4901",
+        "rev": "99029c447f51a09743ea8fb5546f58b5254216da",
         "type": "github"
       },
       "original": {
@@ -621,11 +621,11 @@
     "neovim-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1759707179,
-        "narHash": "sha256-OnbvgAUIa0c+/f+S1FueyOfRYXqE9TdVvU8IDZ1t79I=",
+        "lastModified": 1759876140,
+        "narHash": "sha256-oRZeejH4NHzWAuavvfRgKAqYX6z4CsX1unpTKeLIz1M=",
         "owner": "neovim",
         "repo": "neovim",
-        "rev": "c2a196f19be1a7a625e47eaf15a295a0ac6e356d",
+        "rev": "236d831d77d61e8de6bb7191fc0a7fb0743a5021",
         "type": "github"
       },
       "original": {
@@ -747,11 +747,11 @@
     },
     "nixpkgs_5": {
       "locked": {
-        "lastModified": 1759381078,
-        "narHash": "sha256-gTrEEp5gEspIcCOx9PD8kMaF1iEmfBcTbO0Jag2QhQs=",
+        "lastModified": 1759831965,
+        "narHash": "sha256-vgPm2xjOmKdZ0xKA6yLXPJpjOtQPHfaZDRtH+47XEBo=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "7df7ff7d8e00218376575f0acdcc5d66741351ee",
+        "rev": "c9b6fb798541223bbb396d287d16f43520250518",
         "type": "github"
       },
       "original": {
@@ -1071,11 +1071,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1753557032,
-        "narHash": "sha256-NJA+5RcKcgS+xoZ/cJleNma+BLyyG+Lim5QWovasW/U=",
+        "lastModified": 1759750069,
+        "narHash": "sha256-5tadpbZCHBPYTA7OJcNCyvOWAv6rrZAYE8LdVRDRFL8=",
         "owner": "maximbaz",
         "repo": "yubikey-touch-detector",
-        "rev": "d1bd5f9fe6be08b0c74d38a52a6f48ca37e190ba",
+        "rev": "1f2e6c5282cbef9c2727b5b2f52166f24191686d",
         "type": "github"
       },
       "original": {
