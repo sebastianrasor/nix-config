@@ -53,6 +53,7 @@
         kernelParams = ["mem_sleep_default=deep"];
         initrd.systemd.enable = true;
       };
+      networking.networkmanager.wifi.powersave = true;
       services.logind.settings.Login = let
         suspendBehavior = "suspend-then-hibernate";
       in {
