@@ -13,7 +13,12 @@
       enableACME = lib.mkIf config.sebastianrasor.acme.enable true;
       acmeRoot = lib.mkIf config.sebastianrasor.acme.enable null;
       locations."/" = {
-        proxyPass = "https://authentik.${config.sebastianrasor.domain}";
+        proxyPass = "https://$carbon";
+        extraConfig = ''
+          proxy_set_header Host $host;
+          resolver 100.100.100.100;
+          set $carbon "carbon.ts.${config.sebastianrasor.domain}";
+        '';
         proxyWebsockets = true;
       };
     };
