@@ -12,7 +12,6 @@
   sebastianrasor.intel-arc-a380.enable = true;
   sebastianrasor.jellyfin.enable = true;
   sebastianrasor.nginx.enable = true;
-  sebastianrasor.nut.enable = true;
   sebastianrasor.persistence.enable = true;
   sebastianrasor.postgresql.enable = true;
   sebastianrasor.radicale.enable = true;
