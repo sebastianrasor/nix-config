@@ -15,7 +15,6 @@
       locations."/" = {
         proxyPass = "https://$carbon";
         extraConfig = ''
-          proxy_set_header Host $host;
           resolver 100.100.100.100;
           set $carbon "carbon.ts.${config.sebastianrasor.domain}";
         '';
