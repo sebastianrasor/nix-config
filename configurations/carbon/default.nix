@@ -11,6 +11,7 @@
   sebastianrasor.immich.enable = true;
   sebastianrasor.intel-arc-a380.enable = true;
   sebastianrasor.jellyfin.enable = true;
+  sebastianrasor.minecraft-server.enable = true;
   sebastianrasor.nginx.enable = true;
   sebastianrasor.persistence.enable = true;
   sebastianrasor.postgresql.enable = true;

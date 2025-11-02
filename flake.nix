@@ -11,6 +11,7 @@
     home-manager,
     impermanence,
     lanzaboote,
+    nix-minecraft,
     sops-nix,
     ...
   }: let
@@ -91,6 +92,7 @@
           flake-home-manager = home-manager.nixosModules.home-manager;
           flake-impermanence = impermanence.nixosModules.impermanence;
           flake-lanzaboote = lanzaboote.nixosModules.lanzaboote;
+          flake-nix-minecraft = nix-minecraft.nixosModules.minecraft-servers;
           flake-sops-nix = sops-nix.nixosModules.sops;
           home-manager-extra = {
             home-manager = {
@@ -229,6 +231,8 @@
     };
 
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
+
+    nix-minecraft.url = "github:Infinidoge/nix-minecraft";
 
     nvf = {
       url = "github:notashelf/nvf";

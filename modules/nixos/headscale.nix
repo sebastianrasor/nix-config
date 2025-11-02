@@ -101,6 +101,11 @@
               value = "100.64.0.3";
             }
             {
+              name = "mc.rasor.us";
+              type = "A";
+              value = "100.64.0.3";
+            }
+            {
               name = "radicale.rasor.us";
               type = "A";
               value = "100.64.0.3";
