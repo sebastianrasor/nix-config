@@ -15,6 +15,7 @@
   sebastianrasor.pass.enable = true;
   sebastianrasor.persistence.enable = true;
   sebastianrasor.posy-cursors.enable = true;
+  sebastianrasor.prismlauncher.enable = true;
   sebastianrasor.thunderbird.enable = true;
   sebastianrasor.yubikey-touch-detector.enable = true;
 
