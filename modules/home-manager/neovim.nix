@@ -9,7 +9,7 @@
     sebastianrasor.neovim = {
       enable = lib.mkEnableOption "";
       package = lib.mkOption {
-        default = outputs.packages.${pkgs.system}.neovim-sebastianrasor;
+        default = outputs.packages.${pkgs.stdenv.hostPlatform.system}.neovim-sebastianrasor;
         type = lib.types.package;
       };
     };
