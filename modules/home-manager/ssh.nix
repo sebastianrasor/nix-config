@@ -22,11 +22,23 @@
         forwardAgent = true;
       };
     };
-    systemd.user.tmpfiles.rules = [
-      #Type  Path            Mode  User  Group  Age  Argument
-      "d     %t/ssh          0700  -     -      -    -"
-      "d     %t/ssh/control  0700  -     -      -    -"
-    ];
+    systemd.user.tmpfiles.settings."10-ssh".rules = {
+      "%t/ssh" = {
+        d = {
+          mode = "0700";
+        };
+      };
+      "%t/ssh/control" = {
+        d = {
+          mode = "0700";
+        };
+      };
+    };
+    #systemd.user.tmpfiles.rules = [
+    #  #Type  Path            Mode  User  Group  Age  Argument
+    #  "d     %t/ssh          0700  -     -      -    -"
+    #  "d     %t/ssh/control  0700  -     -      -    -"
+    #];
     home.persistence."${config.sebastianrasor.persistence.storagePath}".files = lib.mkIf config.sebastianrasor.persistence.enable (builtins.map (lib.strings.removePrefix config.home.homeDirectory) ["${config.home.homeDirectory}/.ssh/known_hosts"]);
   };
 }

@@ -5,7 +5,7 @@
   inputs,
   ...
 }: let
-  yubikey-touch-detector = inputs.yubikey-touch-detector.packages.${pkgs.system}.yubikey-touch-detector;
+  yubikey-touch-detector = inputs.yubikey-touch-detector.packages.${pkgs.stdenv.hostPlatform.system}.yubikey-touch-detector;
 in {
   options = {
     sebastianrasor.yubikey-touch-detector.enable = lib.mkEnableOption "";

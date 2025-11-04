@@ -10,11 +10,13 @@
   config = lib.mkIf config.sebastianrasor.git.enable {
     programs.git = {
       enable = true;
-      userEmail = "https://www.sebastianrasor.com/contact";
-      userName = "Sebastian Rasor";
-      extraConfig = {
+      settings = {
         init = {
           defaultBranch = "main";
+        };
+        user = {
+          email = "https://www.sebastianrasor.com/contact";
+          name = "Sebastian Rasor";
         };
       };
       signing = {

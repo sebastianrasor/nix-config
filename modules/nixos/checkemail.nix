@@ -18,7 +18,7 @@
       wantedBy = ["multi-user.target"];
       serviceConfig = {
         EnvironmentFile = lib.mkIf config.sebastianrasor.secrets.enable config.sops.secrets.checkemail-env.path;
-        ExecStart = "${lib.getExe' inputs.checkemail.packages.${pkgs.system}.default "checkemail"}";
+        ExecStart = "${lib.getExe' inputs.checkemail.packages.${pkgs.stdenv.hostPlatform.system}.default "checkemail"}";
         Restart = "always";
       };
     };

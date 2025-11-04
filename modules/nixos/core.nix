@@ -18,6 +18,7 @@
         pam.enable = true;
         secrets.enable = true;
         sshd.enable = true;
+        ssh-fix.enable = true;
         sudo-rs.enable = true;
         tailscale.enable = true;
       };
