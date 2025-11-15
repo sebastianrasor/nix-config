@@ -15,12 +15,11 @@
         listen 25565;
         proxy_pass carbon.ts.${config.sebastianrasor.domain}:25565;
       }
+      server {
+        listen 24454 udp;
+        proxy_pass carbon.ts.${config.sebastianrasor.domain}:24454;
+        proxy_responses 0;
+      }
     '';
-    #  server {
-    #    listen 24454 udp;
-    #    proxy_pass carbon.ts.${config.sebastianrasor.domain}:24454;
-    #    proxy_responses 0;
-    #  }
-    #'';
   };
 }
