@@ -3,16 +3,14 @@
   inputs,
   lib,
   ...
-}: let
-  secretspath = builtins.toString inputs.mysecrets;
-in {
+}: {
   options = {
     sebastianrasor.secrets.enable = lib.mkEnableOption "";
   };
 
   config = lib.mkIf config.sebastianrasor.secrets.enable {
     sops = {
-      defaultSopsFile = "${secretspath}/secrets.yaml";
+      defaultSopsFile = (builtins.toString inputs.nix-secrets) + "/secrets.yaml";
       validateSopsFiles = false;
 
       age = {

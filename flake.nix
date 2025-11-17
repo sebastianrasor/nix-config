@@ -225,10 +225,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    mysecrets = {
-      url = "git+ssh://git@github.com/sebastianrasor/nix-secrets.git?ref=main&shallow=1";
-      flake = false;
-    };
+    nix-secrets.url = "git+ssh://git@github.com/sebastianrasor/nix-secrets.git?ref=main&shallow=1";
 
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
 

@@ -482,24 +482,6 @@
         "type": "github"
       }
     },
-    "mysecrets": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1755586797,
-        "narHash": "sha256-7+g3ELMCwhvq+c00hs+o/LcLxMYT6UIB68G0g9aYT+A=",
-        "ref": "main",
-        "rev": "a9fc440703c46140dcefd6358744daaffd7e4230",
-        "shallow": true,
-        "type": "git",
-        "url": "ssh://git@github.com/sebastianrasor/nix-secrets.git"
-      },
-      "original": {
-        "ref": "main",
-        "shallow": true,
-        "type": "git",
-        "url": "ssh://git@github.com/sebastianrasor/nix-secrets.git"
-      }
-    },
     "napalm": {
       "inputs": {
         "flake-utils": [
@@ -580,6 +562,23 @@
         "owner": "Infinidoge",
         "repo": "nix-minecraft",
         "type": "github"
+      }
+    },
+    "nix-secrets": {
+      "locked": {
+        "lastModified": 1763354261,
+        "narHash": "sha256-zzECKzoE5uCmRI9ZowH5SZ4ym/bx31Vi/EEeS3v2poo=",
+        "ref": "main",
+        "rev": "d00d7831dacd7ef14dc4711e447a573e0ed8d27f",
+        "shallow": true,
+        "type": "git",
+        "url": "ssh://git@github.com/sebastianrasor/nix-secrets.git"
+      },
+      "original": {
+        "ref": "main",
+        "shallow": true,
+        "type": "git",
+        "url": "ssh://git@github.com/sebastianrasor/nix-secrets.git"
       }
     },
     "nixos-hardware": {
@@ -819,9 +818,9 @@
         "home-manager": "home-manager",
         "impermanence": "impermanence",
         "lanzaboote": "lanzaboote",
-        "mysecrets": "mysecrets",
         "neovim-nightly-overlay": "neovim-nightly-overlay",
         "nix-minecraft": "nix-minecraft",
+        "nix-secrets": "nix-secrets",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_6",
         "nvf": "nvf",
