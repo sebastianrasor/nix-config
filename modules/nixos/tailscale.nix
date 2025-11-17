@@ -21,6 +21,7 @@
     services.tailscale = {
       enable = true;
       authKeyFile = lib.mkIf config.sebastianrasor.secrets.enable config.sops.secrets.tailscale_key.path;
+      extraDaemonFlags = ["--encrypt-state=false"];
       extraUpFlags = ["--login-server=https://headscale.${config.sebastianrasor.domain}"];
       extraSetFlags = lib.mkIf config.sebastianrasor.tailscale.exitNode ["--advertise-exit-node"];
       useRoutingFeatures = lib.mkIf config.sebastianrasor.tailscale.exitNode "server";
