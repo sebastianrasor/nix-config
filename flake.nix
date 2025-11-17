@@ -16,10 +16,22 @@
   }: let
     inherit (self) outputs;
 
-    forAllSystems = function:
-      nixpkgs.lib.genAttrs [
-        "x86_64-linux"
-      ] (system: function nixpkgs.legacyPackages.${system});
+    system = "x86_64-linux";
+
+    pkgs = import nixpkgs {inherit system;};
+
+    deployPkgs = import nixpkgs {
+      inherit system;
+      overlays = [
+        deploy-rs.overlays.default
+        (self: super: {
+          deploy-rs = {
+            inherit (pkgs) deploy-rs;
+            lib = super.deploy-rs.lib;
+          };
+        })
+      ];
+    };
   in {
     # import all NixOS configurations from ./configurations/*
     nixosConfigurations = with nixpkgs.lib;
@@ -125,35 +137,30 @@
         }
       ];
 
-    formatter = forAllSystems (pkgs: pkgs.alejandra);
+    formatter.${system} = pkgs.alejandra;
 
     # create a simple development shell for working with Nix
-    devShells = forAllSystems (pkgs: {
-      default = pkgs.mkShellNoCC {
-        nativeBuildInputs = with pkgs; [
-          alejandra
-          pkgs.deploy-rs
-          fd
-          nh
-          nixd
-          nixf
-        ];
-        shellHook = ''
-          export NH_FLAKE=".";
-        '';
-      };
-    });
+    devShells.${system}.default = pkgs.mkShellNoCC {
+      nativeBuildInputs = with pkgs; [
+        alejandra
+        pkgs.deploy-rs
+        fd
+        nh
+        nixd
+        nixf
+      ];
+      shellHook = ''
+        export NH_FLAKE=".";
+      '';
+    };
 
-    packages = with nixpkgs.lib;
-      forAllSystems (
-        pkgs:
-          attrsets.mapAttrs' (
-            name: _:
-              attrsets.nameValuePair
-              (removeSuffix ".nix" name)
-              (pkgs.callPackage (./packages + ("/" + name)) {inherit inputs outputs;})
-          ) (builtins.readDir ./packages)
-      );
+    packages.${system} = with nixpkgs.lib;
+      attrsets.mapAttrs' (
+        name: _:
+          attrsets.nameValuePair
+          (removeSuffix ".nix" name)
+          (pkgs.callPackage (./packages + ("/" + name)) {inherit inputs outputs;})
+      ) (builtins.readDir ./packages);
 
     deploy = {
       sshUser = "sebastian";
@@ -165,7 +172,7 @@
           hostname = "carbon";
           profiles.system = {
             user = "root";
-            path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.carbon;
+            path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.carbon;
           };
         };
         nephele = {
@@ -173,7 +180,7 @@
           hostname = "nephele";
           profiles.system = {
             user = "root";
-            path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.nephele;
+            path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.nephele;
           };
         };
       };
