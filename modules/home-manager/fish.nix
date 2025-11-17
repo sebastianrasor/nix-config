@@ -21,7 +21,6 @@
         fish_user_key_bindings = "fish_default_key_bindings -M insert; fish_vi_key_bindings --no-erase insert";
         last_history_item = "echo $history[1]";
       };
-      interactiveShellInit = "fish_config theme choose 'fish default'; set -g fish_color_command blue; set -g fish_color_keyword blue";
       shellAbbrs = {
         pgnc = {
           expansion = "pass generate -nc % 43";
