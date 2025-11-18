@@ -6,6 +6,37 @@
   ...
 }: let
   cfg = config.sebastianrasor.minecraft-server;
+  secretsEnabled = config.sebastianrasor.secrets.enable;
+
+  fabricServer = pkgs.fetchurl {
+    url = "https://meta.fabricmc.net/v2/versions/loader/1.21.10/0.18.0/1.1.0/server/jar";
+    sha256 = "0k0y4c812j37g3d946w42q0xy7wvzahy3xk7r4mkx34ikajx9shm";
+  };
+
+  javaProperties = pkgs.formats.javaProperties {};
+  serverPropertiesFile = javaProperties.generate "server.properties" (javaProperties.type.merge null [{value = cfg.serverProperties;}]);
+  opsFile = pkgs.writeText "ops.json" (builtins.toJSON cfg.ops);
+  whitelistFile = pkgs.writeText "whitelist.json" (builtins.toJSON cfg.whitelist);
+
+  hocon = pkgs.formats.hocon {};
+  luckPermsConfFile = hocon.generate "luckperms.conf" {
+    storage-method = "postgresql";
+    data = {
+      address = "localhost";
+      database = "minecraft_luckperms";
+      username = "minecraft_luckperms";
+      password =
+        if secretsEnabled
+        then config.sops.placeholder."minecraft/luckperms-postgres-password"
+        else null;
+    };
+  };
+
+  stopScript = pkgs.writeShellScript "minecraft-server-stop" ''
+    echo stop > ${config.systemd.sockets.minecraft-server.socketConfig.ListenFIFO}
+
+    tail --pid="$1" -f /dev/null
+  '';
 in {
   options = {
     sebastianrasor.minecraft-server = {
@@ -60,6 +91,10 @@ in {
         default = {};
         type = lib.types.submodule {
           options = {
+            enable-rcon = lib.mkOption {
+              default = true;
+              type = lib.types.bool;
+            };
             difficulty = lib.mkOption {
               default = "hard";
               type = lib.types.str;
@@ -77,14 +112,10 @@ in {
               type = lib.types.port;
             };
             management-server-secret = lib.mkOption {
-              # This isn't really very secret, but with the management server
-              # only listening on localhost this shouldn't be a big deal.
-              # Even taking this into consideration, this does lower overall
-              # security. If, somehow, an attacker gained access to my server
-              # for the sole purpose of giving themselves operator permission
-              # on my Minecraft server, they could use this to do so if they
-              # couldn't gain write access to /run/minecraft-server.stdin
-              default = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+              default =
+                if secretsEnabled
+                then config.sops.placeholder."minecraft/management-server-secret"
+                else null;
               type = lib.types.str;
             };
             management-server-tls-enabled = lib.mkOption {
@@ -94,6 +125,17 @@ in {
             pause-when-empty-seconds = lib.mkOption {
               default = -1;
               type = lib.types.int;
+            };
+            "rcon.password" = lib.mkOption {
+              default =
+                if secretsEnabled
+                then config.sops.placeholder."minecraft/rcon-password"
+                else null;
+              type = lib.types.str;
+            };
+            "rcon.port" = lib.mkOption {
+              default = 25575;
+              type = lib.types.port;
             };
             server-port = lib.mkOption {
               default = 25565;
@@ -127,6 +169,51 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    environment.systemPackages = lib.mkIf secretsEnabled [
+      (pkgs.symlinkJoin {
+        name = "mcrcon";
+        paths = [
+          (pkgs.writeShellScriptBin "mcrcon" ''
+            export MCRCON_PASS="$(cat ${config.sops.secrets."minecraft/rcon-password".path})"
+            exec ${lib.getExe' pkgs.mcrcon "mcrcon"}
+          '')
+          pkgs.mcrcon
+        ];
+      })
+    ];
+
+    sops = lib.mkIf secretsEnabled {
+      secrets = {
+        "minecraft/management-server-secret" = {
+          owner = config.users.users.minecraft.name;
+          group = config.users.users.minecraft.group;
+          mode = "0660";
+        };
+        "minecraft/rcon-password" = {
+          owner = config.users.users.minecraft.name;
+          group = config.users.users.minecraft.group;
+          mode = "0660";
+        };
+        "minecraft/luckperms-postgres-password" = {
+          owner = config.users.users.minecraft.name;
+          group = config.users.users.minecraft.group;
+          mode = "0660";
+        };
+      };
+      templates = {
+        "minecraft-server.properties" = {
+          file = serverPropertiesFile;
+          owner = config.users.users.minecraft.name;
+          group = config.users.users.minecraft.group;
+        };
+        "minecraft-luckperms.conf" = {
+          file = luckPermsConfFile;
+          owner = config.users.users.minecraft.name;
+          group = config.users.users.minecraft.group;
+        };
+      };
+    };
+
     users.users.minecraft = {
       description = "Minecraft game server service user";
       home = cfg.dir;
@@ -166,44 +253,71 @@ in {
       requires = ["minecraft-server.socket"];
       description = "Minecraft game server";
 
-      preStart = let
-        javaProperties = pkgs.formats.javaProperties {};
-        opsFile = pkgs.writeText "ops.json" (builtins.toJSON cfg.ops);
-        whitelistFile = pkgs.writeText "whitelist.json" (builtins.toJSON cfg.whitelist);
-        serverPropertiesFile = javaProperties.generate "server.properties" (javaProperties.type.merge null [{value = cfg.serverProperties;}]);
-      in
+      preStart =
         ''
           echo "eula = true" > eula.txt
 
           cp --dereference --remove-destination ${opsFile} ops.json
           chmod +w ops.json
-          cp --dereference --remove-destination ${serverPropertiesFile} server.properties
+          cp --dereference --remove-destination ${
+            if secretsEnabled
+            then config.sops.templates."minecraft-server.properties".path
+            else serverPropertiesFile
+          } server.properties
           chmod +w server.properties
 
           ln -sf ${whitelistFile} whitelist.json
 
-          rm -f mods/*
+          mkdir -p config/luckperms
+          ln -sf ${
+            if secretsEnabled
+            then config.sops.templates."minecraft-luckperms.conf".path
+            else luckPermsConfFile
+          } config/luckperms/luckperms.conf
+
+          rm -rf mods
+          mkdir mods
         ''
         + (lib.strings.concatMapStringsSep "\n" (x: "ln -sf ${x} mods/") [
           (pkgs.fetchurl {
-            url = "https://cdn.modrinth.com/data/VSNURh3q/versions/eY3dbqLu/c2me-fabric-mc1.21.10-0.3.5.0.0.jar";
-            sha512 = "a3422b75899a9355aa13128651ed2815ff83ff698c4c22a94ea7f275c656aff247440085a47de20353ff54469574c84adc9b428c2e963a80a3c6657fb849825d";
+            url = "https://cdn.modrinth.com/data/sml2FMaA/versions/EHGIPeW9/antixray-fabric-1.4.10%2B1.21.9.jar";
+            sha512 = "7ee0c66cf6214e8cd17f5dee892a5abf7bf0571bc09b9609cfb4e56b38db2978f6cc6fee1ab27102cba929c8404a7a12857d4d442ab26f8228d30ea856fc57e9";
           })
           (pkgs.fetchurl {
-            url = "https://cdn.modrinth.com/data/fALzjamp/versions/kkEljQ4R/Chunky-Fabric-1.4.51.jar";
-            sha512 = "a9bf1e7ce7618acdf202eb93b14bd5f1e50a8fa09c6d2661711a22f8de501c89c7d480c264aa26ef8386c2dab2c88abe467a64e7fb662d3b0865c70e0f72b3e9";
+            url = "https://cdn.modrinth.com/data/EsAfCjCV/versions/8sbiz1lS/appleskin-fabric-mc1.21.9-3.0.7.jar";
+            sha512 = "224a3qhcq3a5z5cd3q8pcxlhzi81c89k51xxdbqifjrscmdc72hwrkiw5s9253vck58bd5y903ccis1amqwvcblryvwsh4il2sd1l3r";
+          })
+          (pkgs.fetchurl {
+            url = "https://cdn.modrinth.com/data/VSNURh3q/versions/eY3dbqLu/c2me-fabric-mc1.21.10-0.3.5.0.0.jar";
+            sha512 = "a3422b75899a9355aa13128651ed2815ff83ff698c4c22a94ea7f275c656aff247440085a47de20353ff54469574c84adc9b428c2e963a80a3c6657fb849825d";
           })
           (pkgs.fetchurl {
             url = "https://cdn.modrinth.com/data/P7dR8mSH/versions/lxeiLRwe/fabric-api-0.136.0%2B1.21.10.jar";
             sha512 = "d6ad5afeb57dc6dbe17a948990fc8441fbbc13a748814a71566404d919384df8bd7abebda52a58a41eb66370a86b8c4f910b64733b135946ecd47e53271310b5";
           })
           (pkgs.fetchurl {
+            url = "https://cdn.modrinth.com/data/Ha28R6CL/versions/LcgnDDmT/fabric-language-kotlin-1.13.7%2Bkotlin.2.2.21.jar";
+            sha512 = "0453a8a4eb8d791b5f0097a6628fae6f13b6dfba1e2bd1f91218769123808c4396a88bcdfc785f1d6bca348f267b32afc2aa9e0d5ec93a7b35bcfe295268c7bc";
+          })
+          (pkgs.fetchurl {
             url = "https://cdn.modrinth.com/data/uXXizFIs/versions/CtMpt7Jr/ferritecore-8.0.0-fabric.jar";
             sha512 = "131b82d1d366f0966435bfcb38c362d604d68ecf30c106d31a6261bfc868ca3a82425bb3faebaa2e5ea17d8eed5c92843810eb2df4790f2f8b1e6c1bdc9b7745";
           })
           (pkgs.fetchurl {
+            url = "https://cdn.modrinth.com/data/nvQzSEkH/versions/qC0qUqL5/Jade-1.21.9-Fabric-20.0.5.jar";
+            sha512 = "1ds04prwkdflrbf0plxqb1k4r9dg4da7mrsz331cnr10yks7d1d2qz6x6ia9jv2dalbj908hbp1g3d1dfvcyrxnbmqwzar6c4zswfa0";
+          })
+          (pkgs.fetchurl {
+            url = "https://cdn.modrinth.com/data/LVN9ygNV/versions/O4Rna8OX/ledger-1.3.16.jar";
+            sha512 = "1ki6dx21za3232l5kfyz8ichgsvawi1zkk05vfjivhjqmp3i939brq7q597pkwabslc8h31ndxm2961sisjdy5wm8873r4213mb7z8y";
+          })
+          (pkgs.fetchurl {
             url = "https://cdn.modrinth.com/data/gvQqBUqZ/versions/oGKQMdyZ/lithium-fabric-0.20.0%2Bmc1.21.10.jar";
             sha512 = "755c0e0fc7f6f38ac4d936cc6023d1dce6ecfd8d6bdc2c544c2a3c3d6d04f0d85db53722a089fa8be72ae32fc127e87f5946793ba6e8b4f2c2962ed30d333ed2";
+          })
+          (pkgs.fetchurl {
+            url = "https://cdn.modrinth.com/data/Vebnzrzj/versions/rGOrpVtr/LuckPerms-Fabric-5.5.17.jar";
+            sha512 = "05ybs3ydwn2550ivdr134dnqy35ahlccnds13ydcnhhc2a2cqb1prpx3ak2p5fn7359g2plsdniv4jpqlwx58paigiy2fyas9hx20xc";
           })
           (pkgs.fetchurl {
             url = "https://cdn.modrinth.com/data/qQyHxfxd/versions/78RjC1gi/NoChatReports-FABRIC-1.21.10-v2.16.0.jar";
@@ -214,12 +328,24 @@ in {
             sha512 = "729515c1e75cf8d9cd704f12b3487ddb9664cf9928e7b85b12289c8fbbc7ed82d0211e1851375cbd5b385820b4fedbc3f617038fff5e30b302047b0937042ae7";
           })
           (pkgs.fetchurl {
+            url = "https://cdn.modrinth.com/data/l6YH9Als/versions/eqIoLvsF/spark-1.10.152-fabric.jar";
+            sha512 = "f99295f91e4bdb8756547f52e8f45b1649d08ad18bc7057bb68beef8137fea1633123d252cfd76a177be394a97fc1278fe85df729d827738d8c61f341604d679";
+          })
+          (pkgs.fetchurl {
+            url = "https://cdn.modrinth.com/data/fdZkP5Bb/versions/QYU98Z30/vanilla-permissions-0.3.1%2B1.21.9-rc1.jar";
+            sha512 = "4d7cadaec12dfb3678d2957d91a3dcf6160c25defe7fb1a0412359f5669b5f6ead825d1dfc2e642ae77ff034b2a61e6c2f12b4b9ddd8389366ba6acf8b005444";
+          })
+          (pkgs.fetchurl {
             url = "https://cdn.modrinth.com/data/9eGKb6K1/versions/BjR2lc4k/voicechat-fabric-1.21.10-2.6.6.jar";
             sha512 = "fc0b838a0906ddafeabf9db3b459d4226a2f06458443ee1dee44d937e5896f0d8d3e7c7bbc2a93ea74b4665f37249e7da719bbabf8449c756d2a49116be61197";
           })
           (pkgs.fetchurl {
-            url = "https://cdn.modrinth.com/data/l6YH9Als/versions/eqIoLvsF/spark-1.10.152-fabric.jar";
-            sha512 = "f99295f91e4bdb8756547f52e8f45b1649d08ad18bc7057bb68beef8137fea1633123d252cfd76a177be394a97fc1278fe85df729d827738d8c61f341604d679";
+            url = "https://cdn.modrinth.com/data/1bokaNcj/versions/hztxb2W2/Xaeros_Minimap_25.2.15_Fabric_1.21.9.jar";
+            sha512 = "380c7c4qz8ry9ir9sbi0qhi2gwg17pw82zwf1g7sbf17ldnnqpwykfa6fjq7864kbb82lmmw014cjs6h1d4jkh9q5frv7bcfpjs790j";
+          })
+          (pkgs.fetchurl {
+            url = "https://cdn.modrinth.com/data/NcUtCpym/versions/81Qc21E2/XaerosWorldMap_1.39.17_Fabric_1.21.9.jar";
+            sha512 = "39d0j50rlprv6mga4p8l3085d35pcsxiygz11sl0kr1qk4s73nypac84idwf9m9njgqgwrpnxxs7047lshsqxdqx6y3nhphd9hps3g6";
           })
         ]);
 
@@ -228,19 +354,8 @@ in {
       };
 
       serviceConfig = {
-        ExecStart = let
-          fabricServer = pkgs.fetchurl {
-            url = "https://meta.fabricmc.net/v2/versions/loader/1.21.10/0.18.0/1.1.0/server/jar";
-            sha256 = "0k0y4c812j37g3d946w42q0xy7wvzahy3xk7r4mkx34ikajx9shm";
-          };
-        in "${lib.getExe' pkgs.temurin-jre-bin "java"} ${cfg.jvmOpts} -jar ${fabricServer} nogui";
-        ExecStop = let
-          stopScript = pkgs.writeShellScript "minecraft-server-stop" ''
-            echo stop > ${config.systemd.sockets.minecraft-server.socketConfig.ListenFIFO}
-
-            tail --pid="$1" -f /dev/null
-          '';
-        in "${stopScript} $MAINPID";
+        ExecStart = "${lib.getExe' pkgs.javaPackages.compiler.temurin-bin.jre-25 "java"} ${cfg.jvmOpts} -jar ${fabricServer} nogui";
+        ExecStop = "${stopScript} $MAINPID";
 
         Restart = "always";
         User = config.users.users.minecraft.name;
