@@ -2,7 +2,8 @@
   config,
   lib,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.authentik-public-proxy.enable = lib.mkEnableOption "";
   };

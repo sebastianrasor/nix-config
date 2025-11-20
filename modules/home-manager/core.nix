@@ -2,7 +2,8 @@
   config,
   lib,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.core.enable = lib.mkEnableOption "";
   };

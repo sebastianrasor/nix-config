@@ -2,7 +2,8 @@
   config,
   lib,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.vim.enable = lib.mkEnableOption "";
   };

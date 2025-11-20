@@ -2,14 +2,17 @@
   config,
   lib,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.acme.enable = lib.mkEnableOption "";
   };
 
   config = lib.mkIf config.sebastianrasor.acme.enable {
-    sops.secrets.acme-env = lib.mkIf config.sebastianrasor.secrets.enable {};
-    environment.persistence."${config.sebastianrasor.persistence.storagePath}".directories = lib.mkIf config.sebastianrasor.persistence.enable ["/var/lib/acme"];
+    sops.secrets.acme-env = lib.mkIf config.sebastianrasor.secrets.enable { };
+    environment.persistence."${config.sebastianrasor.persistence.storagePath}".directories =
+      lib.mkIf config.sebastianrasor.persistence.enable
+        [ "/var/lib/acme" ];
     security.acme = {
       acceptTerms = true;
       defaults = {

@@ -1,193 +1,220 @@
 {
   description = "Sebastian Rasor's Nix configurations";
 
-  outputs = inputs @ {
-    self,
-    nixpkgs,
-    authentik-nix,
-    cosmic-manager,
-    deploy-rs,
-    disko,
-    home-manager,
-    impermanence,
-    lanzaboote,
-    sops-nix,
-    ...
-  }: let
-    inherit (self) outputs;
+  outputs =
+    inputs@{
+      self,
+      nixpkgs,
+      authentik-nix,
+      cosmic-manager,
+      deploy-rs,
+      disko,
+      home-manager,
+      impermanence,
+      lanzaboote,
+      sops-nix,
+      ...
+    }:
+    let
+      inherit (self) outputs;
 
-    system = "x86_64-linux";
+      system = "x86_64-linux";
 
-    pkgs = import nixpkgs {inherit system;};
+      pkgs = import nixpkgs { inherit system; };
 
-    deployPkgs = import nixpkgs {
-      inherit system;
-      overlays = [
-        deploy-rs.overlays.default
-        (self: super: {
-          deploy-rs = {
-            inherit (pkgs) deploy-rs;
-            lib = super.deploy-rs.lib;
-          };
-        })
-      ];
-    };
-  in {
-    # import all NixOS configurations from ./configurations/*
-    nixosConfigurations = with nixpkgs.lib;
-      pipe ./configurations [
-        builtins.readDir
+      deployPkgs = import nixpkgs {
+        inherit system;
+        overlays = [
+          deploy-rs.overlays.default
+          (self: super: {
+            deploy-rs = {
+              inherit (pkgs) deploy-rs;
+              lib = super.deploy-rs.lib;
+            };
+          })
+        ];
+      };
+    in
+    {
+      # import all NixOS configurations from ./configurations/*
+      nixosConfigurations =
+        with nixpkgs.lib;
+        pipe ./configurations [
+          builtins.readDir
 
-        # { hostName = ... } -> { hostName = nixosConfiguration; }
-        (mapAttrs' (hostName: _:
-          nameValuePair hostName (nixosSystem {
-            specialArgs = {inherit inputs outputs;};
-            modules =
-              [./configurations/${hostName}]
-              ++ attrsets.attrValues self.nixosModules;
-          })))
-      ];
+          # { hostName = ... } -> { hostName = nixosConfiguration; }
+          (mapAttrs' (
+            hostName: _:
+            nameValuePair hostName (nixosSystem {
+              specialArgs = { inherit inputs outputs; };
+              modules = [ ./configurations/${hostName} ] ++ attrsets.attrValues self.nixosModules;
+            })
+          ))
+        ];
 
-    # import all Home Manager configurations from ./configurations/*/users/*/home.nix
-    homeConfigurations = with nixpkgs.lib;
-      pipe ./configurations [
-        builtins.readDir
+      # import all Home Manager configurations from ./configurations/*/users/*/home.nix
+      homeConfigurations =
+        with nixpkgs.lib;
+        pipe ./configurations [
+          builtins.readDir
 
-        # { hostName = ... } -> { hostName = ["sebastian", ...]; }
-        (mapAttrs' (hostName: _:
-          nameValuePair hostName (
-            pipe ./configurations/${hostName}/users [
-              builtins.readDir
-              builtins.attrNames
-            ]
-          )))
+          # { hostName = ... } -> { hostName = ["sebastian", ...]; }
+          (mapAttrs' (
+            hostName: _:
+            nameValuePair hostName (
+              pipe ./configurations/${hostName}/users [
+                builtins.readDir
+                builtins.attrNames
+              ]
+            )
+          ))
 
-        # { hostName = ["sebastian", ...]; } -> { "sebastian@hostName" = homeManagerConfiguration; ... }
-        (concatMapAttrs (hostName: usernames:
-          pipe usernames [
-            (map (username: {
-              name = "${username}@${hostName}";
-              value = home-manager.lib.homeManagerConfiguration {
-                pkgs = self.nixosConfigurations.${hostName}.pkgs;
-                extraSpecialArgs = {inherit inputs outputs;};
-                modules =
-                  [./configurations/${hostName}/users/${username}/home.nix]
+          # { hostName = ["sebastian", ...]; } -> { "sebastian@hostName" = homeManagerConfiguration; ... }
+          (concatMapAttrs (
+            hostName: usernames:
+            pipe usernames [
+              (map (username: {
+                name = "${username}@${hostName}";
+                value = home-manager.lib.homeManagerConfiguration {
+                  pkgs = self.nixosConfigurations.${hostName}.pkgs;
+                  extraSpecialArgs = { inherit inputs outputs; };
+                  modules = [
+                    ./configurations/${hostName}/users/${username}/home.nix
+                  ]
                   ++ attrsets.attrValues self.homeModules;
+                };
+              }))
+              builtins.listToAttrs
+            ]
+          ))
+        ];
+
+      nixosModules =
+        with nixpkgs.lib;
+        mergeAttrsList [
+          # ./modules/nixos/*
+          (pipe ./modules/nixos [
+            builtins.readDir
+            (mapAttrs' (
+              nixosModule: _:
+              nameValuePair (removeSuffix ".nix" nixosModule) (import ./modules/nixos/${nixosModule})
+            ))
+          ])
+
+          # ./modules/* (excluding nixos & home-manager)
+          (pipe ./modules [
+            builtins.readDir
+            (filterAttrs (
+              name: _:
+              !(builtins.elem name [
+                "nixos"
+                "home-manager"
+              ])
+            ))
+            (mapAttrs' (module: _: nameValuePair (removeSuffix ".nix" module) (import ./modules/${module})))
+          ])
+
+          # flake modules
+          {
+            flake-authentik-nix = authentik-nix.nixosModules.default;
+            flake-disko = disko.nixosModules.disko;
+            flake-home-manager = home-manager.nixosModules.home-manager;
+            flake-impermanence = impermanence.nixosModules.impermanence;
+            flake-lanzaboote = lanzaboote.nixosModules.lanzaboote;
+            flake-sops-nix = sops-nix.nixosModules.sops;
+            home-manager-extra = {
+              home-manager = {
+                extraSpecialArgs = { inherit inputs outputs; };
+                sharedModules = attrsets.attrValues self.homeModules;
               };
-            }))
-            builtins.listToAttrs
-          ]))
-      ]; #
+            };
+          }
+        ];
 
-    nixosModules = with nixpkgs.lib;
-      mergeAttrsList [
-        # ./modules/nixos/*
-        (pipe ./modules/nixos [
-          builtins.readDir
-          (mapAttrs' (nixosModule: _:
-              nameValuePair (removeSuffix ".nix" nixosModule) (import ./modules/nixos/${nixosModule})))
-        ])
+      homeModules =
+        with nixpkgs.lib;
+        mergeAttrsList [
+          # ./modules/home-manager/*
+          (pipe ./modules/home-manager [
+            builtins.readDir
+            (mapAttrs' (
+              homeModule: _:
+              nameValuePair (removeSuffix ".nix" homeModule) (import ./modules/home-manager/${homeModule})
+            ))
+          ])
 
-        # ./modules/* (excluding nixos & home-manager)
-        (pipe ./modules [
-          builtins.readDir
-          (filterAttrs (name: _: !(builtins.elem name ["nixos" "home-manager"])))
-          (mapAttrs' (module: _:
-              nameValuePair (removeSuffix ".nix" module) (import ./modules/${module})))
-        ])
+          # ./modules/* (excluding nixos & home-manager)
+          (pipe ./modules [
+            builtins.readDir
+            (filterAttrs (
+              name: _:
+              !(builtins.elem name [
+                "nixos"
+                "home-manager"
+              ])
+            ))
+            (mapAttrs' (module: _: nameValuePair (removeSuffix ".nix" module) (import ./modules/${module})))
+          ])
 
-        # flake modules
-        {
-          flake-authentik-nix = authentik-nix.nixosModules.default;
-          flake-disko = disko.nixosModules.disko;
-          flake-home-manager = home-manager.nixosModules.home-manager;
-          flake-impermanence = impermanence.nixosModules.impermanence;
-          flake-lanzaboote = lanzaboote.nixosModules.lanzaboote;
-          flake-sops-nix = sops-nix.nixosModules.sops;
-          home-manager-extra = {
-            home-manager = {
-              extraSpecialArgs = {inherit inputs outputs;};
-              sharedModules = attrsets.attrValues self.homeModules;
+          # flake modules
+          {
+            flake-cosmic-manager = cosmic-manager.homeManagerModules.cosmic-manager;
+            flake-impermanence = impermanence.homeManagerModules.impermanence;
+          }
+        ];
+
+      formatter.${system} = pkgs.nixfmt-tree;
+
+      # create a simple development shell for working with Nix
+      devShells.${system}.default = pkgs.mkShellNoCC {
+        nativeBuildInputs = with pkgs; [
+          pkgs.deploy-rs
+          fd
+          nh
+          nixd
+          nixf
+          nixfmt-tree
+        ];
+        shellHook = ''
+          export NH_FLAKE=".";
+        '';
+      };
+
+      packages.${system} =
+        with nixpkgs.lib;
+        attrsets.mapAttrs' (
+          name: _:
+          attrsets.nameValuePair (removeSuffix ".nix" name) (
+            pkgs.callPackage (./packages + ("/" + name)) { inherit inputs outputs; }
+          )
+        ) (builtins.readDir ./packages);
+
+      deploy = {
+        sshUser = "sebastian";
+        user = "root";
+        fastConnection = true;
+        nodes = {
+          carbon = {
+            remoteBuild = true;
+            hostname = "carbon";
+            profiles.system = {
+              user = "root";
+              path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.carbon;
             };
           };
-        }
-      ];
-
-    homeModules = with nixpkgs.lib;
-      mergeAttrsList [
-        # ./modules/home-manager/*
-        (pipe ./modules/home-manager [
-          builtins.readDir
-          (mapAttrs' (homeModule: _:
-              nameValuePair (removeSuffix ".nix" homeModule) (import ./modules/home-manager/${homeModule})))
-        ])
-
-        # ./modules/* (excluding nixos & home-manager)
-        (pipe ./modules [
-          builtins.readDir
-          (filterAttrs (name: _: !(builtins.elem name ["nixos" "home-manager"])))
-          (mapAttrs' (module: _:
-              nameValuePair (removeSuffix ".nix" module) (import ./modules/${module})))
-        ])
-
-        # flake modules
-        {
-          flake-cosmic-manager = cosmic-manager.homeManagerModules.cosmic-manager;
-          flake-impermanence = impermanence.homeManagerModules.impermanence;
-        }
-      ];
-
-    formatter.${system} = pkgs.alejandra;
-
-    # create a simple development shell for working with Nix
-    devShells.${system}.default = pkgs.mkShellNoCC {
-      nativeBuildInputs = with pkgs; [
-        alejandra
-        pkgs.deploy-rs
-        fd
-        nh
-        nixd
-        nixf
-      ];
-      shellHook = ''
-        export NH_FLAKE=".";
-      '';
-    };
-
-    packages.${system} = with nixpkgs.lib;
-      attrsets.mapAttrs' (
-        name: _:
-          attrsets.nameValuePair
-          (removeSuffix ".nix" name)
-          (pkgs.callPackage (./packages + ("/" + name)) {inherit inputs outputs;})
-      ) (builtins.readDir ./packages);
-
-    deploy = {
-      sshUser = "sebastian";
-      user = "root";
-      fastConnection = true;
-      nodes = {
-        carbon = {
-          remoteBuild = true;
-          hostname = "carbon";
-          profiles.system = {
-            user = "root";
-            path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.carbon;
-          };
-        };
-        nephele = {
-          remoteBuild = false;
-          hostname = "nephele";
-          profiles.system = {
-            user = "root";
-            path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.nephele;
+          nephele = {
+            remoteBuild = false;
+            hostname = "nephele";
+            profiles.system = {
+              user = "root";
+              path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.nephele;
+            };
           };
         };
       };
-    };
 
-    checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
-  };
+      checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
+    };
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";

@@ -1,4 +1,5 @@
-{...}: {
+{ ... }:
+{
   disko.devices = {
     nodev."/" = {
       fsType = "tmpfs";
@@ -21,7 +22,7 @@
                 type = "filesystem";
                 format = "vfat";
                 mountpoint = "/boot";
-                mountOptions = ["umask=0077"];
+                mountOptions = [ "umask=0077" ];
               };
             };
             cryptlvm = {
@@ -51,7 +52,7 @@
               type = "filesystem";
               format = "ext4";
               mountpoint = "/nix";
-              mountOptions = ["defaults"];
+              mountOptions = [ "defaults" ];
             };
           };
           swap = {

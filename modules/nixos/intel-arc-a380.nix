@@ -3,13 +3,14 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.intel-arc-a380.enable = lib.mkEnableOption "";
   };
 
   config = lib.mkIf config.sebastianrasor.intel-arc-a380.enable {
-    boot.kernelParams = ["i915.enable_guc=3"];
+    boot.kernelParams = [ "i915.enable_guc=3" ];
 
     environment.sessionVariables = {
       LIBVA_DRIVER_NAME = "iHD";

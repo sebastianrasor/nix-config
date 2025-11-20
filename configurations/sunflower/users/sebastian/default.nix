@@ -2,7 +2,8 @@
   config,
   lib,
   ...
-}: {
+}:
+{
   users.users.sebastian = {
     isNormalUser = true;
     home = "/home/sebastian";
@@ -16,5 +17,7 @@
     ];
   };
 
-  home-manager.users.sebastian = lib.mkIf config.sebastianrasor.home-manager.enable (import ./home.nix);
+  home-manager.users.sebastian = lib.mkIf config.sebastianrasor.home-manager.enable (
+    import ./home.nix
+  );
 }

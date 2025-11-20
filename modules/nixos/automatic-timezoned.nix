@@ -2,7 +2,8 @@
   config,
   lib,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.automatic-timezoned.enable = lib.mkEnableOption "";
   };

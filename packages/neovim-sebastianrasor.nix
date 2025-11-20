@@ -2,7 +2,8 @@
   inputs,
   pkgs,
   ...
-}: let
+}:
+let
   configuration = {
     config.vim = {
       package = inputs.neovim-nightly-overlay.packages.${pkgs.stdenv.system}.neovim;
@@ -21,12 +22,12 @@
         nix = {
           enable = true;
           format = {
-            type = "alejandra";
+            type = "nixfmt";
             enable = true;
           };
           lsp = {
             enable = true;
-            package = ["nixd"];
+            package = [ "nixd" ];
             server = "nixd";
             options = {
               nixos.expr = ''let lib = import <nixpkgs/lib>; in (lib.attrsets.mergeAttrsList(builtins.attrValues((builtins.getFlake ("git+file://" + toString ./.)).nixosConfigurations))).options'';
@@ -39,7 +40,7 @@
           crates.enable = true;
           lsp = {
             enable = true;
-            package = ["rust-analyzer"];
+            package = [ "rust-analyzer" ];
             opts = ''
               ['rust-analyzer'] = {
                 check = {
@@ -138,8 +139,7 @@
     };
   };
 in
-  (inputs.nvf.lib.neovimConfiguration {
-    inherit pkgs;
-    modules = [configuration];
-  })
-  .neovim
+(inputs.nvf.lib.neovimConfiguration {
+  inherit pkgs;
+  modules = [ configuration ];
+}).neovim

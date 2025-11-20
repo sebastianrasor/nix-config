@@ -2,7 +2,8 @@
   config,
   lib,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.mpv.enable = lib.mkEnableOption "";
   };

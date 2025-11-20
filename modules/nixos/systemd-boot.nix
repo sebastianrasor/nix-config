@@ -2,7 +2,8 @@
   config,
   lib,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.systemd-boot.enable = lib.mkEnableOption "";
   };

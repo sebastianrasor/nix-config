@@ -1,4 +1,5 @@
-{...}: {
+{ ... }:
+{
   networking.hostName = "carbon";
 
   sebastianrasor.core.enable = true;
@@ -24,11 +25,10 @@
     host = "unas-pro.internal";
   };
 
-  imports =
-    [
-      ./hardware-configuration.nix
-    ]
-    ++ map (moduleFile: ./users + ("/" + moduleFile)) (builtins.attrNames (builtins.readDir ./users));
+  imports = [
+    ./hardware-configuration.nix
+  ]
+  ++ map (moduleFile: ./users + ("/" + moduleFile)) (builtins.attrNames (builtins.readDir ./users));
 
   system.stateVersion = "25.05";
 }

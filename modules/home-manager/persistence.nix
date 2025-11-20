@@ -2,7 +2,8 @@
   config,
   lib,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.persistence.enable = lib.mkEnableOption "";
     sebastianrasor.persistence.storagePath = lib.mkOption {

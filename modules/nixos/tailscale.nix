@@ -2,7 +2,8 @@
   config,
   lib,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.tailscale = {
       enable = lib.mkEnableOption "";
@@ -15,15 +16,17 @@
   };
 
   config = lib.mkIf config.sebastianrasor.tailscale.enable {
-    sops.secrets.tailscale_key = lib.mkIf config.sebastianrasor.secrets.enable {};
-    networking.firewall.trustedInterfaces = [config.services.tailscale.interfaceName];
-    environment.persistence."${config.sebastianrasor.persistence.storagePath}".files = lib.mkIf config.sebastianrasor.persistence.enable ["/var/lib/tailscale/tailscaled.state"];
+    sops.secrets.tailscale_key = lib.mkIf config.sebastianrasor.secrets.enable { };
+    networking.firewall.trustedInterfaces = [ config.services.tailscale.interfaceName ];
+    environment.persistence."${config.sebastianrasor.persistence.storagePath}".files =
+      lib.mkIf config.sebastianrasor.persistence.enable
+        [ "/var/lib/tailscale/tailscaled.state" ];
     services.tailscale = {
       enable = true;
       authKeyFile = lib.mkIf config.sebastianrasor.secrets.enable config.sops.secrets.tailscale_key.path;
-      extraDaemonFlags = ["--encrypt-state=false"];
-      extraUpFlags = ["--login-server=https://headscale.${config.sebastianrasor.domain}"];
-      extraSetFlags = lib.mkIf config.sebastianrasor.tailscale.exitNode ["--advertise-exit-node"];
+      extraDaemonFlags = [ "--encrypt-state=false" ];
+      extraUpFlags = [ "--login-server=https://headscale.${config.sebastianrasor.domain}" ];
+      extraSetFlags = lib.mkIf config.sebastianrasor.tailscale.exitNode [ "--advertise-exit-node" ];
       useRoutingFeatures = lib.mkIf config.sebastianrasor.tailscale.exitNode "server";
     };
   };

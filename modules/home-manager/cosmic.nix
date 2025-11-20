@@ -4,7 +4,8 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.cosmic.enable = lib.mkEnableOption "";
   };
@@ -98,21 +99,23 @@
           plugins_center = cosmicLib.cosmic.mkRON "optional" [
             "com.system76.CosmicAppletTime"
           ];
-          plugins_wings = cosmicLib.cosmic.mkRON "optional" (cosmicLib.cosmic.mkRON "tuple" [
-            [
-              "com.system76.CosmicAppletWorkspaces"
+          plugins_wings = cosmicLib.cosmic.mkRON "optional" (
+            cosmicLib.cosmic.mkRON "tuple" [
+              [
+                "com.system76.CosmicAppletWorkspaces"
+              ]
+              [
+                "com.system76.CosmicAppletStatusArea"
+                "com.system76.CosmicAppletTiling"
+                "com.system76.CosmicAppletAudio"
+                "com.system76.CosmicAppletNetwork"
+                "com.system76.CosmicAppletBattery"
+                "com.system76.CosmicAppletNotifications"
+                "com.system76.CosmicAppletBluetooth"
+                "com.system76.CosmicAppletPower"
+              ]
             ]
-            [
-              "com.system76.CosmicAppletStatusArea"
-              "com.system76.CosmicAppletTiling"
-              "com.system76.CosmicAppletAudio"
-              "com.system76.CosmicAppletNetwork"
-              "com.system76.CosmicAppletBattery"
-              "com.system76.CosmicAppletNotifications"
-              "com.system76.CosmicAppletBluetooth"
-              "com.system76.CosmicAppletPower"
-            ]
-          ]);
+          );
         }
       ];
       shortcuts = [

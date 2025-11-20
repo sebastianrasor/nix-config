@@ -2,7 +2,8 @@
   config,
   lib,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.ripgrep.enable = lib.mkEnableOption "";
   };

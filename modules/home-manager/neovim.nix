@@ -4,7 +4,8 @@
   pkgs,
   outputs,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.neovim = {
       enable = lib.mkEnableOption "";
@@ -16,7 +17,7 @@
   };
 
   config = lib.mkIf config.sebastianrasor.neovim.enable {
-    home.packages = [config.sebastianrasor.neovim.package];
+    home.packages = [ config.sebastianrasor.neovim.package ];
     home.sessionVariables.EDITOR = "nvim";
     programs.fish.shellAbbrs = lib.mkIf config.sebastianrasor.fish.enable {
       vim = "nvim";

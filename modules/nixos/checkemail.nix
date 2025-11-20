@@ -4,21 +4,24 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.checkemail.enable = lib.mkEnableOption "";
   };
 
   config = lib.mkIf config.sebastianrasor.checkemail.enable {
-    sops.secrets.checkemail-env = lib.mkIf config.sebastianrasor.secrets.enable {};
+    sops.secrets.checkemail-env = lib.mkIf config.sebastianrasor.secrets.enable { };
     systemd.services.checkemail = {
       description = "checkemail";
-      after = ["network-online.target"];
-      wants = ["network-online.target"];
-      wantedBy = ["multi-user.target"];
+      after = [ "network-online.target" ];
+      wants = [ "network-online.target" ];
+      wantedBy = [ "multi-user.target" ];
       serviceConfig = {
         EnvironmentFile = lib.mkIf config.sebastianrasor.secrets.enable config.sops.secrets.checkemail-env.path;
-        ExecStart = "${lib.getExe' inputs.checkemail.packages.${pkgs.stdenv.hostPlatform.system}.default "checkemail"}";
+        ExecStart = "${lib.getExe' inputs.checkemail.packages.${pkgs.stdenv.hostPlatform.system}.default
+          "checkemail"
+        }";
         Restart = "always";
       };
     };

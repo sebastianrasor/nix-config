@@ -4,7 +4,8 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   minecraftWorldBackupScript = pkgs.writeShellApplication {
     name = "minecraft-world-backup";
     runtimeInputs = with pkgs; [
@@ -122,7 +123,8 @@
       echo "Backup completed"
     '';
   };
-in {
+in
+{
   options = {
     sebastianrasor.minecraft-world-backup = {
       enable = lib.mkEnableOption "Minecraft game server world backup";
@@ -149,7 +151,7 @@ in {
       };
       timers.minecraft-world-backup = {
         description = "Minecraft game server world backup timer";
-        wantedBy = ["timers.target"];
+        wantedBy = [ "timers.target" ];
         timerConfig = {
           OnCalendar = "*:0/15";
         };

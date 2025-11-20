@@ -3,7 +3,8 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.auto-rotate.enable = lib.mkEnableOption "";
   };
@@ -27,7 +28,7 @@
           '';
         };
         Install = {
-          WantedBy = ["default.target"];
+          WantedBy = [ "default.target" ];
         };
       };
     };
