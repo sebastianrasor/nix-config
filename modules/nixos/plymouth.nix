@@ -2,7 +2,8 @@
   config,
   lib,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.plymouth.enable = lib.mkEnableOption "";
   };

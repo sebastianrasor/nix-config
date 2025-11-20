@@ -2,7 +2,8 @@
   config,
   lib,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.dvorak.enable = lib.mkEnableOption "";
   };

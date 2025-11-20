@@ -2,7 +2,8 @@
   config,
   lib,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.browserpass.enable = lib.mkEnableOption "";
   };

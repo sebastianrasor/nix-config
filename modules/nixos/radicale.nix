@@ -2,7 +2,8 @@
   config,
   lib,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.radicale.enable = lib.mkEnableOption "";
   };
@@ -13,19 +14,23 @@
       group = config.users.users.radicale.group;
     };
 
-    users.users.radicale.extraGroups = lib.mkIf config.sebastianrasor.unas.enable ["unifi-drive-nfs"];
-    systemd.services.radicale.unitConfig.RequiresMountsFor = lib.mkIf config.sebastianrasor.unas.enable ["/media/radicale"];
-    systemd.services.radicale.bindsTo = lib.mkIf config.sebastianrasor.unas.enable ["media-radicale.mount"];
+    users.users.radicale.extraGroups = lib.mkIf config.sebastianrasor.unas.enable [ "unifi-drive-nfs" ];
+    systemd.services.radicale.unitConfig.RequiresMountsFor =
+      lib.mkIf config.sebastianrasor.unas.enable
+        [ "/media/radicale" ];
+    systemd.services.radicale.bindsTo = lib.mkIf config.sebastianrasor.unas.enable [
+      "media-radicale.mount"
+    ];
     fileSystems."/media/radicale" = lib.mkIf config.sebastianrasor.unas.enable {
       device = "${config.sebastianrasor.unas.host}:${config.sebastianrasor.unas.basePath}/Radicale";
       fsType = "nfs";
-      options = ["nolock"];
+      options = [ "nolock" ];
     };
 
     services.radicale = {
       enable = true;
       settings = {
-        server.hosts = ["127.0.0.1:5232"];
+        server.hosts = [ "127.0.0.1:5232" ];
         auth = {
           type = "htpasswd";
           htpasswd_filename = lib.mkIf config.sebastianrasor.secrets.enable config.sops.secrets.radicale_users.path;

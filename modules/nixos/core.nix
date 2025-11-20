@@ -3,7 +3,8 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   options.sebastianrasor.core = {
     enable = lib.mkEnableOption "";
     laptop = lib.mkEnableOption "";
@@ -23,9 +24,9 @@
       };
 
       networking = {
-        timeServers = ["pool.ntp.org"];
+        timeServers = [ "pool.ntp.org" ];
         domain = config.sebastianrasor.domain;
-        search = [config.sebastianrasor.domain];
+        search = [ config.sebastianrasor.domain ];
       };
       time.timeZone = lib.mkIf (!config.sebastianrasor.automatic-timezoned.enable) "America/Chicago";
       users.mutableUsers = false;
@@ -50,17 +51,19 @@
         yubikey.enable = true;
       };
       boot = {
-        kernelParams = ["mem_sleep_default=deep"];
+        kernelParams = [ "mem_sleep_default=deep" ];
         initrd.systemd.enable = true;
       };
       networking.networkmanager.wifi.powersave = true;
-      services.logind.settings.Login = let
-        suspendBehavior = "suspend-then-hibernate";
-      in {
-        HandleLidSwitch = suspendBehavior;
-        HandlePowerKey = suspendBehavior;
-        HandlePowerKeyLongPress = "poweroff";
-      };
+      services.logind.settings.Login =
+        let
+          suspendBehavior = "suspend-then-hibernate";
+        in
+        {
+          HandleLidSwitch = suspendBehavior;
+          HandlePowerKey = suspendBehavior;
+          HandlePowerKeyLongPress = "poweroff";
+        };
       systemd.sleep.extraConfig = ''
         HibernateDelaySec=30m
         SuspendState=mem

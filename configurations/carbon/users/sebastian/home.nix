@@ -1,4 +1,5 @@
-{...}: {
+{ ... }:
+{
   sebastianrasor.core.enable = true;
 
   home = {

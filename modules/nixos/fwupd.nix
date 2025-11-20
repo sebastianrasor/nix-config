@@ -2,7 +2,8 @@
   config,
   lib,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.fwupd.enable = lib.mkEnableOption "";
   };

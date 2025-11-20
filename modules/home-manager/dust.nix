@@ -3,7 +3,8 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.dust.enable = lib.mkEnableOption "";
   };

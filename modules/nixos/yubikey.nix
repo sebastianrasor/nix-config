@@ -3,7 +3,8 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.yubikey.enable = lib.mkEnableOption "";
   };
@@ -19,9 +20,9 @@
     services = {
       pcscd = {
         enable = true;
-        plugins = [pkgs.yubikey-personalization];
+        plugins = [ pkgs.yubikey-personalization ];
       };
-      udev.packages = [pkgs.yubikey-personalization];
+      udev.packages = [ pkgs.yubikey-personalization ];
     };
 
     hardware.gpgSmartcards.enable = true;

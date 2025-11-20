@@ -2,7 +2,8 @@
   config,
   lib,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.immich-public-proxy.enable = lib.mkEnableOption "";
   };

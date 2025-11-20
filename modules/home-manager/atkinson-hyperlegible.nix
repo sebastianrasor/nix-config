@@ -3,7 +3,8 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.atkinson-hyperlegible.enable = lib.mkEnableOption "";
   };

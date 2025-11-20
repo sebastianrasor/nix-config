@@ -3,7 +3,8 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.headscale.enable = lib.mkEnableOption "";
   };
@@ -12,11 +13,13 @@
     sops.secrets.headscale-openid-client-secret = lib.mkIf config.sebastianrasor.secrets.enable {
       owner = config.systemd.services.headscale.serviceConfig.User;
     };
-    networking.firewall.allowedUDPPorts = [3478];
-    environment.persistence."${config.sebastianrasor.persistence.storagePath}".directories = lib.mkIf config.sebastianrasor.persistence.enable ["/var/lib/headscale"];
+    networking.firewall.allowedUDPPorts = [ 3478 ];
+    environment.persistence."${config.sebastianrasor.persistence.storagePath}".directories =
+      lib.mkIf config.sebastianrasor.persistence.enable
+        [ "/var/lib/headscale" ];
     systemd.services.headscale-oidc-restart = {
-      after = ["headscale.service"];
-      wantedBy = ["headscale.service"];
+      after = [ "headscale.service" ];
+      wantedBy = [ "headscale.service" ];
       serviceConfig.ExecStart = pkgs.writeShellScript "headscale-oidc-restart" ''
         STATUS_CODE="$(${lib.getExe pkgs.curl} -o /dev/null --silent --write-out "%{http_code}" "${config.services.headscale.settings.server_url}/oidc/callback")"
 
@@ -42,7 +45,7 @@
           client_id = "t5tdQYkn2zReh1DCHhTwMNiZnSIq5nvLMjsT13nQ";
           client_secret_path = config.sops.secrets.headscale-openid-client-secret.path;
         };
-        derp.urls = [];
+        derp.urls = [ ];
         derp.server = {
           enabled = true;
           verify_clients = true;
@@ -122,7 +125,8 @@
       locations."/" = {
         proxyPass = "http://127.0.0.1:${toString config.services.headscale.port}";
         proxyWebsockets = true;
-        extraConfig = "proxy_ssl_server_name on;" + "proxy_pass_header Authorization;" + "proxy_buffering off;";
+        extraConfig =
+          "proxy_ssl_server_name on;" + "proxy_pass_header Authorization;" + "proxy_buffering off;";
       };
     };
   };

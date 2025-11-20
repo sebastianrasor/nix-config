@@ -2,7 +2,8 @@
   config,
   lib,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.actual.enable = lib.mkEnableOption "";
   };
@@ -12,13 +13,13 @@
       enable = true;
       settings = {
         loginMethod = "openid";
-        allowedLoginMethods = ["openid"];
+        allowedLoginMethods = [ "openid" ];
       };
     };
 
     systemd.services.actual = lib.mkIf config.sebastianrasor.unas.enable {
-      bindsTo = ["var-lib-actual.mount"];
-      unitConfig.RequiresMountsFor = ["/var/lib/actual"];
+      bindsTo = [ "var-lib-actual.mount" ];
+      unitConfig.RequiresMountsFor = [ "/var/lib/actual" ];
       serviceConfig = {
         DynamicUser = lib.mkForce false;
         User = lib.mkForce "unifi-drive-nfs";

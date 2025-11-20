@@ -3,7 +3,8 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.posy-cursors.enable = lib.mkEnableOption "";
   };

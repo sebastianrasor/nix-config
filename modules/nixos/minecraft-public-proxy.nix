@@ -2,14 +2,15 @@
   config,
   lib,
   ...
-}: {
+}:
+{
   options = {
     sebastianrasor.minecraft-public-proxy.enable = lib.mkEnableOption "";
   };
 
   config = lib.mkIf config.sebastianrasor.minecraft-public-proxy.enable {
-    networking.firewall.allowedTCPPorts = [25565];
-    networking.firewall.allowedUDPPorts = [24454];
+    networking.firewall.allowedTCPPorts = [ 25565 ];
+    networking.firewall.allowedUDPPorts = [ 24454 ];
     services.nginx.streamConfig = ''
       server {
         listen 25565;
