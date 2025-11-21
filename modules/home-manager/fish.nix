@@ -54,12 +54,6 @@
         exec ${lib.getExe' config.programs.fish.package "fish"} $LOGIN_OPTION
       fi
     '';
-    home.persistence."${config.sebastianrasor.persistence.storagePath}".files =
-      lib.mkIf config.sebastianrasor.persistence.enable
-        (
-          builtins.map (lib.strings.removePrefix config.home.homeDirectory) [
-            "${config.xdg.dataHome}/fish/fish_history"
-          ]
-        );
+    sebastianrasor.persistence.files = [ "${config.xdg.dataHome}/fish/fish_history" ];
   };
 }

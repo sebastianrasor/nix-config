@@ -18,9 +18,6 @@
   config = lib.mkIf config.sebastianrasor.tailscale.enable {
     sops.secrets.tailscale_key = lib.mkIf config.sebastianrasor.secrets.enable { };
     networking.firewall.trustedInterfaces = [ config.services.tailscale.interfaceName ];
-    environment.persistence."${config.sebastianrasor.persistence.storagePath}".files =
-      lib.mkIf config.sebastianrasor.persistence.enable
-        [ "/var/lib/tailscale/tailscaled.state" ];
     services.tailscale = {
       enable = true;
       authKeyFile = lib.mkIf config.sebastianrasor.secrets.enable config.sops.secrets.tailscale_key.path;
@@ -29,5 +26,6 @@
       extraSetFlags = lib.mkIf config.sebastianrasor.tailscale.exitNode [ "--advertise-exit-node" ];
       useRoutingFeatures = lib.mkIf config.sebastianrasor.tailscale.exitNode "server";
     };
+    sebastianrasor.persistence.files = [ "/var/lib/tailscale/tailscaled.state" ];
   };
 }

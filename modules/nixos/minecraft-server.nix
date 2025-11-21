@@ -226,17 +226,6 @@ in
     };
     users.groups.minecraft = { };
 
-    environment.persistence."${config.sebastianrasor.persistence.storagePath}".directories =
-      lib.mkIf config.sebastianrasor.persistence.enable
-        [
-          {
-            directory = cfg.dir + "/world";
-            user = config.users.users.minecraft.name;
-            group = config.users.groups.minecraft.name;
-            mode = "0700";
-          }
-        ];
-
     systemd.sockets.minecraft-server = {
       bindsTo = [ "minecraft-server.service" ];
       socketConfig = {
@@ -394,5 +383,14 @@ in
         UMask = "0077";
       };
     };
+
+    sebastianrasor.persistence.directories = [
+      {
+        directory = cfg.dir + "/world";
+        user = config.users.users.minecraft.name;
+        group = config.users.groups.minecraft.name;
+        mode = "0700";
+      }
+    ];
   };
 }
