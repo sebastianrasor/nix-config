@@ -40,12 +40,6 @@
       "d     %t/ssh          0700  -     -      -    -"
       "d     %t/ssh/control  0700  -     -      -    -"
     ];
-    home.persistence."${config.sebastianrasor.persistence.storagePath}".files =
-      lib.mkIf config.sebastianrasor.persistence.enable
-        (
-          builtins.map (lib.strings.removePrefix config.home.homeDirectory) [
-            "${config.home.homeDirectory}/.ssh/known_hosts"
-          ]
-        );
+    sebastianrasor.persistence.files = [ "${config.home.homeDirectory}/.ssh/known_hosts" ];
   };
 }

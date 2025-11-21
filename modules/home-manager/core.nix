@@ -33,6 +33,10 @@
     sebastianrasor.yazi.enable = true;
     sebastianrasor.zoxide.enable = true;
 
+    sebastianrasor.persistence.directories = [
+      config.xdg.stateHome
+    ];
+
     programs.home-manager.enable = true;
   };
 }

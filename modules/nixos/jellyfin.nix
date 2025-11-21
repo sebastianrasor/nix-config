@@ -35,11 +35,6 @@
       fsType = "nfs";
     };
 
-    # Need to transcode on disk since tmpfs root usually doesn't have the space for transcodes
-    environment.persistence."${config.sebastianrasor.persistence.storagePath}".directories =
-      lib.mkIf config.sebastianrasor.persistence.enable
-        [ "/var/cache/jellyfin/transcodes" ];
-
     fileSystems."/media/movies" = lib.mkIf config.sebastianrasor.unas.enable {
       device = "${config.sebastianrasor.unas.host}:${config.sebastianrasor.unas.basePath}/Movies";
       fsType = "nfs";
@@ -69,5 +64,8 @@
           "proxy_ssl_server_name on;" + "proxy_pass_header Authorization;" + "proxy_buffering off;";
       };
     };
+
+    # Need to transcode on disk since tmpfs root usually doesn't have the space for transcodes
+    sebastianrasor.persistence.directories = [ "/var/cache/jellyfin/transcodes" ];
   };
 }
