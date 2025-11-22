@@ -7,9 +7,9 @@
   sebastianrasor.authentik-public-proxy.enable = true;
   sebastianrasor.acme.enable = true;
   sebastianrasor.checkemail.enable = true;
+  sebastianrasor.gate.enable = true;
   sebastianrasor.headscale.enable = true;
   sebastianrasor.immich-public-proxy.enable = true;
-  sebastianrasor.minecraft-public-proxy.enable = true;
   sebastianrasor.nginx.enable = true;
   sebastianrasor.persistence.enable = true;
   sebastianrasor.systemd-boot.enable = true;

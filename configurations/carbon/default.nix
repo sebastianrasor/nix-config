@@ -8,6 +8,7 @@
   sebastianrasor.actual.enable = true;
   sebastianrasor.authentik.enable = true;
   sebastianrasor.frigate.enable = false;
+  sebastianrasor.gate.enable = true;
   sebastianrasor.homebox.enable = true;
   sebastianrasor.immich.enable = true;
   sebastianrasor.intel-arc-a380.enable = true;

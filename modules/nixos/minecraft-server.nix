@@ -31,6 +31,16 @@ let
       password =
         if secretsEnabled then config.sops.placeholder."minecraft/luckperms-postgres-password" else null;
     };
+
+  };
+
+  toml = pkgs.formats.toml { };
+  fabricProxyLiteTomlFile = toml.generate "FabricProxy-Lite.toml" {
+    hackOnlineMode = false;
+    hackEarlySend = true;
+    hackMessageChain = false;
+    disconnectMessage = "This server requires you connect at the following server IP mc.${config.sebastianrasor.domain}";
+    secret = if secretsEnabled then config.sops.placeholder."minecraft/velocity-secret" else null;
   };
 
   stopScript = pkgs.writeShellScript "minecraft-server-stop" ''
@@ -126,6 +136,10 @@ in
               default = false;
               type = lib.types.bool;
             };
+            online-mode = lib.mkOption {
+              default = false;
+              type = lib.types.bool;
+            };
             pause-when-empty-seconds = lib.mkOption {
               default = -1;
               type = lib.types.int;
@@ -139,7 +153,7 @@ in
               type = lib.types.port;
             };
             server-port = lib.mkOption {
-              default = 25565;
+              default = 25555;
               type = lib.types.port;
             };
             simulation-distance = lib.mkOption {
@@ -190,7 +204,6 @@ in
         "minecraft/management-server-secret" = {
           owner = config.users.users.minecraft.name;
           group = config.users.users.minecraft.group;
-          mode = "0660";
         };
         "minecraft/rcon-password" = {
           owner = config.users.users.minecraft.name;
@@ -200,17 +213,25 @@ in
         "minecraft/luckperms-postgres-password" = {
           owner = config.users.users.minecraft.name;
           group = config.users.users.minecraft.group;
-          mode = "0660";
+        };
+        "minecraft/velocity-secret" = {
+          owner = config.users.users.minecraft.name;
+          group = config.users.users.minecraft.group;
         };
       };
       templates = {
-        "minecraft-server.properties" = {
+        "minecraft/server.properties" = {
           file = serverPropertiesFile;
           owner = config.users.users.minecraft.name;
           group = config.users.users.minecraft.group;
         };
-        "minecraft-luckperms.conf" = {
+        "minecraft/luckperms.conf" = {
           file = luckPermsConfFile;
+          owner = config.users.users.minecraft.name;
+          group = config.users.users.minecraft.group;
+        };
+        "minecraft/FabricProxy-Lite.toml" = {
+          file = fabricProxyLiteTomlFile;
           owner = config.users.users.minecraft.name;
           group = config.users.users.minecraft.group;
         };
@@ -254,7 +275,7 @@ in
         chmod +w ops.json
         cp --dereference --remove-destination ${
           if secretsEnabled then
-            config.sops.templates."minecraft-server.properties".path
+            config.sops.templates."minecraft/server.properties".path
           else
             serverPropertiesFile
         } server.properties
@@ -264,8 +285,15 @@ in
 
         mkdir -p config/luckperms
         ln -sf ${
-          if secretsEnabled then config.sops.templates."minecraft-luckperms.conf".path else luckPermsConfFile
+          if secretsEnabled then config.sops.templates."minecraft/luckperms.conf".path else luckPermsConfFile
         } config/luckperms/luckperms.conf
+
+        ln -sf ${
+          if secretsEnabled then
+            config.sops.templates."minecraft/FabricProxy-Lite.toml".path
+          else
+            fabricProxyLiteTomlFile
+        } config/FabricProxy-Lite.toml
 
         rm -rf mods
         mkdir mods
@@ -290,6 +318,10 @@ in
         (pkgs.fetchurl {
           url = "https://cdn.modrinth.com/data/Ha28R6CL/versions/LcgnDDmT/fabric-language-kotlin-1.13.7%2Bkotlin.2.2.21.jar";
           sha512 = "0453a8a4eb8d791b5f0097a6628fae6f13b6dfba1e2bd1f91218769123808c4396a88bcdfc785f1d6bca348f267b32afc2aa9e0d5ec93a7b35bcfe295268c7bc";
+        })
+        (pkgs.fetchurl {
+          url = "https://cdn.modrinth.com/data/8dI2tmqs/versions/nR8AIdvx/FabricProxy-Lite-2.11.0.jar";
+          sha512 = "c2e1d9279f6f19a561f934b846540b28a033586b4b419b9c1aa27ac43ffc8fad2ce60e212a15406e5fa3907ff5ecbe5af7a5edb183a9ee6737a41e464aec1375";
         })
         (pkgs.fetchurl {
           url = "https://cdn.modrinth.com/data/uXXizFIs/versions/CtMpt7Jr/ferritecore-8.0.0-fabric.jar";
@@ -326,18 +358,6 @@ in
         (pkgs.fetchurl {
           url = "https://cdn.modrinth.com/data/fdZkP5Bb/versions/QYU98Z30/vanilla-permissions-0.3.1%2B1.21.9-rc1.jar";
           sha512 = "4d7cadaec12dfb3678d2957d91a3dcf6160c25defe7fb1a0412359f5669b5f6ead825d1dfc2e642ae77ff034b2a61e6c2f12b4b9ddd8389366ba6acf8b005444";
-        })
-        (pkgs.fetchurl {
-          url = "https://cdn.modrinth.com/data/9eGKb6K1/versions/BjR2lc4k/voicechat-fabric-1.21.10-2.6.6.jar";
-          sha512 = "fc0b838a0906ddafeabf9db3b459d4226a2f06458443ee1dee44d937e5896f0d8d3e7c7bbc2a93ea74b4665f37249e7da719bbabf8449c756d2a49116be61197";
-        })
-        (pkgs.fetchurl {
-          url = "https://cdn.modrinth.com/data/1bokaNcj/versions/hztxb2W2/Xaeros_Minimap_25.2.15_Fabric_1.21.9.jar";
-          sha512 = "380c7c4qz8ry9ir9sbi0qhi2gwg17pw82zwf1g7sbf17ldnnqpwykfa6fjq7864kbb82lmmw014cjs6h1d4jkh9q5frv7bcfpjs790j";
-        })
-        (pkgs.fetchurl {
-          url = "https://cdn.modrinth.com/data/NcUtCpym/versions/81Qc21E2/XaerosWorldMap_1.39.17_Fabric_1.21.9.jar";
-          sha512 = "39d0j50rlprv6mga4p8l3085d35pcsxiygz11sl0kr1qk4s73nypac84idwf9m9njgqgwrpnxxs7047lshsqxdqx6y3nhphd9hps3g6";
         })
       ]);
 
