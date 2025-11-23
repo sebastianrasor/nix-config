@@ -6,6 +6,17 @@
   ...
 }:
 let
+  cfg = config.sebastianrasor.minecraft-world-backup;
+  serverProperties = config.sebastianrasor.minecraft-server.serverProperties;
+
+  secretsEnabled = config.sebastianrasor.secrets.enable;
+  managementServerTarget = "ws://${serverProperties.management-server-host}:${toString serverProperties.management-server-port}";
+  managementServerSecret =
+    if secretsEnabled then
+      config.sops.placeholder."minecraft/management-server-secret"
+    else
+      serverProperties.management-server-secret;
+
   minecraftWorldBackupScript = pkgs.writeShellApplication {
     name = "minecraft-world-backup";
     runtimeInputs = with pkgs; [
@@ -16,7 +27,7 @@ let
     ];
     text = ''
       function websocat_msmp() {
-        websocat -H 'Authorization: Bearer ${config.sebastianrasor.minecraft-server.serverProperties.management-server-secret}' --jsonrpc ws://${config.sebastianrasor.minecraft-server.serverProperties.management-server-host}:${toString config.sebastianrasor.minecraft-server.serverProperties.management-server-port} 2>/dev/null
+        websocat -H "Authorization: Bearer ${managementServerSecret}" --jsonrpc "${managementServerTarget}" 2>/dev/null
       }
 
       function msmp_method() {
@@ -128,10 +139,14 @@ in
   options = {
     sebastianrasor.minecraft-world-backup = {
       enable = lib.mkEnableOption "Minecraft game server world backup";
+      dir = lib.mkOption {
+        type = lib.types.path;
+        default = config.sebastianrasor.minecraft-server.dir;
+      };
     };
   };
 
-  config = lib.mkIf config.sebastianrasor.minecraft-world-backup.enable {
+  config = lib.mkIf cfg.enable {
     fileSystems."/media/minecraft-server-backups" = lib.mkIf config.sebastianrasor.unas.enable {
       device = "${config.sebastianrasor.unas.host}:${config.sebastianrasor.unas.basePath}/Minecraft_Server_Backups";
       fsType = "nfs";
@@ -140,13 +155,23 @@ in
     systemd = {
       services.minecraft-world-backup = {
         description = "Minecraft game server world backup service";
-        unitConfig = {
-          RequiresMountsFor = "/media/minecraft-server-backups";
-        };
+
+        unitConfig.RequiresMountsFor = lib.mkIf config.sebastianrasor.unas.enable "/media/minecraft-server-backups";
+
+        # https://github.com/Mic92/sops-nix/pull/826#issuecomment-3567478960
+        preStart = lib.mkIf secretsEnabled ''
+          cp --dereference --remove-destination ${
+            config.sops.templates."minecraft/world-backup".path
+          } ./world-backup
+          chmod +x ./world-backup
+        '';
+
         serviceConfig = {
+          inherit (config.systemd.services.minecraft-server.serviceConfig) User;
           Type = "oneshot";
-          User = config.systemd.services.minecraft-server.serviceConfig.User;
-          ExecStart = lib.getExe minecraftWorldBackupScript;
+          WorkingDirectory = cfg.dir;
+          ExecStart =
+            if secretsEnabled then "${cfg.dir}/world-backup" else lib.getExe minecraftWorldBackupScript;
         };
       };
       timers.minecraft-world-backup = {
@@ -154,6 +179,23 @@ in
         wantedBy = [ "timers.target" ];
         timerConfig = {
           OnCalendar = "*:0/15";
+        };
+      };
+    };
+
+    sops = lib.mkIf secretsEnabled {
+      secrets = {
+        "minecraft/management-server-secret" = {
+          owner = config.users.users.minecraft.name;
+          group = config.users.users.minecraft.group;
+        };
+      };
+      templates = {
+        "minecraft/world-backup" = {
+          file = lib.getExe minecraftWorldBackupScript;
+          owner = config.users.users.minecraft.name;
+          group = config.users.users.minecraft.group;
+          mode = "0500";
         };
       };
     };
