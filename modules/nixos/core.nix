@@ -34,6 +34,7 @@
         };
       };
 
+      boot.kernelPackages = pkgs.linuxPackages_latest;
       networking = {
         timeServers = [ "pool.ntp.org" ];
         domain = config.sebastianrasor.domain;
