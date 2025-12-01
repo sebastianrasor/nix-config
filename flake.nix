@@ -6,8 +6,8 @@
       self,
       nixpkgs,
       authentik-nix,
+      comin,
       cosmic-manager,
-      deploy-rs,
       disko,
       home-manager,
       impermanence,
@@ -21,19 +21,6 @@
       system = "x86_64-linux";
 
       pkgs = import nixpkgs { inherit system; };
-
-      deployPkgs = import nixpkgs {
-        inherit system;
-        overlays = [
-          deploy-rs.overlays.default
-          (self: super: {
-            deploy-rs = {
-              inherit (pkgs) deploy-rs;
-              lib = super.deploy-rs.lib;
-            };
-          })
-        ];
-      };
     in
     {
       # import all NixOS configurations from ./configurations/*
@@ -117,6 +104,7 @@
           # flake modules
           {
             flake-authentik-nix = authentik-nix.nixosModules.default;
+            flake-comin = comin.nixosModules.comin;
             flake-disko = disko.nixosModules.disko;
             flake-home-manager = home-manager.nixosModules.home-manager;
             flake-impermanence = impermanence.nixosModules.impermanence;
@@ -168,7 +156,6 @@
       # create a simple development shell for working with Nix
       devShells.${system}.default = pkgs.mkShellNoCC {
         nativeBuildInputs = with pkgs; [
-          pkgs.deploy-rs
           fd
           nh
           nixd
@@ -188,32 +175,6 @@
             pkgs.callPackage (./packages + ("/" + name)) { inherit inputs outputs; }
           )
         ) (builtins.readDir ./packages);
-
-      deploy = {
-        sshUser = "sebastian";
-        user = "root";
-        fastConnection = true;
-        nodes = {
-          carbon = {
-            remoteBuild = true;
-            hostname = "carbon";
-            profiles.system = {
-              user = "root";
-              path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.carbon;
-            };
-          };
-          nephele = {
-            remoteBuild = false;
-            hostname = "nephele";
-            profiles.system = {
-              user = "root";
-              path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.nephele;
-            };
-          };
-        };
-      };
-
-      checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
     };
 
   inputs = {
@@ -230,6 +191,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    comin = {
+      url = "github:nlewo/comin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     cosmic-manager = {
       url = "github:HeitorAugustoLN/cosmic-manager";
       inputs = {
@@ -237,8 +203,6 @@
         home-manager.follows = "home-manager";
       };
     };
-
-    deploy-rs.url = "github:serokell/deploy-rs";
 
     disko = {
       url = "github:nix-community/disko";
