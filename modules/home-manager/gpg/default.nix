@@ -24,18 +24,6 @@
           trust = "ultimate";
           source = ./0xE346A2A083D90F7D.asc;
         }
-        {
-          trust = "ultimate";
-          source = ./0x4A14A9E2AC256044.asc;
-        }
-        {
-          trust = "ultimate";
-          source = ./0xF10C0FFD5B533126.asc;
-        }
-        {
-          trust = "ultimate";
-          source = ./0xF20DE4BA5B36D4E9.asc;
-        }
       ];
     };
 
