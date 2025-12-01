@@ -17,6 +17,7 @@ in
   config = lib.mkIf cfg.enable {
     services.comin = {
       enable = true;
+      gpgPublicKeyPaths = [ "${config.sebastianrasor.gpg-key}" ];
       remotes = [
         {
           name = "origin";
@@ -28,8 +29,6 @@ in
     sops.secrets.comin = lib.mkIf secretsEnabled {
       format = "binary";
       sopsFile = (builtins.toString inputs.nix-secrets) + "/comin";
-      #owner = config.users.users.comin.name;
-      #group = config.users.users.comin.group;
     };
     systemd.services.comin.environment.GIT_SSH_COMMAND =
       lib.mkIf secretsEnabled "${pkgs.openssh}/bin/ssh -i ${config.sops.secrets.comin.path} -o IdentitiesOnly=yes -o ForwardAgent=no";

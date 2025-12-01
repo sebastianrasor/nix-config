@@ -22,7 +22,7 @@
       publicKeys = [
         {
           trust = "ultimate";
-          source = ./0xE346A2A083D90F7D.asc;
+          source = config.sebastianrasor.gpg-key;
         }
       ];
     };
