@@ -1,0 +1,57 @@
+# https://github.com/cachix/cachix-ci-agents/blob/main/.github/workflows/deploy.yml
+
+name: Build & Deploy
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      deploy_spec_basename: ${{ steps.agent.outputs.basename }}
+    steps:
+    - name: Free Disk Space (Ubuntu)
+      uses: jlumbroso/free-disk-space@v1.3.1
+    - uses: actions/checkout@v5
+    - uses: webfactory/ssh-agent@v0.9.0
+      with:
+          ssh-private-key: '${{ secrets.SSH_PRIVATE_KEY }}'
+    - uses: cachix/install-nix-action@v31
+    - uses: cachix/cachix-action@v15
+      with:
+        name: sebastianrasor
+        authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+    - name: Version info
+      run: nix --version
+    - name: Build
+      id: agent
+      run: |
+        out_path="$(nix build -L --print-out-paths --accept-flake-config)"
+        echo "out_path=$out_path" >> $GITHUB_OUTPUT
+        echo "basename=$(basename "$out_path")" >> $GITHUB_OUTPUT
+        sleep 3
+    - name: Upload Deploy specification
+      uses: actions/upload-artifact@v5.0.0
+      with:
+        name: deploy_spec
+        path: ${{ steps.agent.outputs.out_path }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+    - uses: cachix/install-nix-action@v31
+    - uses: cachix/cachix-action@v15
+      with:
+        name: sebastianrasor
+        authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+    - name: Download Deploy specification
+      uses: actions/download-artifact@v6.0.0
+      with:
+        name: deploy_spec
+    - name: Deploy
+      env:
+        CACHIX_ACTIVATE_TOKEN: ${{ secrets.CACHIX_ACTIVATE_TOKEN }}
+      run: cachix deploy activate ${{ needs.build.outputs.deploy_spec_basename }}
