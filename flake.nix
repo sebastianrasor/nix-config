@@ -12,6 +12,7 @@
       home-manager,
       impermanence,
       lanzaboote,
+      nvf,
       sops-nix,
       ...
     }:
@@ -148,6 +149,7 @@
           {
             flake-cosmic-manager = cosmic-manager.homeManagerModules.cosmic-manager;
             flake-impermanence = impermanence.homeManagerModules.impermanence;
+            flake-nvf = nvf.homeManagerModules.default;
           }
         ];
 
@@ -166,15 +168,6 @@
           export NH_FLAKE=".";
         '';
       };
-
-      packages.${system} =
-        with nixpkgs.lib;
-        attrsets.mapAttrs' (
-          name: _:
-          attrsets.nameValuePair (removeSuffix ".nix" name) (
-            pkgs.callPackage (./packages + ("/" + name)) { inherit inputs outputs; }
-          )
-        ) (builtins.readDir ./packages);
     };
 
   inputs = {

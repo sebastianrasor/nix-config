@@ -13,7 +13,7 @@
   sebastianrasor.gpg.enable = true;
   sebastianrasor.monaspace.enable = true;
   sebastianrasor.mpv.enable = true;
-  sebastianrasor.neovim.enable = true;
+  sebastianrasor.nvf.enable = true;
   sebastianrasor.pass.enable = true;
   sebastianrasor.persistence.enable = true;
   sebastianrasor.posy-cursors.enable = true;
