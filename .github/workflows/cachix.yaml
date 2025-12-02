@@ -54,4 +54,4 @@ jobs:
     - name: Deploy
       env:
         CACHIX_ACTIVATE_TOKEN: ${{ secrets.CACHIX_ACTIVATE_TOKEN }}
-      run: cachix deploy activate ${{ needs.build.outputs.deploy_spec_basename }}
+      run: cachix deploy activate ${{ needs.build.outputs.deploy_spec_basename }} --async
