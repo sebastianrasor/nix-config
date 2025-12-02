@@ -27,7 +27,10 @@ jobs:
     - name: Build
       id: agent
       run: |
+        echo "::group::nix build"
         out_path="$(nix build -L --print-out-paths --accept-flake-config)"
+        echo "::endgroup::"
+        echo "Built $out_path"
         echo "out_path=$out_path" >> $GITHUB_OUTPUT
         echo "basename=$(basename "$out_path")" >> $GITHUB_OUTPUT
         sleep 3
