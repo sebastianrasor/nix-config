@@ -13,7 +13,7 @@
   config = lib.mkMerge [
     (lib.mkIf config.sebastianrasor.core.enable {
       sebastianrasor = {
-        comin.enable = true;
+        cachix-agent.enable = true;
         home-manager.enable = true;
         i18n.enable = true;
         nix.enable = true;

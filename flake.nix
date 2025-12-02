@@ -6,7 +6,7 @@
       self,
       nixpkgs,
       authentik-nix,
-      comin,
+      cachix-deploy-flake,
       cosmic-manager,
       disko,
       home-manager,
@@ -39,6 +39,17 @@
             })
           ))
         ];
+
+      # expose all NixOS configurations as Cachix Deploy agents
+      packages.${system}.default =
+        let
+          cachix-deploy-lib = cachix-deploy-flake.lib pkgs;
+        in
+        cachix-deploy-lib.spec {
+          agents = builtins.mapAttrs (
+            _: nixosSystem: nixosSystem.config.system.build.toplevel
+          ) self.nixosConfigurations;
+        };
 
       # import all Home Manager configurations from ./configurations/*/users/*/home.nix
       homeConfigurations =
@@ -105,7 +116,6 @@
           # flake modules
           {
             flake-authentik-nix = authentik-nix.nixosModules.default;
-            flake-comin = comin.nixosModules.comin;
             flake-disko = disko.nixosModules.disko;
             flake-home-manager = home-manager.nixosModules.home-manager;
             flake-impermanence = impermanence.nixosModules.impermanence;
@@ -179,13 +189,10 @@
       url = "github:nix-community/authentik-nix";
     };
 
+    cachix-deploy-flake.url = "github:cachix/cachix-deploy-flake";
+
     checkemail = {
       url = "github:sebastianrasor/checkemail";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    comin = {
-      url = "github:nlewo/comin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
