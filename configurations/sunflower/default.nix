@@ -5,6 +5,9 @@
   sebastianrasor.core.enable = true;
   sebastianrasor.core.laptop = true;
 
+  sebastianrasor.deep-sleep.enable = true;
+  sebastianrasor.suspend-fix.enable = true;
+
   imports = [
     inputs.nixos-hardware.nixosModules.framework-12-13th-gen-intel
     ./hardware-configuration.nix
