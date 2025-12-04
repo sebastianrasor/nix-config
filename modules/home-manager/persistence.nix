@@ -11,7 +11,7 @@ in
     enable = lib.mkEnableOption "";
     storagePath = lib.mkOption {
       type = lib.types.str;
-      default = "/nix/persist${config.home.homeDirectory}";
+      default = "/nix/persist";
     };
     directories = lib.mkOption {
       type = lib.types.listOf (lib.types.coercedTo lib.types.str (d: { directory = d; }) lib.types.attrs);
@@ -35,7 +35,7 @@ in
   config = lib.mkIf cfg.enable {
     home.persistence."${cfg.storagePath}" = {
       inherit (cfg) directories files;
-      allowOther = true;
+      hideMounts = true;
     };
   };
 }

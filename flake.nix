@@ -225,7 +225,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    impermanence.url = "github:nix-community/impermanence";
+    impermanence.url = "github:nix-community/impermanence?ref=pull/272/head";
 
     lanzaboote = {
       url = "github:nix-community/lanzaboote/v0.4.3";
