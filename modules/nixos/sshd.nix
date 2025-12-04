@@ -41,19 +41,6 @@
       };
     };
 
-    specialisation.expose-ssh.configuration = {
-      services.openssh = {
-        openFirewall = lib.mkForce true;
-        settings.PermitRootLogin = lib.mkForce "prohibit-password";
-      };
-      users.users.root = {
-        shell = lib.mkForce pkgs.bash;
-        openssh.authorizedKeys.keys = [
-          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG71B1X8QTaPtldyB7UvST8bzYBLSyXHkKJG2BbT0tkG"
-        ];
-      };
-    };
-
     sebastianrasor.persistence.files = [
       "/etc/ssh/ssh_host_rsa_key"
       "/etc/ssh/ssh_host_rsa_key.pub"
