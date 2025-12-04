@@ -61,6 +61,7 @@
         networkmanager.enable = true;
         persistence.enable = true;
         pipewire.enable = true;
+        plymouth.enable = true;
         yubikey.enable = true;
       };
       boot.initrd.systemd.enable = true;
