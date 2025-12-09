@@ -9,6 +9,7 @@
     home = "/home/sebastian";
     description = "Sebastian Rasor";
     extraGroups = [
+      "dialout"
       "networkmanager"
       "wheel"
     ];
