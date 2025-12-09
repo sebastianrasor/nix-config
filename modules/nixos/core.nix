@@ -18,6 +18,7 @@
         i18n.enable = true;
         nix.enable = true;
         pam.enable = true;
+        resolved.enable = true;
         secrets.enable = true;
         sshd.enable = true;
         sudo-rs.enable = true;
