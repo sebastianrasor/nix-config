@@ -55,6 +55,7 @@
           magic_dns = true;
           # https://github.com/juanfont/headscale/blob/3123d5286bbeb1d4958cec3c92d5a0969b201a9b/hscontrol/types/config_test.go#L414
           base_domain = "ts.${config.sebastianrasor.domain}";
+          search_domains = [ config.sebastianrasor.domain ];
           override_local_dns = false;
           # eventually I'd like to set these to CNAMES to the magic dns records
           # for the respective nodes on the tailnet. that's not currently
