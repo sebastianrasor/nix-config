@@ -40,7 +40,6 @@
       networking = {
         timeServers = [ "pool.ntp.org" ];
         domain = config.sebastianrasor.domain;
-        search = [ config.sebastianrasor.domain ];
       };
       time.timeZone = lib.mkIf (!config.sebastianrasor.automatic-timezoned.enable) "America/Chicago";
       users.mutableUsers = false;
