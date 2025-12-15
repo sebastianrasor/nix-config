@@ -32,7 +32,7 @@
       fsType = "nfs";
     };
 
-    services.nginx.virtualHosts."actual.${config.sebastianrasor.domain}" = {
+    services.nginx.virtualHosts."actual.ts.${config.sebastianrasor.domain}" = {
       forceSSL = lib.mkIf config.sebastianrasor.acme.enable true;
       enableACME = lib.mkIf config.sebastianrasor.acme.enable true;
       acmeRoot = lib.mkIf config.sebastianrasor.acme.enable null;

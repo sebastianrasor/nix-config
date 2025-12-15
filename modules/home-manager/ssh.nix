@@ -14,7 +14,7 @@
       enableDefaultConfig = false;
       extraOptionOverrides = {
         CanonicalizeHostname = "yes";
-        CanonicalDomains = "ts.rasor.us";
+        CanonicalDomains = "ts.${config.sebastianrasor.domain}";
       };
       matchBlocks."*.ts.${config.sebastianrasor.domain}" = {
         controlMaster = "auto";

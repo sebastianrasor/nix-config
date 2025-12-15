@@ -55,59 +55,53 @@
           magic_dns = true;
           # https://github.com/juanfont/headscale/blob/3123d5286bbeb1d4958cec3c92d5a0969b201a9b/hscontrol/types/config_test.go#L414
           base_domain = "ts.${config.sebastianrasor.domain}";
-          search_domains = [ config.sebastianrasor.domain ];
           override_local_dns = false;
           # eventually I'd like to set these to CNAMES to the magic dns records
           # for the respective nodes on the tailnet. that's not currently
           # possible, though. :(
           extra_records = [
             {
-              name = "actual.rasor.us";
+              name = "actual.ts.${config.sebastianrasor.domain}";
               type = "A";
               value = "100.64.0.3";
             }
             {
-              name = "authentik.rasor.us";
+              name = "authentik.ts.${config.sebastianrasor.domain}";
               type = "A";
               value = "100.64.0.3";
             }
             {
-              name = "frigate.rasor.us";
+              name = "frigate.ts.${config.sebastianrasor.domain}";
               type = "A";
               value = "100.64.0.3";
             }
             {
-              name = "headscale.rasor.us";
-              type = "A";
-              value = "137.220.49.126";
-            }
-            {
-              name = "homeassistant.rasor.us";
+              name = "homeassistant.ts.${config.sebastianrasor.domain}";
               type = "A";
               value = "100.64.0.6";
             }
             {
-              name = "homebox.rasor.us";
+              name = "homebox.ts.${config.sebastianrasor.domain}";
               type = "A";
               value = "100.64.0.3";
             }
             {
-              name = "immich.rasor.us";
+              name = "immich.ts.${config.sebastianrasor.domain}";
               type = "A";
               value = "100.64.0.3";
             }
             {
-              name = "jellyfin.rasor.us";
+              name = "jellyfin.ts.${config.sebastianrasor.domain}";
               type = "A";
               value = "100.64.0.3";
             }
             {
-              name = "mc.rasor.us";
+              name = "mc.ts.${config.sebastianrasor.domain}";
               type = "A";
               value = "100.64.0.3";
             }
             {
-              name = "radicale.rasor.us";
+              name = "radicale.ts.${config.sebastianrasor.domain}";
               type = "A";
               value = "100.64.0.3";
             }
