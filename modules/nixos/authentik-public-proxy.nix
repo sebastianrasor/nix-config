@@ -17,7 +17,7 @@
         proxyPass = "https://$carbon";
         extraConfig = ''
           resolver 100.100.100.100;
-          set $carbon "carbon.ts.${config.sebastianrasor.domain}";
+          set $carbon "authentik.ts.${config.sebastianrasor.domain}";
         '';
         proxyWebsockets = true;
       };

@@ -16,14 +16,16 @@
       nginx = {
         enable = true;
         enableACME = true;
-        host = "authentik.${config.sebastianrasor.domain}";
+        host = "authentik.ts.${config.sebastianrasor.domain}";
       };
       settings = {
         disable_startup_analytics = true;
         avatars = "initials";
       };
     };
-    services.nginx.virtualHosts.${config.services.authentik.nginx.host}.acmeRoot =
-      lib.mkIf config.sebastianrasor.acme.enable null;
+    services.nginx.virtualHosts.${config.services.authentik.nginx.host} = {
+      acmeRoot = lib.mkIf config.sebastianrasor.acme.enable null;
+      serverAliases = [ "authentik.${config.sebastianrasor.domain}" ];
+    };
   };
 }

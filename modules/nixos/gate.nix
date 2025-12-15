@@ -58,15 +58,6 @@ in
             managed = true;
             floodgateKeyPath = config.sops.secrets."minecraft/floodgate.pem".path;
           };
-          #lite = {
-          #  enabled = true;
-          #  routes = [
-          #    {
-          #      host = "nephele.rasor.us";
-          #      backend = "carbon.ts.${config.sebastianrasor.domain}:25565";
-          #    }
-          #  ];
-          #};
         };
       };
     };
