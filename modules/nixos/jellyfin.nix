@@ -9,31 +9,16 @@
   };
 
   config = lib.mkIf config.sebastianrasor.jellyfin.enable {
-    services.jellyfin = {
-      enable = true;
-      logDir = lib.mkIf config.sebastianrasor.unas.enable "/media/jellyfin/log";
-      dataDir = lib.mkIf config.sebastianrasor.unas.enable "/media/jellyfin";
-      configDir = lib.mkIf config.sebastianrasor.unas.enable "/media/jellyfin/config";
-    };
+    services.jellyfin.enable = true;
 
     users.users.jellyfin.extraGroups = lib.mkIf config.sebastianrasor.unas.enable [ "unifi-drive-nfs" ];
 
-    systemd.services.jellyfin.bindsTo = lib.mkIf config.sebastianrasor.unas.enable [
-      "media-jellyfin.mount"
-      "media-movies.mount"
-      "media-shows.mount"
-    ];
-    systemd.services.jellyfin.unitConfig.RequiresMountsFor =
+    fileSystems."${config.services.jellyfin.dataDir}/data/backups" =
       lib.mkIf config.sebastianrasor.unas.enable
-        [
-          "/media/jellyfin"
-          "/media/movies"
-          "/media/shows"
-        ];
-    fileSystems."/media/jellyfin" = lib.mkIf config.sebastianrasor.unas.enable {
-      device = "${config.sebastianrasor.unas.host}:${config.sebastianrasor.unas.basePath}/Jellyfin";
-      fsType = "nfs";
-    };
+        {
+          device = "${config.sebastianrasor.unas.host}:${config.sebastianrasor.unas.basePath}/Jellyfin";
+          fsType = "nfs";
+        };
 
     fileSystems."/media/movies" = lib.mkIf config.sebastianrasor.unas.enable {
       device = "${config.sebastianrasor.unas.host}:${config.sebastianrasor.unas.basePath}/Movies";
@@ -66,6 +51,9 @@
     };
 
     # Need to transcode on disk since tmpfs root usually doesn't have the space for transcodes
-    sebastianrasor.persistence.directories = [ "/var/cache/jellyfin/transcodes" ];
+    sebastianrasor.persistence.directories = [
+      config.services.jellyfin.dataDir
+      "${config.services.jellyfin.cacheDir}/transcodes"
+    ];
   };
 }
