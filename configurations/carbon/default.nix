@@ -23,7 +23,7 @@
 
   sebastianrasor.unas = {
     enable = true;
-    host = "unas-pro.internal";
+    host = "10.0.0.103";
   };
 
   imports = [
