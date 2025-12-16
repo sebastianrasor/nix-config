@@ -66,7 +66,8 @@ in
   config = lib.mkIf cfg.enable {
     systemd.services.gate = {
       wantedBy = [ "multi-user.target" ];
-      after = [ "network.target" ];
+      after = [ "network-online.target" ];
+      wants = [ "network-online.target" ];
       description = "High performant & paralleled Minecraft proxy server";
 
       preStart = ''

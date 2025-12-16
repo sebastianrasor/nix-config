@@ -20,6 +20,7 @@
   sebastianrasor.postgresql.enable = true;
   sebastianrasor.radicale.enable = true;
   sebastianrasor.systemd-boot.enable = true;
+  sebastianrasor.systemd-networkd.interfacesRequiredForOnline."enp10s0f0np0" = "routable";
 
   sebastianrasor.unas = {
     enable = true;
