@@ -3,11 +3,9 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   cfg = config.sebastianrasor.nvf;
-in
-{
+in {
   options.sebastianrasor.nvf = {
     enable = lib.mkEnableOption "";
   };
@@ -20,8 +18,16 @@ in
           viAlias = false;
           vimAlias = false;
 
+          lsp.servers.nixd.settings.nixd = {
+            nixpkgs.expr = ''import (builtins.getFlake ("git+file://" + toString ./.)).inputs.nixpkgs { }'';
+            options = {
+              nixos.expr = ''let lib = import <nixpkgs/lib>; in (lib.attrsets.mergeAttrsList(builtins.attrValues((builtins.getFlake ("git+file://" + toString ./.)).nixosConfigurations))).options'';
+              home_manager.expr = ''let lib = import <nixpkgs/lib>; in (lib.attrsets.mergeAttrsList(builtins.attrValues((builtins.getFlake ("git+file://" + toString ./.)).nixosConfigurations))).options.home-manager.users.type.getSubOptions []'';
+            };
+          };
+
           languages = {
-            enableDAP = true;
+            #enableDAP = true;
             enableExtraDiagnostics = true;
             enableFormat = true;
             enableTreesitter = true;
@@ -31,34 +37,14 @@ in
             markdown.enable = true;
             nix = {
               enable = true;
-              format = {
-                type = "nixfmt";
-                enable = true;
-              };
               lsp = {
                 enable = true;
-                package = [ "nixd" ];
-                server = "nixd";
-                options = {
-                  nixos.expr = ''let lib = import <nixpkgs/lib>; in (lib.attrsets.mergeAttrsList(builtins.attrValues((builtins.getFlake ("git+file://" + toString ./.)).nixosConfigurations))).options'';
-                  home_manager.expr = ''let lib = import <nixpkgs/lib>; in (lib.attrsets.mergeAttrsList(builtins.attrValues((builtins.getFlake ("git+file://" + toString ./.)).homeConfigurations))).options'';
-                };
+                servers = ["nixd"];
               };
             };
             rust = {
               enable = true;
-              crates.enable = true;
-              lsp = {
-                enable = true;
-                package = [ "rust-analyzer" ];
-                opts = ''
-                  ['rust-analyzer'] = {
-                    check = {
-                      command = "clippy",
-                    },
-                  },
-                '';
-              };
+              extensions.crates-nvim.enable = true;
             };
             ts.enable = true;
           };
@@ -78,6 +64,7 @@ in
 
           lsp = {
             formatOnSave = true;
+            inlayHints.enable = true;
             lightbulb.enable = true;
             trouble.enable = true;
             otter-nvim.enable = true;
