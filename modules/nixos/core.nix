@@ -22,11 +22,14 @@
         secrets.enable = true;
         sshd.enable = true;
         sudo-rs.enable = true;
+        systemd-networkd.enable = true;
+        systemd-timesyncd.enable = true;
         tailscale.enable = true;
 
         persistence = {
           directories = [
             "/var/lib/nixos"
+            "/var/lib/private"
             "/var/lib/systemd/coredump"
             "/var/log"
           ];
@@ -36,11 +39,26 @@
         };
       };
 
-      boot.kernelPackages = pkgs.linuxPackages_latest;
-      networking = {
-        timeServers = [ "pool.ntp.org" ];
-        domain = config.sebastianrasor.domain;
+      system.activationScripts = {
+        "createPersistentStorageDirs".deps = [
+          "var-lib-private-permissions"
+          "users"
+          "groups"
+        ];
+        "var-lib-private-permissions" =
+          let
+            persistenceStoragePath = config.sebastianrasor.persistence.storagePath;
+          in
+          {
+            deps = [ "specialfs" ];
+            text = ''
+              mkdir -p ${persistenceStoragePath}/var/lib/private
+              chmod 0700 ${persistenceStoragePath}/var/lib/private
+            '';
+          };
       };
+
+      boot.kernelPackages = pkgs.linuxPackages_latest;
       time.timeZone = lib.mkIf (!config.sebastianrasor.automatic-timezoned.enable) "America/Chicago";
       users.mutableUsers = false;
       users.users.root = {
@@ -75,6 +93,7 @@
           HandlePowerKey = suspendBehavior;
           HandlePowerKeyLongPress = "poweroff";
         };
+      systemd.network.wait-online.enable = false;
       systemd.sleep.extraConfig = ''
         HibernateDelaySec=30m
       '';

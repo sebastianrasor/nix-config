@@ -3,9 +3,11 @@
   lib,
   pkgs,
   ...
-}: let
+}:
+let
   cfg = config.sebastianrasor.nvf;
-in {
+in
+{
   options.sebastianrasor.nvf = {
     enable = lib.mkEnableOption "";
   };
@@ -39,7 +41,7 @@ in {
               enable = true;
               lsp = {
                 enable = true;
-                servers = ["nixd"];
+                servers = [ "nixd" ];
               };
             };
             rust = {

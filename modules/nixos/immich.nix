@@ -9,33 +9,58 @@
   };
 
   config = lib.mkIf config.sebastianrasor.immich.enable {
-    users.users.immich = {
-      # https://github.com/nixos/nixpkgs/issues/418799
-      home = "/var/lib/immich";
-      createHome = true;
-
-      extraGroups = [
-        "video"
-        "render"
-      ];
-    };
-
     services.immich = {
       accelerationDevices = null;
       enable = true;
-      mediaLocation = lib.mkIf config.sebastianrasor.unas.enable "/media/immich";
     };
 
-    systemd.services.immich.unitConfig.RequiresMountsFor = lib.mkIf config.sebastianrasor.unas.enable [
-      "/media/immich"
+    users.users.immich.extraGroups = [
+      "video"
+      "render"
     ];
-    systemd.services.immich.bindsTo = lib.mkIf config.sebastianrasor.unas.enable [
-      "media-immich.mount"
-    ];
-    fileSystems."/media/immich" = lib.mkIf config.sebastianrasor.unas.enable {
-      device = "${config.sebastianrasor.unas.host}:${config.sebastianrasor.unas.basePath}/Immich";
-      fsType = "nfs";
+
+    sebastianrasor.persistence.directories = [ config.services.immich.mediaLocation ];
+
+    sebastianrasor.unas.mounts."Immich" = "/srv/immich";
+
+    fileSystems."/var/lib/immich/backups" = {
+      device = "/srv/immich/backups";
+      fsType = "none";
+      options = [
+        "bind"
+      ];
     };
+
+    fileSystems."/var/lib/immich/library" = {
+      device = "/srv/immich/library";
+      fsType = "none";
+      options = [
+        "bind"
+      ];
+    };
+
+    fileSystems."/var/lib/immich/profile" = {
+      device = "/srv/immich/profile";
+      fsType = "none";
+      options = [
+        "bind"
+      ];
+    };
+
+    fileSystems."/var/lib/immich/upload" = {
+      device = "/srv/immich/upload";
+      fsType = "none";
+      options = [
+        "bind"
+      ];
+    };
+
+    systemd.services.immich.unitConfig.RequiresMountsFor = [
+      "/var/lib/immich/backups"
+      "/var/lib/immich/library"
+      "/var/lib/immich/profile"
+      "/var/lib/immich/upload"
+    ];
 
     services.nginx.virtualHosts."immich.ts.${config.sebastianrasor.domain}" = {
       forceSSL = lib.mkIf config.sebastianrasor.acme.enable true;

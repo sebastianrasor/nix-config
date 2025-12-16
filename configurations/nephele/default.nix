@@ -14,6 +14,7 @@
   sebastianrasor.persistence.enable = true;
   sebastianrasor.systemd-boot.enable = true;
   sebastianrasor.tailscale.exitNode = true;
+  sebastianrasor.systemd-networkd.interfacesRequiredForOnline."enp1s0" = "routable";
 
   imports = [
     ./hardware-configuration.nix

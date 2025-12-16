@@ -3,26 +3,43 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.unas;
+in
 {
-  options = {
-    sebastianrasor.unas.enable = lib.mkEnableOption "";
+  options.sebastianrasor.unas = {
+    enable = lib.mkEnableOption "";
 
-    sebastianrasor.unas.host = lib.mkOption {
+    host = lib.mkOption {
       type = lib.types.str;
+      default = "unas-pro.internal";
     };
 
-    sebastianrasor.unas.basePath = lib.mkOption {
+    basePath = lib.mkOption {
       type = lib.types.str;
       default = "/var/nfs/shared";
     };
+
+    mounts = lib.mkOption {
+      type = lib.types.attrsOf lib.types.str;
+      default = { };
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.unas.enable {
+  config = lib.mkIf cfg.enable {
     users.groups.unifi-drive.gid = 988;
     users.users.unifi-drive-nfs = {
       group = "unifi-drive";
       isSystemUser = true;
       uid = 977;
     };
+
+    fileSystems = lib.mapAttrs' (
+      shareName: mountPath:
+      lib.nameValuePair mountPath {
+        device = "${cfg.host}:${cfg.basePath}/${shareName}";
+        fsType = "nfs";
+      }
+    ) cfg.mounts;
   };
 }

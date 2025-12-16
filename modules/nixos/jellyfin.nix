@@ -11,32 +11,22 @@
   config = lib.mkIf config.sebastianrasor.jellyfin.enable {
     services.jellyfin.enable = true;
 
-    users.users.jellyfin.extraGroups = lib.mkIf config.sebastianrasor.unas.enable [ "unifi-drive-nfs" ];
+    # Need to transcode on disk since tmpfs root usually doesn't have the space for transcodes
+    sebastianrasor.persistence.directories = [
+      config.services.jellyfin.dataDir
+      "${config.services.jellyfin.cacheDir}/transcodes"
+    ];
 
-    fileSystems."${config.services.jellyfin.dataDir}/data/backups" =
-      lib.mkIf config.sebastianrasor.unas.enable
-        {
-          device = "${config.sebastianrasor.unas.host}:${config.sebastianrasor.unas.basePath}/Jellyfin";
-          fsType = "nfs";
-        };
-
-    fileSystems."/media/movies" = lib.mkIf config.sebastianrasor.unas.enable {
-      device = "${config.sebastianrasor.unas.host}:${config.sebastianrasor.unas.basePath}/Movies";
-      fsType = "nfs";
-      options = [
-        "nolock"
-        "ro"
-      ];
+    sebastianrasor.unas.mounts = {
+      "Jellyfin" = "${config.services.jellyfin.dataDir}/data/backups";
+      "Movies" = "/media/movies";
+      "Shows" = "/media/shows";
     };
 
-    fileSystems."/media/shows" = lib.mkIf config.sebastianrasor.unas.enable {
-      device = "${config.sebastianrasor.unas.host}:${config.sebastianrasor.unas.basePath}/Shows";
-      fsType = "nfs";
-      options = [
-        "nolock"
-        "ro"
-      ];
-    };
+    systemd.services.immich.unitConfig.RequiresMountsFor = [
+      "/media/movies"
+      "/media/shows"
+    ];
 
     services.nginx.virtualHosts."jellyfin.ts.${config.sebastianrasor.domain}" = {
       forceSSL = lib.mkIf config.sebastianrasor.acme.enable true;
@@ -49,11 +39,5 @@
           "proxy_ssl_server_name on;" + "proxy_pass_header Authorization;" + "proxy_buffering off;";
       };
     };
-
-    # Need to transcode on disk since tmpfs root usually doesn't have the space for transcodes
-    sebastianrasor.persistence.directories = [
-      config.services.jellyfin.dataDir
-      "${config.services.jellyfin.cacheDir}/transcodes"
-    ];
   };
 }
