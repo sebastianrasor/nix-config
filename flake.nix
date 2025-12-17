@@ -169,6 +169,7 @@
       devShells.${system}.default = pkgs.mkShellNoCC {
         nativeBuildInputs = with pkgs; [
           fd
+          git
           nh
           nixd
           nixf
