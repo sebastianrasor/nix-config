@@ -22,6 +22,7 @@ in
 
           lsp.servers.nixd.settings.nixd = {
             nixpkgs.expr = ''import (builtins.getFlake ("git+file://" + toString ./.)).inputs.nixpkgs { }'';
+            formatting.command = [ "nixfmt" ];
             options = {
               nixos.expr = ''let lib = import <nixpkgs/lib>; in (lib.attrsets.mergeAttrsList(builtins.attrValues((builtins.getFlake ("git+file://" + toString ./.)).nixosConfigurations))).options'';
               home_manager.expr = ''let lib = import <nixpkgs/lib>; in (lib.attrsets.mergeAttrsList(builtins.attrValues((builtins.getFlake ("git+file://" + toString ./.)).nixosConfigurations))).options.home-manager.users.type.getSubOptions []'';
@@ -39,6 +40,7 @@ in
             markdown.enable = true;
             nix = {
               enable = true;
+              format.type = [ "nixfmt" ];
               lsp = {
                 enable = true;
                 servers = [ "nixd" ];
