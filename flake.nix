@@ -173,7 +173,7 @@
           nh
           nixd
           nixf
-          nixfmt-tree
+          nixfmt-rfc-style
         ];
         shellHook = ''
           export NH_FLAKE=".";
