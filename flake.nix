@@ -14,6 +14,7 @@
       lanzaboote,
       nvf,
       sops-nix,
+      tailscale-golink,
       ...
     }:
     let
@@ -121,6 +122,7 @@
             flake-impermanence = impermanence.nixosModules.impermanence;
             flake-lanzaboote = lanzaboote.nixosModules.lanzaboote;
             flake-sops-nix = sops-nix.nixosModules.sops;
+            flake-tailscale-golink = tailscale-golink.nixosModules.default;
             home-manager-extra = {
               home-manager = {
                 extraSpecialArgs = { inherit inputs outputs; };
@@ -231,6 +233,11 @@
 
     sops-nix = {
       url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    tailscale-golink = {
+      url = "github:tailscale/golink";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
