@@ -3,12 +3,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.starship;
+in
 {
-  options = {
-    sebastianrasor.starship.enable = lib.mkEnableOption "";
+  options.sebastianrasor.starship = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.starship.enable {
+  config = lib.mkIf cfg.enable {
     programs.starship = {
       enable = true;
       enableTransience = true;

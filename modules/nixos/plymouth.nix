@@ -3,12 +3,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.plymouth;
+in
 {
-  options = {
-    sebastianrasor.plymouth.enable = lib.mkEnableOption "";
+  options.sebastianrasor.plymouth = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.plymouth.enable {
+  config = lib.mkIf cfg.enable {
     boot = {
       consoleLogLevel = 0;
       initrd.verbose = false;

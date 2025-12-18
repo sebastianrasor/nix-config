@@ -50,137 +50,138 @@ let
   '';
 in
 {
-  options = {
-    sebastianrasor.minecraft-server = {
-      enable = lib.mkEnableOption "Minecraft game server";
+  options.sebastianrasor.minecraft-server = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
 
-      dir = lib.mkOption {
-        type = lib.types.path;
-        default = "/var/lib/minecraft";
-        description = "Storage directory for all Minecraft game server files";
-      };
+    dir = lib.mkOption {
+      type = lib.types.path;
+      default = "/var/lib/minecraft";
+      description = "Storage directory for all Minecraft game server files";
+    };
 
-      jvmOpts = lib.mkOption {
-        type = lib.types.str;
-        default = "-Xmx24G -Xms24G";
-      };
+    jvmOpts = lib.mkOption {
+      type = lib.types.str;
+      default = "-Xmx24G -Xms24G";
+    };
 
-      ops = lib.mkOption {
-        type = lib.types.listOf (
-          lib.types.submodule {
-            options = {
-              uuid = lib.mkOption {
-                type = lib.types.str;
-              };
-              name = lib.mkOption {
-                type = lib.types.str;
-              };
-              level = lib.mkOption {
-                type = lib.types.int;
-              };
-              bypassesPlayerLimit = lib.mkOption {
-                type = lib.types.bool;
-              };
-            };
-          }
-        );
-        default = inputs.nix-secrets.minecraft.ops;
-      };
-
-      whitelist = lib.mkOption {
-        type = lib.types.listOf (
-          lib.types.submodule {
-            options = {
-              uuid = lib.mkOption {
-                type = lib.types.str;
-              };
-              name = lib.mkOption {
-                type = lib.types.str;
-              };
-            };
-          }
-        );
-        default = inputs.nix-secrets.minecraft.whitelist;
-      };
-
-      serverProperties = lib.mkOption {
-        default = { };
-        type = lib.types.submodule {
+    ops = lib.mkOption {
+      type = lib.types.listOf (
+        lib.types.submodule {
           options = {
-            enable-rcon = lib.mkOption {
-              default = true;
-              type = lib.types.bool;
-            };
-            difficulty = lib.mkOption {
-              default = "hard";
+            uuid = lib.mkOption {
               type = lib.types.str;
             };
-            management-server-enabled = lib.mkOption {
-              default = true;
-              type = lib.types.bool;
-            };
-            management-server-host = lib.mkOption {
-              default = "localhost";
+            name = lib.mkOption {
               type = lib.types.str;
             };
-            management-server-port = lib.mkOption {
-              default = 25585;
-              type = lib.types.port;
-            };
-            management-server-secret = lib.mkOption {
-              default =
-                if secretsEnabled then config.sops.placeholder."minecraft/management-server-secret" else null;
-              type = lib.types.str;
-            };
-            management-server-tls-enabled = lib.mkOption {
-              default = false;
-              type = lib.types.bool;
-            };
-            online-mode = lib.mkOption {
-              default = false;
-              type = lib.types.bool;
-            };
-            pause-when-empty-seconds = lib.mkOption {
-              default = -1;
+            level = lib.mkOption {
               type = lib.types.int;
             };
-            "rcon.password" = lib.mkOption {
-              default = if secretsEnabled then config.sops.placeholder."minecraft/rcon-password" else null;
-              type = lib.types.str;
-            };
-            "rcon.port" = lib.mkOption {
-              default = 25575;
-              type = lib.types.port;
-            };
-            server-port = lib.mkOption {
-              default = 25555;
-              type = lib.types.port;
-            };
-            simulation-distance = lib.mkOption {
-              default = 12;
-              type = lib.types.int;
-            };
-            spawn-protection = lib.mkOption {
-              default = 0;
-              type = lib.types.int;
-            };
-            view-distance = lib.mkOption {
-              default = 32;
-              type = lib.types.int;
-            };
-            white-list = lib.mkOption {
-              default = true;
+            bypassesPlayerLimit = lib.mkOption {
               type = lib.types.bool;
             };
           };
-          freeformType = lib.types.attrsOf (
-            lib.types.oneOf [
-              lib.types.bool
-              lib.types.int
-              lib.types.str
-            ]
-          );
+        }
+      );
+      default = inputs.nix-secrets.minecraft.ops;
+    };
+
+    whitelist = lib.mkOption {
+      type = lib.types.listOf (
+        lib.types.submodule {
+          options = {
+            uuid = lib.mkOption {
+              type = lib.types.str;
+            };
+            name = lib.mkOption {
+              type = lib.types.str;
+            };
+          };
+        }
+      );
+      default = inputs.nix-secrets.minecraft.whitelist;
+    };
+
+    serverProperties = lib.mkOption {
+      default = { };
+      type = lib.types.submodule {
+        options = {
+          enable-rcon = lib.mkOption {
+            default = true;
+            type = lib.types.bool;
+          };
+          difficulty = lib.mkOption {
+            default = "hard";
+            type = lib.types.str;
+          };
+          management-server-enabled = lib.mkOption {
+            default = true;
+            type = lib.types.bool;
+          };
+          management-server-host = lib.mkOption {
+            default = "localhost";
+            type = lib.types.str;
+          };
+          management-server-port = lib.mkOption {
+            default = 25585;
+            type = lib.types.port;
+          };
+          management-server-secret = lib.mkOption {
+            default =
+              if secretsEnabled then config.sops.placeholder."minecraft/management-server-secret" else null;
+            type = lib.types.str;
+          };
+          management-server-tls-enabled = lib.mkOption {
+            default = false;
+            type = lib.types.bool;
+          };
+          online-mode = lib.mkOption {
+            default = false;
+            type = lib.types.bool;
+          };
+          pause-when-empty-seconds = lib.mkOption {
+            default = -1;
+            type = lib.types.int;
+          };
+          "rcon.password" = lib.mkOption {
+            default = if secretsEnabled then config.sops.placeholder."minecraft/rcon-password" else null;
+            type = lib.types.str;
+          };
+          "rcon.port" = lib.mkOption {
+            default = 25575;
+            type = lib.types.port;
+          };
+          server-port = lib.mkOption {
+            default = 25555;
+            type = lib.types.port;
+          };
+          simulation-distance = lib.mkOption {
+            default = 12;
+            type = lib.types.int;
+          };
+          spawn-protection = lib.mkOption {
+            default = 0;
+            type = lib.types.int;
+          };
+          view-distance = lib.mkOption {
+            default = 32;
+            type = lib.types.int;
+          };
+          white-list = lib.mkOption {
+            default = true;
+            type = lib.types.bool;
+          };
         };
+        freeformType = lib.types.attrsOf (
+          lib.types.oneOf [
+            lib.types.bool
+            lib.types.int
+            lib.types.str
+          ]
+        );
       };
     };
   };

@@ -3,12 +3,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.nut;
+in
 {
-  options = {
-    sebastianrasor.nut.enable = lib.mkEnableOption "";
+  options.sebastianrasor.nut = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.nut.enable {
+  config = lib.mkIf cfg.enable {
     power.ups = {
       enable = true;
       openFirewall = true;

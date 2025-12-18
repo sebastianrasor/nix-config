@@ -3,12 +3,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.homebox;
+in
 {
-  options = {
-    sebastianrasor.homebox.enable = lib.mkEnableOption "";
+  options.sebastianrasor.homebox = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.homebox.enable {
+  config = lib.mkIf cfg.enable {
     services.homebox = {
       enable = true;
       database.createLocally = true;

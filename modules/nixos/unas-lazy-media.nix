@@ -4,22 +4,28 @@
   pkgs,
   ...
 }:
+let
+  cfg = config.sebastianrasor.unas-lazy-media;
+in
 {
-  options = {
-    sebastianrasor.unas-lazy-media.enable = lib.mkEnableOption "";
+  options.sebastianrasor.unas-lazy-media = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
 
-    sebastianrasor.unas-lazy-media.host = lib.mkOption {
+    host = lib.mkOption {
       type = lib.types.str;
       default = config.sebastianrasor.unas.host;
     };
 
-    sebastianrasor.unas-lazy-media.basePath = lib.mkOption {
+    basePath = lib.mkOption {
       type = lib.types.str;
       default = config.sebastianrasor.unas.basePath;
     };
   };
 
-  config = lib.mkIf config.sebastianrasor.unas-lazy-media.enable {
+  config = lib.mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
       nfs-utils
     ];

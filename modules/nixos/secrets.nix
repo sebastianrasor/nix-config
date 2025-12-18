@@ -4,12 +4,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.secrets;
+in
 {
-  options = {
-    sebastianrasor.secrets.enable = lib.mkEnableOption "";
+  options.sebastianrasor.secrets = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.secrets.enable {
+  config = lib.mkIf cfg.enable {
     sops = {
       defaultSopsFile = (builtins.toString inputs.nix-secrets) + "/secrets.yaml";
       validateSopsFiles = false;

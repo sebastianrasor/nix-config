@@ -4,12 +4,20 @@
   pkgs,
   ...
 }:
+let
+  cfg = config.sebastianrasor.tokei;
+in
 {
-  options = {
-    sebastianrasor.tokei.enable = lib.mkEnableOption "";
+  options.sebastianrasor.tokei = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.tokei.enable {
-    home.packages = [ pkgs.tokei ];
+  config = lib.mkIf cfg.enable {
+    home.packages = with pkgs; [
+      tokei
+    ];
   };
 }

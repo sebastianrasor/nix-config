@@ -3,12 +3,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.vim;
+in
 {
-  options = {
-    sebastianrasor.vim.enable = lib.mkEnableOption "";
+  options.sebastianrasor.vim = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.vim.enable {
+  config = lib.mkIf cfg.enable {
     programs.vim = {
       enable = true;
       extraConfig = ''

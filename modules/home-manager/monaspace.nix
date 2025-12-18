@@ -4,15 +4,22 @@
   pkgs,
   ...
 }:
+let
+  cfg = config.sebastianrasor.monaspace;
+in
 {
-  options = {
-    sebastianrasor.monaspace.enable = lib.mkEnableOption "";
+  options.sebastianrasor.monaspace = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.monaspace.enable {
-    fonts.fontconfig.enable = true;
-    home.packages = [
-      pkgs.nerd-fonts.monaspace
+  config = lib.mkIf cfg.enable {
+    home.packages = with pkgs; [
+      nerd-fonts.monaspace
     ];
+
+    fonts.fontconfig.enable = true;
   };
 }

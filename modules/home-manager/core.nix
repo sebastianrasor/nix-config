@@ -3,39 +3,44 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.core;
+in
 {
-  options = {
-    sebastianrasor.core.enable = lib.mkEnableOption "";
+  options.sebastianrasor.core = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.core.enable {
-    sebastianrasor.bandwhich.enable = true;
-    sebastianrasor.bash.enable = true;
-    sebastianrasor.bat.enable = true;
-    sebastianrasor.direnv.enable = true;
-    sebastianrasor.dust.enable = true;
-    sebastianrasor.eza.enable = true;
-    sebastianrasor.fish.enable = true;
-    sebastianrasor.gitoxide.enable = true;
-    sebastianrasor.gping.enable = true;
-    sebastianrasor.hyperfine.enable = true;
-    sebastianrasor.jnv.enable = true;
-    sebastianrasor.jq.enable = true;
-    sebastianrasor.miniserve.enable = true;
-    sebastianrasor.monolith.enable = true;
-    sebastianrasor.navi.enable = true;
-    sebastianrasor.ripgrep.enable = true;
-    sebastianrasor.ssh.enable = true;
-    sebastianrasor.starship.enable = true;
-    sebastianrasor.tokei.enable = true;
-    sebastianrasor.vim.enable = true;
-    sebastianrasor.xdg-userdirs.enable = true;
-    sebastianrasor.yazi.enable = true;
-    sebastianrasor.zoxide.enable = true;
-
-    sebastianrasor.persistence.directories = [
-      config.xdg.stateHome
-    ];
+  config = lib.mkIf cfg.enable {
+    sebastianrasor = {
+      bandwhich.enable = true;
+      bash.enable = true;
+      bat.enable = true;
+      direnv.enable = true;
+      dust.enable = true;
+      eza.enable = true;
+      fish.enable = true;
+      gitoxide.enable = true;
+      gping.enable = true;
+      hyperfine.enable = true;
+      jnv.enable = true;
+      jq.enable = true;
+      miniserve.enable = true;
+      monolith.enable = true;
+      navi.enable = true;
+      persistence.directories = [ config.xdg.stateHome ];
+      ripgrep.enable = true;
+      ssh.enable = true;
+      starship.enable = true;
+      tokei.enable = true;
+      vim.enable = true;
+      xdg-userdirs.enable = true;
+      yazi.enable = true;
+      zoxide.enable = true;
+    };
 
     programs.home-manager.enable = true;
   };

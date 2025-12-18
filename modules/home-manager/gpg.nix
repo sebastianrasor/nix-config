@@ -4,12 +4,18 @@
   pkgs,
   ...
 }:
+let
+  cfg = config.sebastianrasor.gpg;
+in
 {
-  options = {
-    sebastianrasor.gpg.enable = lib.mkEnableOption "";
+  options.sebastianrasor.gpg = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.gpg.enable {
+  config = lib.mkIf cfg.enable {
     programs.gpg = {
       enable = true;
       homedir = "${config.xdg.dataHome}/gnupg";
@@ -31,7 +37,7 @@
       enable = true;
       enableScDaemon = true;
       enableSshSupport = true;
-      pinentry.package = pkgs.pinentry-qt;
+      pinentry.package = with pkgs; pinentry-qt;
     };
 
     programs.ssh.matchBlocks.gpg-agent.match =

@@ -4,12 +4,18 @@
   pkgs,
   ...
 }:
+let
+  cfg = config.sebastianrasor.steam;
+in
 {
-  options = {
-    sebastianrasor.steam.enable = lib.mkEnableOption "";
+  options.sebastianrasor.steam = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.steam.enable {
+  config = lib.mkIf cfg.enable {
     programs.steam = {
       enable = true;
       package = pkgs.steam.override {

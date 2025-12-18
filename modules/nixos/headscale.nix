@@ -4,12 +4,18 @@
   pkgs,
   ...
 }:
+let
+  cfg = config.sebastianrasor.headscale;
+in
 {
-  options = {
-    sebastianrasor.headscale.enable = lib.mkEnableOption "";
+  options.sebastianrasor.headscale = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.headscale.enable {
+  config = lib.mkIf cfg.enable {
     sops.secrets.headscale-openid-client-secret = lib.mkIf config.sebastianrasor.secrets.enable {
       owner = config.systemd.services.headscale.serviceConfig.User;
     };

@@ -3,12 +3,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.frigate;
+in
 {
-  options = {
-    sebastianrasor.frigate.enable = lib.mkEnableOption "";
+  options.sebastianrasor.frigate = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.frigate.enable {
+  config = lib.mkIf cfg.enable {
     users.users.frigate.extraGroups = lib.mkIf config.sebastianrasor.unas.enable [ "unifi-drive-nfs" ];
 
     services.nginx.virtualHosts."frigate.ts.${config.sebastianrasor.domain}" =

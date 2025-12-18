@@ -3,12 +3,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.authentik;
+in
 {
-  options = {
-    sebastianrasor.authentik.enable = lib.mkEnableOption "";
+  options.sebastianrasor.authentik = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.authentik.enable {
+  config = lib.mkIf cfg.enable {
     sops.secrets.authentik-env = lib.mkIf config.sebastianrasor.secrets.enable { };
     services.authentik = {
       enable = true;

@@ -3,12 +3,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.eza;
+in
 {
-  options = {
-    sebastianrasor.eza.enable = lib.mkEnableOption "";
+  options.sebastianrasor.eza = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.eza.enable {
+  config = lib.mkIf cfg.enable {
     programs.eza = {
       enable = true;
       extraOptions = [
@@ -16,6 +22,7 @@
         "--header"
       ];
     };
+
     home.shellAliases = {
       ls = "eza";
       tree = "eza --tree";

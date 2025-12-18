@@ -4,12 +4,20 @@
   pkgs,
   ...
 }:
+let
+  cfg = config.sebastianrasor.gitoxide;
+in
 {
-  options = {
-    sebastianrasor.gitoxide.enable = lib.mkEnableOption "";
+  options.sebastianrasor.gitoxide = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.gitoxide.enable {
-    home.packages = [ pkgs.gitoxide ];
+  config = lib.mkIf cfg.enable {
+    home.packages = with pkgs; [
+      gitoxide
+    ];
   };
 }

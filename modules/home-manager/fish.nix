@@ -4,17 +4,23 @@
   pkgs,
   ...
 }:
+let
+  cfg = config.sebastianrasor.fish;
+in
 {
-  options = {
-    sebastianrasor.fish.enable = lib.mkEnableOption "";
+  options.sebastianrasor.fish = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
 
-    sebastianrasor.fish.bashInit = lib.mkOption {
+    bashInit = lib.mkOption {
       type = lib.types.bool;
       default = config.sebastianrasor.bash.enable;
     };
   };
 
-  config = lib.mkIf config.sebastianrasor.fish.enable {
+  config = lib.mkIf cfg.enable {
     programs.fish = {
       enable = true;
       functions = {
@@ -23,14 +29,6 @@
         last_history_item = "echo $history[1]";
       };
       shellAbbrs = {
-        pgnc = {
-          expansion = "pass generate -nc % 43";
-          setCursor = true;
-        };
-        pgc = {
-          expansion = "pass generate -c % 39";
-          setCursor = true;
-        };
         "!!" = {
           function = "last_history_item";
           position = "anywhere";
@@ -48,12 +46,14 @@
         };
       };
     };
-    programs.bash.initExtra = lib.mkIf config.sebastianrasor.fish.bashInit ''
+
+    programs.bash.initExtra = lib.mkIf cfg.bashInit ''
       if [[ $(${lib.getExe' pkgs.procps "ps"} --no-header --pid=$PPID --format=comm) != "fish" && -z ''\${BASH_EXECUTION_STRING} && ''\${SHLVL} == 1 ]]; then
         shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=''\'''\'
         exec ${lib.getExe' config.programs.fish.package "fish"} $LOGIN_OPTION
       fi
     '';
+
     sebastianrasor.persistence.files = [ "${config.xdg.dataHome}/fish/fish_history" ];
   };
 }

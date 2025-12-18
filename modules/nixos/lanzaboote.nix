@@ -4,14 +4,20 @@
   pkgs,
   ...
 }:
+let
+  cfg = config.sebastianrasor.lanzaboote;
+in
 {
-  options = {
-    sebastianrasor.lanzaboote.enable = lib.mkEnableOption "";
+  options.sebastianrasor.lanzaboote = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.lanzaboote.enable {
-    environment.systemPackages = [
-      pkgs.sbctl
+  config = lib.mkIf cfg.enable {
+    environment.systemPackages = with pkgs; [
+      sbctl
     ];
 
     boot.loader.systemd-boot.enable = lib.mkForce false;

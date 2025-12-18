@@ -8,11 +8,16 @@ let
 in
 {
   options.sebastianrasor.persistence = {
-    enable = lib.mkEnableOption "";
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
+
     storagePath = lib.mkOption {
       type = lib.types.str;
       default = "/nix/persist";
     };
+
     directories = lib.mkOption {
       type = lib.types.listOf (lib.types.coercedTo lib.types.str (d: { directory = d; }) lib.types.attrs);
       default = [ ];
@@ -25,6 +30,7 @@ in
         ]
       );
     };
+
     files = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [ ];

@@ -3,12 +3,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.ssh;
+in
 {
-  options = {
-    sebastianrasor.ssh.enable = lib.mkEnableOption "";
+  options.sebastianrasor.ssh = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.ssh.enable {
+  config = lib.mkIf cfg.enable {
     programs.ssh = {
       enable = true;
       enableDefaultConfig = false;
@@ -23,6 +29,7 @@
         forwardAgent = true;
       };
     };
+
     #systemd.user.tmpfiles.settings."10-ssh".rules = {
     #  "%t/ssh" = {
     #    d = {
@@ -40,6 +47,7 @@
       "d     %t/ssh          0700  -     -      -    -"
       "d     %t/ssh/control  0700  -     -      -    -"
     ];
+
     sebastianrasor.persistence.files = [ "${config.home.homeDirectory}/.ssh/known_hosts" ];
   };
 }

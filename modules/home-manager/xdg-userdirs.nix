@@ -3,12 +3,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.xdg-userdirs;
+in
 {
-  options = {
-    sebastianrasor.xdg-userdirs.enable = lib.mkEnableOption "";
+  options.sebastianrasor.xdg-userdirs = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.xdg-userdirs.enable {
+  config = lib.mkIf cfg.enable {
     xdg.userDirs = {
       enable = true;
       desktop = "${config.home.homeDirectory}/desktop";

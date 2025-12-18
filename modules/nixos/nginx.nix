@@ -3,12 +3,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.nginx;
+in
 {
-  options = {
-    sebastianrasor.nginx.enable = lib.mkEnableOption "";
+  options.sebastianrasor.nginx = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.nginx.enable {
+  config = lib.mkIf cfg.enable {
     networking.firewall.allowedTCPPorts = [
       80
       443

@@ -8,7 +8,10 @@ let
 in
 {
   options.sebastianrasor.systemd-networkd = {
-    enable = lib.mkEnableOption "";
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
 
     interfacesRequiredForOnline = lib.mkOption {
       type = lib.types.attrsOf lib.types.str;

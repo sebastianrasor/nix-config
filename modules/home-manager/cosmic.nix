@@ -5,13 +5,18 @@
   pkgs,
   ...
 }:
+let
+  cfg = config.sebastianrasor.cosmic;
+in
 {
-  options = {
-    sebastianrasor.cosmic.enable = lib.mkEnableOption "";
+  options.sebastianrasor.cosmic = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.cosmic.enable {
-    home.file.".config/cosmic-initial-setup-done".text = "";
+  config = lib.mkIf cfg.enable {
     wayland.desktopManager.cosmic = {
       enable = true;
       appearance = {
@@ -150,6 +155,7 @@
         }
       ];
     };
+
     programs.cosmic-term = {
       enable = true;
       profiles = [
@@ -166,5 +172,7 @@
         font_size = 16;
       };
     };
+
+    home.file.".config/cosmic-initial-setup-done".text = "";
   };
 }

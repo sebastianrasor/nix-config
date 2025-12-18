@@ -4,12 +4,18 @@
   pkgs,
   ...
 }:
+let
+  cfg = config.sebastianrasor.cosmic;
+in
 {
-  options = {
-    sebastianrasor.cosmic.enable = lib.mkEnableOption "";
+  options.sebastianrasor.cosmic = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.cosmic.enable {
+  config = lib.mkIf cfg.enable {
     services.desktopManager.cosmic.enable = true;
     services.displayManager.cosmic-greeter.enable = true;
 

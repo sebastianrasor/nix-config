@@ -9,7 +9,10 @@ let
 in
 {
   options.sebastianrasor.tailscale-golink = {
-    enable = lib.mkEnableOption "";
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
   config = lib.mkIf cfg.enable {

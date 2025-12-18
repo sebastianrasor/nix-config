@@ -3,19 +3,28 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.tailscale;
+in
 {
-  options = {
-    sebastianrasor.tailscale = {
-      enable = lib.mkEnableOption "";
-      exitNode = lib.mkEnableOption "";
-      authKeyFile = lib.mkOption {
-        type = lib.types.str;
-        default = null;
-      };
+  options.sebastianrasor.tailscale = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
+
+    exitNode = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
+
+    authKeyFile = lib.mkOption {
+      type = lib.types.str;
+      default = null;
     };
   };
 
-  config = lib.mkIf config.sebastianrasor.tailscale.enable {
+  config = lib.mkIf cfg.enable {
     sops.secrets.tailscale_key = lib.mkIf config.sebastianrasor.secrets.enable { };
     networking.firewall.trustedInterfaces = [ config.services.tailscale.interfaceName ];
     services.tailscale = {

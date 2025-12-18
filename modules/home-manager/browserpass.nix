@@ -3,12 +3,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.browserpass;
+in
 {
-  options = {
-    sebastianrasor.browserpass.enable = lib.mkEnableOption "";
+  options.sebastianrasor.browserpass = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.browserpass.enable {
+  config = lib.mkIf cfg.enable {
     programs.browserpass.enable = true;
   };
 }
