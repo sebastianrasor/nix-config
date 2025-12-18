@@ -4,14 +4,23 @@
   pkgs,
   ...
 }:
+let
+  cfg = config.sebastianrasor.thunderbird;
+in
 {
-  options = {
-    sebastianrasor.thunderbird.enable = lib.mkEnableOption "";
+  options.sebastianrasor.thunderbird = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.thunderbird.enable {
-    home.packages = [ pkgs.thunderbird ];
+  # TODO: Use programs.thunderbird.* to declaratively configure thunderbird.
+  config = lib.mkIf cfg.enable {
+    home.packages = with pkgs; [
+      thunderbird
+    ];
+
     sebastianrasor.persistence.directories = [ "${config.home.homeDirectory}/.thunderbird" ];
-    # wtf??? programs.thunderbird.enable = true;
   };
 }

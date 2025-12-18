@@ -4,12 +4,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.nix;
+in
 {
-  options = {
-    sebastianrasor.nix.enable = lib.mkEnableOption "";
+  options.sebastianrasor.nix = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.nix.enable {
+  config = lib.mkIf cfg.enable {
     nixpkgs.config.allowUnfree = true;
     nix = {
       registry = lib.mapAttrs (_: value: { flake = value; }) inputs;

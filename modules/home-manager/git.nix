@@ -3,12 +3,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.git;
+in
 {
-  options = {
-    sebastianrasor.git.enable = lib.mkEnableOption "";
+  options.sebastianrasor.git = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.git.enable {
+  config = lib.mkIf cfg.enable {
     programs.git = {
       enable = true;
       settings = {
@@ -32,18 +38,6 @@
           };
         }
       ];
-    };
-    programs.fish.shellAbbrs = lib.mkIf config.sebastianrasor.fish.enable {
-      ga = "git add";
-      gc = "git commit";
-      gca = "git commit --amend";
-      gcm = "git commit -m";
-      gd = "git diff";
-      gds = "git diff --staged";
-      gp = "git push";
-      gr = "git restore";
-      grh = "git reset HEAD";
-      gs = "git status";
     };
   };
 }

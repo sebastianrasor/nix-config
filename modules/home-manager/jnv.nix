@@ -4,12 +4,20 @@
   pkgs,
   ...
 }:
+let
+  cfg = config.sebastianrasor.jnv;
+in
 {
-  options = {
-    sebastianrasor.jnv.enable = lib.mkEnableOption "";
+  options.sebastianrasor.jnv = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.jnv.enable {
-    home.packages = [ pkgs.jnv ];
+  config = lib.mkIf cfg.enable {
+    home.packages = with pkgs; [
+      jnv
+    ];
   };
 }

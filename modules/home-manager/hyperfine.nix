@@ -4,16 +4,20 @@
   pkgs,
   ...
 }:
+let
+  cfg = config.sebastianrasor.hyperfine;
+in
 {
-  options = {
-    sebastianrasor.hyperfine.enable = lib.mkEnableOption "";
+  options.sebastianrasor.hyperfine = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.hyperfine.enable {
-    home.packages = [ pkgs.hyperfine ];
-
-    programs.fish.shellAbbrs = lib.mkIf config.sebastianrasor.fish.enable {
-      hf = "hyperfine";
-    };
+  config = lib.mkIf cfg.enable {
+    home.packages = with pkgs; [
+      hyperfine
+    ];
   };
 }

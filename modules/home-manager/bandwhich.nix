@@ -4,12 +4,20 @@
   pkgs,
   ...
 }:
+let
+  cfg = config.sebastianrasor.bandwhich;
+in
 {
-  options = {
-    sebastianrasor.bandwhich.enable = lib.mkEnableOption "";
+  options.sebastianrasor.bandwhich = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.bandwhich.enable {
-    home.packages = [ pkgs.bandwhich ];
+  config = lib.mkIf cfg.enable {
+    home.packages = with pkgs; [
+      bandwhich
+    ];
   };
 }

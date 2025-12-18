@@ -15,16 +15,20 @@ let
 
   startScript = pkgs.writeShellApplication {
     name = "minecraft-world-backup";
-    runtimeInputs = [
-      pkgs.gate
-      pkgs.javaPackages.compiler.temurin-bin.jre-25
+    runtimeInputs = with pkgs; [
+      gate
+      javaPackages.compiler.temurin-bin.jre-25
     ];
     text = "gate -c config.yaml";
   };
 in
 {
   options.sebastianrasor.gate = {
-    enable = lib.mkEnableOption "";
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
+
     config = lib.mkOption {
       type = lib.types.submodule {
         freeformType = yaml.type;

@@ -6,15 +6,19 @@
   ...
 }:
 let
+  cfg = config.sebastianrasor.yubikey-touch-detector;
   yubikey-touch-detector =
     inputs.yubikey-touch-detector.packages.${pkgs.stdenv.hostPlatform.system}.yubikey-touch-detector;
 in
 {
-  options = {
-    sebastianrasor.yubikey-touch-detector.enable = lib.mkEnableOption "";
+  options.sebastianrasor.yubikey-touch-detector = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.yubikey-touch-detector.enable {
+  config = lib.mkIf cfg.enable {
     home = {
       file.yubikey-touch-detector-config = {
         text = ''

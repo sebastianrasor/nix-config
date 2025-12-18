@@ -3,12 +3,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.jq;
+in
 {
-  options = {
-    sebastianrasor.jq.enable = lib.mkEnableOption "";
+  options.sebastianrasor.jq = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.jq.enable {
+  config = lib.mkIf cfg.enable {
     programs.jq.enable = true;
   };
 }

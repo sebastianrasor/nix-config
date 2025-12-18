@@ -4,13 +4,22 @@
   pkgs,
   ...
 }:
+let
+  cfg = config.sebastianrasor.prismlauncher;
+in
 {
-  options = {
-    sebastianrasor.prismlauncher.enable = lib.mkEnableOption "";
+  options.sebastianrasor.prismlauncher = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.prismlauncher.enable {
-    home.packages = [ pkgs.prismlauncher ];
+  config = lib.mkIf cfg.enable {
+    home.packages = with pkgs; [
+      prismlauncher
+    ];
+
     sebastianrasor.persistence.directories = [ "${config.xdg.dataHome}/PrismLauncher" ];
   };
 }

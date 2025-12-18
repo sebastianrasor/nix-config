@@ -3,12 +3,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.bat;
+in
 {
-  options = {
-    sebastianrasor.bat.enable = lib.mkEnableOption "";
+  options.sebastianrasor.bat = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.bat.enable {
+  config = lib.mkIf cfg.enable {
     programs.bat.enable = true;
     home.shellAliases.cat = "bat";
   };

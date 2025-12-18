@@ -3,12 +3,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.jellyfin;
+in
 {
-  options = {
-    sebastianrasor.jellyfin.enable = lib.mkEnableOption "";
+  options.sebastianrasor.jellyfin = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.jellyfin.enable {
+  config = lib.mkIf cfg.enable {
     services.jellyfin.enable = true;
 
     # Need to transcode on disk since tmpfs root usually doesn't have the space for transcodes

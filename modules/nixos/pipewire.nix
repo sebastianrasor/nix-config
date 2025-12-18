@@ -3,12 +3,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.pipewire;
+in
 {
-  options = {
-    sebastianrasor.pipewire.enable = lib.mkEnableOption "";
+  options.sebastianrasor.pipewire = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.pipewire.enable {
+  config = lib.mkIf cfg.enable {
     services.pulseaudio.enable = false;
     security.rtkit.enable = true;
     services.pipewire = {

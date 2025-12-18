@@ -3,12 +3,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.i18n;
+in
 {
-  options = {
-    sebastianrasor.i18n.enable = lib.mkEnableOption "";
+  options.sebastianrasor.i18n = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.i18n.enable {
+  config = lib.mkIf cfg.enable {
     i18n.defaultLocale = "en_US.UTF-8";
 
     i18n.extraLocaleSettings = {

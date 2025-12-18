@@ -4,12 +4,18 @@
   pkgs,
   ...
 }:
+let
+  cfg = config.sebastianrasor.sshd;
+in
 {
-  options = {
-    sebastianrasor.sshd.enable = lib.mkEnableOption "";
+  options.sebastianrasor.sshd = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.sshd.enable {
+  config = lib.mkIf cfg.enable {
     services.openssh = {
       enable = true;
       openFirewall = false;

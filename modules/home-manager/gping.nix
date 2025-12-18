@@ -4,12 +4,20 @@
   pkgs,
   ...
 }:
+let
+  cfg = config.sebastianrasor.gping;
+in
 {
-  options = {
-    sebastianrasor.gping.enable = lib.mkEnableOption "";
+  options.sebastianrasor.gping = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.gping.enable {
-    home.packages = [ pkgs.gping ];
+  config = lib.mkIf cfg.enable {
+    home.packages = with pkgs; [
+      gping
+    ];
   };
 }

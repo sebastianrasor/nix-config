@@ -3,12 +3,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.immich;
+in
 {
-  options = {
-    sebastianrasor.immich.enable = lib.mkEnableOption "";
+  options.sebastianrasor.immich = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.immich.enable {
+  config = lib.mkIf cfg.enable {
     services.immich = {
       accelerationDevices = null;
       enable = true;

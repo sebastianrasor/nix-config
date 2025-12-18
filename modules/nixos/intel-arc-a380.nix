@@ -4,12 +4,18 @@
   pkgs,
   ...
 }:
+let
+  cfg = config.sebastianrasor.intel-arc-a380;
+in
 {
-  options = {
-    sebastianrasor.intel-arc-a380.enable = lib.mkEnableOption "";
+  options.sebastianrasor.intel-arc-a380 = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.intel-arc-a380.enable {
+  config = lib.mkIf cfg.enable {
     boot.kernelParams = [ "i915.enable_guc=3" ];
 
     environment.sessionVariables = {

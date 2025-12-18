@@ -3,12 +3,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.actual;
+in
 {
-  options = {
-    sebastianrasor.actual.enable = lib.mkEnableOption "";
+  options.sebastianrasor.actual = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.actual.enable {
+  config = lib.mkIf cfg.enable {
     services.actual = {
       enable = true;
       settings = {

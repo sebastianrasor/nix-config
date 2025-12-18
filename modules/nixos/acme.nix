@@ -3,13 +3,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.acme;
+in
 {
-  options = {
-    sebastianrasor.acme.enable = lib.mkEnableOption "";
+  options.sebastianrasor.acme = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.acme.enable {
-    sops.secrets.acme-env = lib.mkIf config.sebastianrasor.secrets.enable { };
+  config = lib.mkIf cfg.enable {
     security.acme = {
       acceptTerms = true;
       defaults = {
@@ -19,6 +24,9 @@
         environmentFile = lib.mkIf config.sebastianrasor.secrets.enable config.sops.secrets.acme-env.path;
       };
     };
+
     sebastianrasor.persistence.directories = [ "/var/lib/acme" ];
+
+    sops.secrets.acme-env = lib.mkIf config.sebastianrasor.secrets.enable { };
   };
 }

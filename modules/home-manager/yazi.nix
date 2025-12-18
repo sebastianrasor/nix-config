@@ -3,12 +3,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.yazi;
+in
 {
-  options = {
-    sebastianrasor.yazi.enable = lib.mkEnableOption "";
+  options.sebastianrasor.yazi = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.yazi.enable {
+  config = lib.mkIf cfg.enable {
     programs.yazi = {
       enable = true;
       enableFishIntegration = true;

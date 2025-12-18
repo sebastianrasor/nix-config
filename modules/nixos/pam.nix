@@ -3,12 +3,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.pam;
+in
 {
-  options = {
-    sebastianrasor.pam.enable = lib.mkEnableOption "";
+  options.sebastianrasor.pam = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.pam.enable {
+  config = lib.mkIf cfg.enable {
     security.pam.services.login.unixAuth = false;
     security.pam.services.sudo.unixAuth = false;
 

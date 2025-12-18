@@ -4,25 +4,35 @@
   pkgs,
   ...
 }:
+let
+  cfg = config.sebastianrasor.core;
+in
 {
   options.sebastianrasor.core = {
-    enable = lib.mkEnableOption "";
-    laptop = lib.mkEnableOption "";
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
+
+    laptop = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
   config = lib.mkMerge [
-    (lib.mkIf config.sebastianrasor.core.enable {
+    (lib.mkIf cfg.enable {
       sebastianrasor = {
         cachix-agent.enable = true;
         home-manager.enable = true;
         i18n.enable = true;
         nix.enable = true;
         pam.enable = true;
-        resolved.enable = true;
         secrets.enable = true;
         sshd.enable = true;
         sudo-rs.enable = true;
         systemd-networkd.enable = true;
+        systemd-resolved.enable = true;
         systemd-timesyncd.enable = true;
         tailscale.enable = true;
 
@@ -66,7 +76,7 @@
         shell = pkgs.shadow;
       };
     })
-    (lib.mkIf config.sebastianrasor.core.laptop {
+    (lib.mkIf cfg.laptop {
       sebastianrasor = {
         automatic-timezoned.enable = true;
         bluetooth.enable = true;

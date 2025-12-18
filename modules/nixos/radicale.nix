@@ -3,12 +3,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.radicale;
+in
 {
-  options = {
-    sebastianrasor.radicale.enable = lib.mkEnableOption "";
+  options.sebastianrasor.radicale = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.radicale.enable {
+  config = lib.mkIf cfg.enable {
     services.radicale = {
       enable = true;
       settings = {

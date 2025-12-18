@@ -8,7 +8,10 @@ let
 in
 {
   options.sebastianrasor.unas = {
-    enable = lib.mkEnableOption "";
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
 
     host = lib.mkOption {
       type = lib.types.str;

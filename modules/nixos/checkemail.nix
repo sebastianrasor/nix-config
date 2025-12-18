@@ -5,12 +5,18 @@
   pkgs,
   ...
 }:
+let
+  cfg = config.sebastianrasor.checkemail;
+in
 {
-  options = {
-    sebastianrasor.checkemail.enable = lib.mkEnableOption "";
+  options.sebastianrasor.checkemail = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.checkemail.enable {
+  config = lib.mkIf cfg.enable {
     sops.secrets.checkemail-env = lib.mkIf config.sebastianrasor.secrets.enable { };
     systemd.services.checkemail = {
       description = "checkemail";

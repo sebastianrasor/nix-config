@@ -3,12 +3,18 @@
   lib,
   ...
 }:
+let
+  cfg = config.sebastianrasor.systemd-resolved;
+in
 {
-  options = {
-    sebastianrasor.resolved.enable = lib.mkEnableOption "";
+  options.sebastianrasor.systemd-resolved = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
   };
 
-  config = lib.mkIf config.sebastianrasor.resolved.enable {
+  config = lib.mkIf cfg.enable {
     services.resolved = {
       enable = true;
       fallbackDns = [

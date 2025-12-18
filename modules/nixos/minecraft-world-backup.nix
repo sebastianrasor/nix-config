@@ -136,13 +136,15 @@ let
   };
 in
 {
-  options = {
-    sebastianrasor.minecraft-world-backup = {
-      enable = lib.mkEnableOption "Minecraft game server world backup";
-      dir = lib.mkOption {
-        type = lib.types.path;
-        default = config.sebastianrasor.minecraft-server.dir;
-      };
+  options.sebastianrasor.minecraft-world-backup = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+    };
+
+    dir = lib.mkOption {
+      type = lib.types.path;
+      default = config.sebastianrasor.minecraft-server.dir;
     };
   };
 
