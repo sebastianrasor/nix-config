@@ -65,7 +65,29 @@ in
               sources.providers.buffer.enabled = false;
             };
           };
+
           autopairs.nvim-autopairs.enable = true;
+
+          luaConfigRC.autopairs-nix = ''
+            local npairs = require("nvim-autopairs")
+            local Rule = require("nvim-autopairs.rule")
+            local cond = require("nvim-autopairs.conds")
+
+            local auto_semicolon = function(prefix)
+              return Rule(prefix, ";", "nix")
+                -- Don't add another semicolon if there already is one after the cursor
+                :with_pair(cond.not_after_regex(";", 2))
+                -- If we're backspacing, we don't want to get rid of the whole thing
+                :with_del(function(_)
+                  return false
+                end)
+            end
+
+            npairs.add_rules({
+              auto_semicolon("= "):with_pair(cond.not_before_regex("!", 2)),
+              auto_semicolon("inherit "),
+            })
+          '';
 
           notify.nvim-notify.enable = true;
 
