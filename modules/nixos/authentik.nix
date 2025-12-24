@@ -5,6 +5,8 @@
 }:
 let
   cfg = config.sebastianrasor.authentik;
+  acmeEnabled = config.sebastianrasor.acme.enable;
+  acmeBaseDomain = config.sebastianrasor.acme.baseDomainName;
 in
 {
   options.sebastianrasor.authentik = {
@@ -15,13 +17,11 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    sops.secrets.authentik-env = lib.mkIf config.sebastianrasor.secrets.enable { };
     services.authentik = {
       enable = true;
       environmentFile = lib.mkIf config.sebastianrasor.secrets.enable config.sops.secrets.authentik-env.path;
       nginx = {
         enable = true;
-        enableACME = true;
         host = "authentik.ts.${config.sebastianrasor.domain}";
       };
       settings = {
@@ -29,9 +29,19 @@ in
         avatars = "initials";
       };
     };
+
+    # special circumstances for proxy from external to tailnet
     services.nginx.virtualHosts.${config.services.authentik.nginx.host} = {
-      acmeRoot = lib.mkIf config.sebastianrasor.acme.enable null;
+      forceSSL = lib.mkForce acmeEnabled;
+      useACMEHost = lib.mkIf acmeEnabled acmeBaseDomain;
       serverAliases = [ "authentik.${config.sebastianrasor.domain}" ];
     };
+
+    sebastianrasor.acme.extraDomainNames = [
+      "authentik.${config.sebastianrasor.domain}"
+      "authentik.ts.${config.sebastianrasor.domain}"
+    ];
+
+    sops.secrets.authentik-env = lib.mkIf config.sebastianrasor.secrets.enable { };
   };
 }

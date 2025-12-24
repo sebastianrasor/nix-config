@@ -27,6 +27,8 @@ in
       };
     };
 
+    sebastianrasor.reverse-proxy.proxies."radicale" = "http://127.0.0.1:5232";
+
     sebastianrasor.unas.mounts."Radicale" = "/media/radicale";
 
     sebastianrasor.persistence.directories = [
@@ -41,17 +43,6 @@ in
     sops.secrets.radicale_users = lib.mkIf config.sebastianrasor.secrets.enable {
       owner = config.users.users.radicale.name;
       group = config.users.users.radicale.group;
-    };
-
-    services.nginx.virtualHosts."radicale.ts.${config.sebastianrasor.domain}" = {
-      forceSSL = lib.mkIf config.sebastianrasor.acme.enable true;
-      enableACME = lib.mkIf config.sebastianrasor.acme.enable true;
-      acmeRoot = lib.mkIf config.sebastianrasor.acme.enable null;
-      locations."/" = {
-        proxyPass = "http://127.0.0.1:5232";
-        proxyWebsockets = true;
-        extraConfig = "proxy_ssl_server_name on;" + "proxy_pass_header Authorization;";
-      };
     };
   };
 }

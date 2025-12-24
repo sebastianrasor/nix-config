@@ -27,6 +27,9 @@ in
 
     sebastianrasor.persistence.directories = [ config.services.immich.mediaLocation ];
 
+    sebastianrasor.reverse-proxy.proxies."immich" =
+      "http://[::1]:${toString config.services.immich.port}";
+
     sebastianrasor.unas.mounts."Immich" = "/srv/immich";
 
     fileSystems."/var/lib/immich/backups" = {
@@ -67,22 +70,5 @@ in
       "/var/lib/immich/profile"
       "/var/lib/immich/upload"
     ];
-
-    services.nginx.virtualHosts."immich.ts.${config.sebastianrasor.domain}" = {
-      forceSSL = lib.mkIf config.sebastianrasor.acme.enable true;
-      enableACME = lib.mkIf config.sebastianrasor.acme.enable true;
-      acmeRoot = lib.mkIf config.sebastianrasor.acme.enable null;
-      locations."/" = {
-        proxyPass = "http://[::1]:${toString config.services.immich.port}";
-        proxyWebsockets = true;
-        recommendedProxySettings = true;
-        extraConfig = ''
-          client_max_body_size 50000M;
-          proxy_read_timeout   600s;
-          proxy_send_timeout   600s;
-          send_timeout         600s;
-        '';
-      };
-    };
   };
 }

@@ -17,6 +17,8 @@ in
   config = lib.mkIf cfg.enable {
     services.jellyfin.enable = true;
 
+    sebastianrasor.reverse-proxy.proxies."jellyfin" = "http://127.0.0.1:8096";
+
     # Need to transcode on disk since tmpfs root usually doesn't have the space for transcodes
     sebastianrasor.persistence.directories = [
       config.services.jellyfin.dataDir
@@ -33,17 +35,5 @@ in
       "/media/movies"
       "/media/shows"
     ];
-
-    services.nginx.virtualHosts."jellyfin.ts.${config.sebastianrasor.domain}" = {
-      forceSSL = lib.mkIf config.sebastianrasor.acme.enable true;
-      enableACME = lib.mkIf config.sebastianrasor.acme.enable true;
-      acmeRoot = lib.mkIf config.sebastianrasor.acme.enable null;
-      locations."/" = {
-        proxyPass = "http://127.0.0.1:8096";
-        proxyWebsockets = true;
-        extraConfig =
-          "proxy_ssl_server_name on;" + "proxy_pass_header Authorization;" + "proxy_buffering off;";
-      };
-    };
   };
 }

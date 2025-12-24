@@ -15,18 +15,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    services.nginx.virtualHosts."authentik.${config.sebastianrasor.domain}" = {
-      forceSSL = lib.mkIf config.sebastianrasor.acme.enable true;
-      enableACME = lib.mkIf config.sebastianrasor.acme.enable true;
-      acmeRoot = lib.mkIf config.sebastianrasor.acme.enable null;
-      locations."/" = {
-        proxyPass = "https://$carbon";
-        extraConfig = ''
-          resolver 100.100.100.100;
-          set $carbon "authentik.ts.${config.sebastianrasor.domain}";
-        '';
-        proxyWebsockets = true;
-      };
-    };
+    sebastianrasor.reverse-proxy.proxies."authentik" =
+      "https://authentik.ts.${config.sebastianrasor.domain}";
   };
 }
