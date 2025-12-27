@@ -18,6 +18,7 @@ in
     networking.networkmanager = {
       enable = true;
       connectionConfig."connection.mdns" = 2;
+      wifi.backend = "iwd";
     };
 
     sebastianrasor.persistence.directories = [ "/etc/NetworkManager/system-connections" ];
