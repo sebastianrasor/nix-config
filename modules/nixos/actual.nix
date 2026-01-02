@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 let
@@ -21,6 +22,20 @@ in
         loginMethod = "openid";
         allowedLoginMethods = [ "openid" ];
       };
+      # https://github.com/NixOS/nixpkgs/issues/475898
+      # https://nixpkgs-tracker.ocfox.me/?pr=475880
+      package =
+        let
+          nodejs = pkgs.nodejs_22;
+          yarn-berry = pkgs.yarn-berry_4.override { inherit nodejs; };
+        in
+        pkgs.actual-server.override {
+          yarn-berry_4 = yarn-berry.overrideAttrs (old: {
+            passthru = old.passthru // {
+              yarnBerryConfigHook = old.passthru.yarnBerryConfigHook.override { inherit nodejs; };
+            };
+          });
+        };
     };
 
     sebastianrasor.reverse-proxy.proxies."actual" =
