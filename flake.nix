@@ -184,8 +184,7 @@
     };
 
   inputs = {
-    # https://github.com/NotAShelf/nvf/issues/1312
-    nixpkgs.url = "github:NixOS/nixpkgs/cad22e7d996aea55ecab064e84834289143e44a0";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
