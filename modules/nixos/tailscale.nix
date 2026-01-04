@@ -32,8 +32,8 @@ in
       authKeyFile = lib.mkIf config.sebastianrasor.secrets.enable config.sops.secrets.tailscale_key.path;
       extraDaemonFlags = [ "--encrypt-state=false" ];
       extraUpFlags = [ "--login-server=https://headscale.${config.sebastianrasor.domain}" ];
-      extraSetFlags = lib.mkIf config.sebastianrasor.tailscale.exitNode [ "--advertise-exit-node" ];
-      useRoutingFeatures = lib.mkIf config.sebastianrasor.tailscale.exitNode "server";
+      extraSetFlags = lib.mkIf cfg.exitNode [ "--advertise-exit-node" ];
+      useRoutingFeatures = if cfg.exitNode then "both" else "client";
     };
     sebastianrasor.persistence.files = [ "/var/lib/tailscale/tailscaled.state" ];
   };
