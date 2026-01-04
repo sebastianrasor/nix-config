@@ -573,10 +573,10 @@
     },
     "nix-secrets": {
       "locked": {
-        "lastModified": 1764706629,
-        "narHash": "sha256-gqRFzZB26p8wrPCdPhf8tIebDAsgVAkrVCX9q9Auw8Y=",
+        "lastModified": 1767549142,
+        "narHash": "sha256-milYrNDXMKJ4vzuYADKABnygmYA8F38frp8UX4Y31u8=",
         "ref": "main",
-        "rev": "22163d75d55bcd4c17d87accc22d8a82186e773d",
+        "rev": "ad0840bed1abbb3e2ceb813b9fc6478ffc61958e",
         "shallow": true,
         "type": "git",
         "url": "ssh://git@github.com/sebastianrasor/nix-secrets.git"
