@@ -19,6 +19,7 @@ in
       bandwhich.enable = true;
       bash.enable = true;
       bat.enable = true;
+      bottom.enable = true;
       direnv.enable = true;
       dust.enable = true;
       eza.enable = true;
