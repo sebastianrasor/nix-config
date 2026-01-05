@@ -24,6 +24,7 @@ in
       dust.enable = true;
       eza.enable = true;
       fish.enable = true;
+      git.enable = true;
       gitoxide.enable = true;
       gping.enable = true;
       hyperfine.enable = true;
