@@ -19,7 +19,5 @@ in
     home.packages = with pkgs; [
       jellyfin-media-player
     ];
-
-    sebastianrasor.persistence.directories = [ "${config.xdg.dataHome}/Jellyfin Media Player" ];
   };
 }

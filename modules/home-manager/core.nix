@@ -33,7 +33,10 @@ in
       miniserve.enable = true;
       monolith.enable = true;
       navi.enable = true;
-      persistence.directories = [ config.xdg.stateHome ];
+      persistence.directories = [
+        config.xdg.dataHome
+        config.xdg.stateHome
+      ];
       ripgrep.enable = true;
       ssh.enable = true;
       starship.enable = true;

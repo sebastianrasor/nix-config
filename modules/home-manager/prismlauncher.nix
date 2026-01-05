@@ -19,7 +19,5 @@ in
     home.packages = with pkgs; [
       prismlauncher
     ];
-
-    sebastianrasor.persistence.directories = [ "${config.xdg.dataHome}/PrismLauncher" ];
   };
 }

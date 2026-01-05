@@ -16,7 +16,5 @@ in
 
   config = lib.mkIf cfg.enable {
     programs.zoxide.enable = true;
-
-    sebastianrasor.persistence.directories = [ "${config.xdg.dataHome}/zoxide" ];
   };
 }
