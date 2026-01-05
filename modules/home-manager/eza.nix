@@ -23,9 +23,9 @@ in
       ];
     };
 
-    home.shellAliases = {
-      ls = "eza";
-      tree = "eza --tree";
+    programs.fish.shellAbbrs = {
+      "ls" = "eza";
+      "tree" = "eza --tree";
     };
   };
 }

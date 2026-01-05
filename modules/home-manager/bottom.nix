@@ -16,6 +16,7 @@ in
 
   config = lib.mkIf cfg.enable {
     programs.bottom.enable = true;
-    home.shellAliases.top = "btm";
+
+    programs.fish.shellAbbrs."top" = "btm";
   };
 }
