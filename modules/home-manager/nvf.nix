@@ -166,11 +166,6 @@ in
       };
     };
     home.sessionVariables.EDITOR = "nvim";
-    programs.fish.shellAbbrs = lib.mkIf config.sebastianrasor.fish.enable {
-      vim = "nvim";
-    };
-    home.shellAliases = lib.mkIf (!config.sebastianrasor.fish.enable) {
-      vim = "nvim";
-    };
+    programs.fish.shellAbbrs."vim" = "nvim";
   };
 }

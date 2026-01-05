@@ -5,10 +5,10 @@
   ...
 }:
 let
-  cfg = config.sebastianrasor.gitoxide;
+  cfg = config.sebastianrasor.dog;
 in
 {
-  options.sebastianrasor.gitoxide = {
+  options.sebastianrasor.dog = {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
@@ -17,7 +17,9 @@ in
 
   config = lib.mkIf cfg.enable {
     home.packages = with pkgs; [
-      gitoxide
+      dogdns
     ];
+
+    programs.fish.shellAbbrs."dig" = "dog";
   };
 }

@@ -21,18 +21,16 @@ in
       bat.enable = true;
       bottom.enable = true;
       direnv.enable = true;
+      dog.enable = true;
       dust.enable = true;
+      dysk.enable = true;
       eza.enable = true;
       fish.enable = true;
       git.enable = true;
-      gitoxide.enable = true;
       gping.enable = true;
       hyperfine.enable = true;
-      jnv.enable = true;
       jq.enable = true;
-      miniserve.enable = true;
       monolith.enable = true;
-      navi.enable = true;
       persistence.directories = [
         config.xdg.dataHome
         config.xdg.stateHome
@@ -43,7 +41,6 @@ in
       tokei.enable = true;
       vim.enable = true;
       xdg-userdirs.enable = true;
-      yazi.enable = true;
       zoxide.enable = true;
     };
 
