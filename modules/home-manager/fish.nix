@@ -53,7 +53,5 @@ in
         exec ${lib.getExe' config.programs.fish.package "fish"} $LOGIN_OPTION
       fi
     '';
-
-    sebastianrasor.persistence.files = [ "${config.xdg.dataHome}/fish/fish_history" ];
   };
 }

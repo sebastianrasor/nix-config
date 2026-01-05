@@ -19,6 +19,5 @@ in
       enable = true;
       nix-direnv.enable = true;
     };
-    sebastianrasor.persistence.directories = [ "${config.xdg.dataHome}/direnv" ];
   };
 }

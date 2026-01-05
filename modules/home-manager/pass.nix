@@ -24,7 +24,5 @@ in
       enable = true;
       settings.PASSWORD_STORE_DIR = cfg.passwordStoreDir;
     };
-
-    sebastianrasor.persistence.directories = [ cfg.passwordStoreDir ];
   };
 }
