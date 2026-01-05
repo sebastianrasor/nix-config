@@ -4,7 +4,6 @@
 
   sebastianrasor.atkinson-hyperlegible.enable = true;
   sebastianrasor.auto-rotate.enable = true;
-  sebastianrasor.bottom.enable = true;
   sebastianrasor.browserpass.enable = true;
   sebastianrasor.cosmic.enable = true;
   sebastianrasor.discord.enable = true;

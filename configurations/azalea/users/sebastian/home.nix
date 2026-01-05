@@ -3,7 +3,6 @@
   sebastianrasor.core.enable = true;
 
   sebastianrasor.atkinson-hyperlegible.enable = true;
-  sebastianrasor.bottom.enable = true;
   sebastianrasor.cosmic.enable = true;
   sebastianrasor.browserpass.enable = true;
   sebastianrasor.discord.enable = true;
