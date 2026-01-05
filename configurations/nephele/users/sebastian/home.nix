@@ -2,6 +2,8 @@
 {
   sebastianrasor.core.enable = true;
 
+  sebastianrasor.persistence.enable = true;
+
   home = {
     username = "sebastian";
     homeDirectory = "/home/sebastian";
