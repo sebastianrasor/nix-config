@@ -13,14 +13,24 @@ in
       default = false;
     };
 
+    authKeyFile = lib.mkOption {
+      type = lib.types.str;
+      default = null;
+    };
+
     exitNode = lib.mkOption {
       type = lib.types.bool;
       default = false;
     };
 
-    authKeyFile = lib.mkOption {
+    loginServer = lib.mkOption {
       type = lib.types.str;
-      default = null;
+      default = "https://headscale.${config.sebastianrasor.domain}";
+    };
+
+    operator = lib.mkOption {
+      type = lib.types.str;
+      default = "sebastian";
     };
   };
 
@@ -31,8 +41,11 @@ in
       enable = true;
       authKeyFile = lib.mkIf config.sebastianrasor.secrets.enable config.sops.secrets.tailscale_key.path;
       extraDaemonFlags = [ "--encrypt-state=false" ];
-      extraUpFlags = [ "--login-server=https://headscale.${config.sebastianrasor.domain}" ];
-      extraSetFlags = lib.mkIf cfg.exitNode [ "--advertise-exit-node" ];
+      extraUpFlags = [ "--login-server=${cfg.loginServer}" ];
+      extraSetFlags = [
+        "--operator=${cfg.operator}"
+      ]
+      ++ lib.optionals cfg.exitNode [ "--advertise-exit-node" ];
       useRoutingFeatures = if cfg.exitNode then "both" else "client";
     };
     sebastianrasor.persistence.files = [ "/var/lib/tailscale/tailscaled.state" ];
