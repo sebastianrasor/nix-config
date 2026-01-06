@@ -28,7 +28,6 @@ in
         bat.enable = true;
         bottom.enable = true;
         direnv.enable = true;
-        dog.enable = true;
         dust.enable = true;
         dysk.enable = true;
         eza.enable = true;

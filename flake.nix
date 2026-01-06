@@ -160,7 +160,6 @@
           # flake modules
           {
             flake-cosmic-manager = cosmic-manager.homeManagerModules.cosmic-manager;
-            flake-impermanence = impermanence.homeManagerModules.impermanence;
             flake-nvf = nvf.homeManagerModules.default;
           }
         ];
