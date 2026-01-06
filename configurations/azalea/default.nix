@@ -2,17 +2,19 @@
 {
   networking.hostName = "azalea";
 
-  sebastianrasor.core.enable = true;
-  sebastianrasor.core.laptop = true;
+  sebastianrasor = {
+    core.enable = true;
+    core.laptop = true;
 
-  sebastianrasor.makemkv.enable = true;
-  sebastianrasor.steam.enable = true;
+    makemkv.enable = true;
+    steam.enable = true;
 
-  sebastianrasor.unas = {
-    enable = true;
-    host = "unas-pro.internal";
+    unas = {
+      enable = true;
+      host = "unas-pro.internal";
+    };
+    unas-lazy-media.enable = true;
   };
-  sebastianrasor.unas-lazy-media.enable = true;
 
   imports = [
     inputs.nixos-hardware.nixosModules.framework-13-7040-amd
