@@ -4,8 +4,8 @@
     core.enable = true;
 
     atkinson-hyperlegible.enable = true;
-    cosmic.enable = true;
     browserpass.enable = true;
+    cosmic.enable = true;
     discord.enable = true;
     git.enable = true;
     google-chrome.enable = true;
