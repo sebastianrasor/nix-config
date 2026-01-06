@@ -2,8 +2,10 @@
 {
   networking.hostName = "sunflower";
 
-  sebastianrasor.core.enable = true;
-  sebastianrasor.core.laptop = true;
+  sebastianrasor = {
+    core.enable = true;
+    core.laptop = true;
+  };
 
   imports = [
     inputs.nixos-hardware.nixosModules.framework-12-13th-gen-intel

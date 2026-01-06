@@ -1,8 +1,10 @@
 { ... }:
 {
-  sebastianrasor.core.enable = true;
+  sebastianrasor = {
+    core.enable = true;
 
-  sebastianrasor.persistence.enable = true;
+    persistence.enable = true;
+  };
 
   home = {
     username = "sebastian";

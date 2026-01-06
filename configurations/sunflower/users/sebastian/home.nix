@@ -1,24 +1,26 @@
 { ... }:
 {
-  sebastianrasor.core.enable = true;
+  sebastianrasor = {
+    core.enable = true;
 
-  sebastianrasor.atkinson-hyperlegible.enable = true;
-  sebastianrasor.auto-rotate.enable = true;
-  sebastianrasor.browserpass.enable = true;
-  sebastianrasor.cosmic.enable = true;
-  sebastianrasor.discord.enable = true;
-  sebastianrasor.git.enable = true;
-  sebastianrasor.google-chrome.enable = true;
-  sebastianrasor.gpg.enable = true;
-  sebastianrasor.monaspace.enable = true;
-  sebastianrasor.mpv.enable = true;
-  sebastianrasor.nvf.enable = true;
-  sebastianrasor.pass.enable = true;
-  sebastianrasor.persistence.enable = true;
-  sebastianrasor.posy-cursors.enable = true;
-  sebastianrasor.tailscale-systray.enable = true;
-  sebastianrasor.thunderbird.enable = true;
-  sebastianrasor.yubikey-touch-detector.enable = true;
+    atkinson-hyperlegible.enable = true;
+    auto-rotate.enable = true;
+    browserpass.enable = true;
+    cosmic.enable = true;
+    discord.enable = true;
+    git.enable = true;
+    google-chrome.enable = true;
+    gpg.enable = true;
+    monaspace.enable = true;
+    mpv.enable = true;
+    nvf.enable = true;
+    pass.enable = true;
+    persistence.enable = true;
+    posy-cursors.enable = true;
+    tailscale-systray.enable = true;
+    thunderbird.enable = true;
+    yubikey-touch-detector.enable = true;
+  };
 
   home = {
     username = "sebastian";
