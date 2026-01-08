@@ -25,10 +25,10 @@
       pkgs = import nixpkgs { inherit system; };
     in
     {
-      # import all NixOS configurations from ./configurations/*
+      # import all NixOS configurations from ./nixos-configurations/*
       nixosConfigurations =
         with nixpkgs.lib;
-        pipe ./configurations [
+        pipe ./nixos-configurations [
           builtins.readDir
 
           # { hostName = ... } -> { hostName = nixosConfiguration; }
@@ -36,7 +36,7 @@
             hostName: _:
             nameValuePair hostName (nixosSystem {
               specialArgs = { inherit inputs outputs; };
-              modules = [ ./configurations/${hostName} ] ++ attrsets.attrValues self.nixosModules;
+              modules = [ ./nixos-configurations/${hostName} ] ++ attrsets.attrValues self.nixosModules;
             })
           ))
         ];
