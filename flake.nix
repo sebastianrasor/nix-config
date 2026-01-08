@@ -52,43 +52,6 @@
           ) self.nixosConfigurations;
         };
 
-      # import all Home Manager configurations from ./configurations/*/users/*/home.nix
-      homeConfigurations =
-        with nixpkgs.lib;
-        pipe ./configurations [
-          builtins.readDir
-
-          # { hostName = ... } -> { hostName = ["sebastian", ...]; }
-          (mapAttrs' (
-            hostName: _:
-            nameValuePair hostName (
-              pipe ./configurations/${hostName}/users [
-                builtins.readDir
-                builtins.attrNames
-              ]
-            )
-          ))
-
-          # { hostName = ["sebastian", ...]; } -> { "sebastian@hostName" = homeManagerConfiguration; ... }
-          (concatMapAttrs (
-            hostName: usernames:
-            pipe usernames [
-              (map (username: {
-                name = "${username}@${hostName}";
-                value = home-manager.lib.homeManagerConfiguration {
-                  pkgs = self.nixosConfigurations.${hostName}.pkgs;
-                  extraSpecialArgs = { inherit inputs outputs; };
-                  modules = [
-                    ./configurations/${hostName}/users/${username}/home.nix
-                  ]
-                  ++ attrsets.attrValues self.homeModules;
-                };
-              }))
-              builtins.listToAttrs
-            ]
-          ))
-        ];
-
       nixosModules =
         with nixpkgs.lib;
         mergeAttrsList [
