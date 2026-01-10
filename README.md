@@ -48,13 +48,12 @@ a single `.nix` file. A minimal amount of configuration should be declared by
 modules in this folder, instead these modules should enable options declared by
 modules in the `modules/` directory to configure the host/machine.
 
-I have chosen to not provide a `homeConfigurations` output, as the
-[Impermanence PR](https://github.com/nix-community/impermanence/pull/272) that I
-use is not compatible with standalone Home Manager on non-NixOS systems. I do
-use Home Manager on one non-NixOS system, though: my work laptop. I feel the
-best way to handle that, though, is to just have a similar repo to this one in
-my workplace internal Git that imports and uses my Home Manager modules from
-this repo.
+I have chosen to not provide a `homeConfigurations` output, as Impermanence is
+not compatible with standalone Home Manager and it's currently enabled on all of
+my Home Manager configurations. I do use standalone Home Manager on one
+non-NixOS system, though: my work laptop. I feel the best way to handle that,
+though, is to just have a similar repo to this one in my workplace internal Git
+that imports and uses my Home Manager modules from this repo.
 
 Modules can exist in three places within the `modules/` directory:
 
