@@ -16,6 +16,7 @@
     jellyfin.enable = true;
     minecraft-server.enable = true;
     minecraft-world-backup.enable = true;
+    paperless.enable = true;
     persistence.enable = true;
     postgresql.enable = true;
     radicale.enable = true;
