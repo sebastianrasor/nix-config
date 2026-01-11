@@ -9,7 +9,10 @@
     home = "/home/sebastian";
     description = "Sebastian Rasor";
     extraGroups = [
+      "dialout"
+      "lp"
       "networkmanager"
+      "scanner"
       "wheel"
     ];
     openssh.authorizedKeys.keys = lib.mkIf config.sebastianrasor.sshd.enable [
