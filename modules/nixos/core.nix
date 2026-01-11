@@ -92,6 +92,7 @@ in
         persistence.enable = true;
         pipewire.enable = true;
         plymouth.enable = true;
+        printing.enable = true;
         sane.enable = true;
         yubikey.enable = true;
       };
