@@ -24,6 +24,7 @@
       enable = true;
       baseDomainName = "ts.${config.sebastianrasor.domain}";
     };
+    rtl-tcp.enable = true;
     systemd-boot.enable = true;
     systemd-networkd.interfacesRequiredForOnline."enp10s0f0np0" = "routable";
     tailscale-golink.enable = true;
