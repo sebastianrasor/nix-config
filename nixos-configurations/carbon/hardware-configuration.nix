@@ -42,7 +42,7 @@
   };
 
   fileSystems."/nix" = {
-    device = "/dev/disk/by-uuid/c80ca6e0-4cee-4974-9544-6830e8d7579b";
+    device = "/dev/disk/by-uuid/c95af7e4-db76-4f22-9d47-efcb7b0d78f1";
     fsType = "ext4";
   };
 
