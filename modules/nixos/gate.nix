@@ -38,12 +38,8 @@ in
           bind = "0.0.0.0:25565";
           servers = {
             default = "carbon.ts.${config.sebastianrasor.domain}:${toString minecraftInternalServerPort}";
-            local = "localhost:${toString minecraftInternalServerPort}";
           };
-          try = [
-            "local"
-            "default"
-          ];
+          try = [ "default" ];
           status = {
             motd = "A Minecraft Server";
             showMaxPlayers = 20;
