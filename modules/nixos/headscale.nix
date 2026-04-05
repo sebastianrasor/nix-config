@@ -107,6 +107,16 @@ in
               value = "100.64.0.3";
             }
             {
+              name = "ollama.ts.${config.sebastianrasor.domain}";
+              type = "A";
+              value = "100.64.0.3";
+            }
+            {
+              name = "open-webui.ts.${config.sebastianrasor.domain}";
+              type = "A";
+              value = "100.64.0.3";
+            }
+            {
               name = "paperless.ts.${config.sebastianrasor.domain}";
               type = "A";
               value = "100.64.0.3";

@@ -16,6 +16,8 @@
     jellyfin.enable = true;
     minecraft-server.enable = true;
     minecraft-world-backup.enable = true;
+    ollama.enable = true;
+    open-webui.enable = true;
     paperless.enable = true;
     persistence.enable = true;
     postgresql.enable = true;
@@ -24,7 +26,6 @@
       enable = true;
       baseDomainName = "ts.${config.sebastianrasor.domain}";
     };
-    rtl-tcp.enable = true;
     systemd-boot.enable = true;
     systemd-networkd.interfacesRequiredForOnline."enp10s0f0np0" = "routable";
     tailscale-golink.enable = true;
