@@ -108,9 +108,7 @@ in
           HandlePowerKeyLongPress = "poweroff";
         };
       systemd.network.wait-online.enable = false;
-      systemd.sleep.extraConfig = ''
-        HibernateDelaySec=30m
-      '';
+      systemd.sleep.settings.Sleep.HibernateDelaySec = "30m";
     })
   ];
 }
