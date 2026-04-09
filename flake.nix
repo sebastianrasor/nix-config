@@ -9,29 +9,49 @@
       ...
     }:
     let
+      constants = import ./constants.nix;
       eachSupportedSystem = nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed;
+      forAllSystems =
+        f:
+        eachSupportedSystem (
+          system:
+          f (
+            import nixpkgs {
+              inherit system;
+              config = constants.nixConfig;
+              overlays = builtins.attrValues self.overlays;
+            }
+          )
+        );
     in
     {
-      devShells = eachSupportedSystem (system: {
-        default = import ./shell.nix { pkgs = import nixpkgs { inherit system; }; };
+      devShells = forAllSystems (pkgs: {
+        default = import ./shell.nix { inherit pkgs; };
       });
 
-      formatter = eachSupportedSystem (system: (import nixpkgs { inherit system; }).nixfmt-tree);
+      formatter = forAllSystems (pkgs: pkgs.nixfmt-tree);
 
       homeModules = import ./home-modules self;
+
+      legacyPackages = forAllSystems (pkgs: pkgs.callPackages ./legacy-packages { });
 
       nixosConfigurations = import ./nixos-configurations self;
 
       nixosModules = import ./nixos-modules self;
 
-      packages = eachSupportedSystem (system: {
-        # Cachix Deploy https://docs.cachix.org/deploy/deploying-to-agents/index.html#write-deploy-specification
-        default = (cachix-deploy-flake.lib (import nixpkgs { inherit system; })).spec {
-          agents = builtins.mapAttrs (
-            _: nixosSystem: nixosSystem.config.system.build.toplevel
-          ) self.nixosConfigurations;
-        };
-      });
+      overlays = (import ./overlays self);
+
+      packages = forAllSystems (
+        pkgs:
+        (import ./packages pkgs)
+        // {
+          default = (cachix-deploy-flake.lib pkgs).spec {
+            agents = builtins.mapAttrs (
+              _: nixosSystem: nixosSystem.config.system.build.toplevel
+            ) self.nixosConfigurations;
+          };
+        }
+      );
     };
 
   inputs = {

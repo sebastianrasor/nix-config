@@ -25,4 +25,7 @@
     =eqWq
     -----END PGP PUBLIC KEY BLOCK-----
   '';
+  nixConfig = {
+    allowUnfree = true;
+  };
 }

@@ -29,6 +29,7 @@ in
         i18n.enable = true;
         nh.enable = true;
         nix.enable = true;
+        nixpkgs.enable = true;
         pam.enable = true;
         secrets.enable = true;
         sshd.enable = true;
