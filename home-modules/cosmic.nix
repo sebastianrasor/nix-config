@@ -1,6 +1,7 @@
 {
   config,
   cosmicLib,
+  inputs,
   lib,
   pkgs,
   ...
@@ -9,6 +10,10 @@ let
   cfg = config.sebastianrasor.cosmic;
 in
 {
+  imports = [
+    inputs.cosmic-manager.homeManagerModules.cosmic-manager
+  ];
+
   options.sebastianrasor.cosmic = {
     enable = lib.mkOption {
       type = lib.types.bool;

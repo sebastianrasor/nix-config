@@ -1,5 +1,6 @@
 {
   config,
+  constants,
   lib,
   pkgs,
   ...
@@ -16,7 +17,7 @@ in
 
     baseDomainName = lib.mkOption {
       type = lib.types.str;
-      default = "${config.networking.hostName}.${config.sebastianrasor.domain}";
+      default = "${config.networking.hostName}.${constants.domain}";
     };
 
     extraDomainNames = lib.mkOption {

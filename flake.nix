@@ -2,147 +2,36 @@
   description = "Sebastian Rasor's Nix configurations";
 
   outputs =
-    inputs@{
+    {
       self,
       nixpkgs,
-      authentik-nix,
       cachix-deploy-flake,
-      cosmic-manager,
-      disko,
-      home-manager,
-      impermanence,
-      lanzaboote,
-      nvf,
-      sops-nix,
-      tailscale-golink,
       ...
     }:
     let
-      inherit (self) outputs;
-
-      system = "x86_64-linux";
-
-      pkgs = import nixpkgs { inherit system; };
+      eachSupportedSystem = nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed;
     in
     {
-      # import all NixOS configurations from ./nixos-configurations/*
-      nixosConfigurations =
-        with nixpkgs.lib;
-        pipe ./nixos-configurations [
-          builtins.readDir
+      devShells = eachSupportedSystem (system: {
+        default = import ./shell.nix { pkgs = import nixpkgs { inherit system; }; };
+      });
 
-          # { hostName = ... } -> { hostName = nixosConfiguration; }
-          (mapAttrs' (
-            hostName: _:
-            nameValuePair hostName (nixosSystem {
-              specialArgs = { inherit inputs outputs; };
-              modules = [ ./nixos-configurations/${hostName} ] ++ attrsets.attrValues self.nixosModules;
-            })
-          ))
-        ];
+      formatter = eachSupportedSystem (system: (import nixpkgs { inherit system; }).nixfmt-tree);
 
-      # expose all NixOS configurations as Cachix Deploy agents
-      packages.${system}.default =
-        let
-          cachix-deploy-lib = cachix-deploy-flake.lib pkgs;
-        in
-        cachix-deploy-lib.spec {
+      homeModules = import ./home-modules self;
+
+      nixosConfigurations = import ./nixos-configurations self;
+
+      nixosModules = import ./nixos-modules self;
+
+      packages = eachSupportedSystem (system: {
+        # Cachix Deploy https://docs.cachix.org/deploy/deploying-to-agents/index.html#write-deploy-specification
+        default = (cachix-deploy-flake.lib (import nixpkgs { inherit system; })).spec {
           agents = builtins.mapAttrs (
             _: nixosSystem: nixosSystem.config.system.build.toplevel
           ) self.nixosConfigurations;
         };
-
-      nixosModules =
-        with nixpkgs.lib;
-        mergeAttrsList [
-          # ./modules/nixos/*
-          (pipe ./modules/nixos [
-            builtins.readDir
-            (mapAttrs' (
-              nixosModule: _:
-              nameValuePair (removeSuffix ".nix" nixosModule) (import ./modules/nixos/${nixosModule})
-            ))
-          ])
-
-          # ./modules/* (excluding nixos & home-manager)
-          (pipe ./modules [
-            builtins.readDir
-            (filterAttrs (
-              name: _:
-              !(builtins.elem name [
-                "nixos"
-                "home-manager"
-              ])
-            ))
-            (mapAttrs' (module: _: nameValuePair (removeSuffix ".nix" module) (import ./modules/${module})))
-          ])
-
-          # flake modules
-          {
-            flake-authentik-nix = authentik-nix.nixosModules.default;
-            flake-disko = disko.nixosModules.disko;
-            flake-home-manager = home-manager.nixosModules.home-manager;
-            flake-impermanence = impermanence.nixosModules.impermanence;
-            flake-lanzaboote = lanzaboote.nixosModules.lanzaboote;
-            flake-sops-nix = sops-nix.nixosModules.sops;
-            flake-tailscale-golink = tailscale-golink.nixosModules.default;
-            home-manager-extra = {
-              home-manager = {
-                extraSpecialArgs = { inherit inputs outputs; };
-                sharedModules = attrsets.attrValues self.homeModules;
-              };
-            };
-          }
-        ];
-
-      homeModules =
-        with nixpkgs.lib;
-        mergeAttrsList [
-          # ./modules/home-manager/*
-          (pipe ./modules/home-manager [
-            builtins.readDir
-            (mapAttrs' (
-              homeModule: _:
-              nameValuePair (removeSuffix ".nix" homeModule) (import ./modules/home-manager/${homeModule})
-            ))
-          ])
-
-          # ./modules/* (excluding nixos & home-manager)
-          (pipe ./modules [
-            builtins.readDir
-            (filterAttrs (
-              name: _:
-              !(builtins.elem name [
-                "nixos"
-                "home-manager"
-              ])
-            ))
-            (mapAttrs' (module: _: nameValuePair (removeSuffix ".nix" module) (import ./modules/${module})))
-          ])
-
-          # flake modules
-          {
-            flake-cosmic-manager = cosmic-manager.homeManagerModules.cosmic-manager;
-            flake-nvf = nvf.homeManagerModules.default;
-          }
-        ];
-
-      formatter.${system} = pkgs.nixfmt-tree;
-
-      # create a simple development shell for working with Nix
-      devShells.${system}.default = pkgs.mkShellNoCC {
-        nativeBuildInputs = with pkgs; [
-          fd
-          git
-          nh
-          nixd
-          nixf
-          nixfmt
-        ];
-        shellHook = ''
-          export NH_FLAKE=".";
-        '';
-      };
+      });
     };
 
   inputs = {

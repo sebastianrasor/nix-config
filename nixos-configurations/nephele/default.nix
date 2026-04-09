@@ -1,4 +1,4 @@
-{ config, ... }:
+{ constants, ... }:
 {
   networking.hostName = "nephele";
 
@@ -14,7 +14,7 @@
     persistence.enable = true;
     reverse-proxy = {
       enable = true;
-      baseDomainName = config.sebastianrasor.domain;
+      baseDomainName = constants.domain;
       openFirewall = true;
     };
     systemd-boot.enable = true;

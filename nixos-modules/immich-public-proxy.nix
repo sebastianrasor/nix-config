@@ -1,5 +1,6 @@
 {
   config,
+  constants,
   lib,
   ...
 }:
@@ -18,7 +19,7 @@ in
     services.immich-public-proxy = {
       enable = true;
       port = 3001;
-      immichUrl = "https://immich.ts.${config.sebastianrasor.domain}";
+      immichUrl = "https://immich.ts.${constants.domain}";
     };
 
     sebastianrasor.reverse-proxy.proxies."immich" =

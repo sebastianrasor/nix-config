@@ -1,5 +1,6 @@
 {
   config,
+  constants,
   inputs,
   lib,
   pkgs,
@@ -37,7 +38,7 @@ in
         config = {
           bind = "0.0.0.0:25565";
           servers = {
-            default = "carbon.ts.${config.sebastianrasor.domain}:${toString minecraftInternalServerPort}";
+            default = "carbon.ts.${constants.domain}:${toString minecraftInternalServerPort}";
           };
           try = [ "default" ];
           status = {

@@ -8,6 +8,10 @@ let
   cfg = config.sebastianrasor.secrets;
 in
 {
+  imports = [
+    inputs.sops-nix.nixosModules.sops
+  ];
+
   options.sebastianrasor.secrets = {
     enable = lib.mkOption {
       type = lib.types.bool;

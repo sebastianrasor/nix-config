@@ -1,5 +1,6 @@
 {
   config,
+  inputs,
   lib,
   pkgs,
   ...
@@ -8,6 +9,10 @@ let
   cfg = config.sebastianrasor.lanzaboote;
 in
 {
+  imports = [
+    inputs.lanzaboote.nixosModules.lanzaboote
+  ];
+
   options.sebastianrasor.lanzaboote = {
     enable = lib.mkOption {
       type = lib.types.bool;
