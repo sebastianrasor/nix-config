@@ -3,13 +3,15 @@
   constants,
   inputs,
   lib,
+  outputs,
   pkgs,
   ...
 }:
 let
   cfg = config.sebastianrasor.gate;
   secretsEnabled = config.sebastianrasor.secrets.enable;
-  minecraftInternalServerPort = config.sebastianrasor.minecraft-server.serverProperties.server-port;
+  carbonMinecraftServerPort =
+    outputs.nixosConfigurations.carbon.config.services.minecraft-server.serverProperties.server-port;
 
   yaml = pkgs.formats.yaml { };
   gateConfigYamlFile = yaml.generate "config.yaml" cfg.config;
@@ -38,16 +40,12 @@ in
         config = {
           bind = "0.0.0.0:25565";
           servers = {
-            default = "carbon.ts.${constants.domain}:${toString minecraftInternalServerPort}";
+            carbon = "carbon.ts.${constants.domain}:${toString carbonMinecraftServerPort}";
           };
-          try = [ "default" ];
           status = {
             motd = "A Minecraft Server";
             showMaxPlayers = 20;
-            favicon = pkgs.fetchurl {
-              url = "https://packpng.com/static/pack.png";
-              sha256 = "0m9yw0llhqvvg9dbhwmisb97ldk12r01lw2nhq194s6nhawcyzcl";
-            };
+            favicon = outputs.packages.${pkgs.stdenv.hostPlatform.system}.server-icon;
           };
           builtinCommands = false;
           forwarding = {
@@ -55,9 +53,9 @@ in
             velocitySecret =
               if secretsEnabled then config.sops.placeholder."minecraft/velocity-secret" else null;
           };
-          bedrock = {
-            managed = true;
-            floodgateKeyPath = config.sops.secrets."minecraft/floodgate.pem".path;
+          forcedHosts = {
+            "mine.diamonds" = [ "carbon" ];
+            "mc.ts.rasor.us" = [ "carbon" ];
           };
         };
       };

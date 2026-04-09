@@ -1,0 +1,186 @@
+{
+  "26.1.2": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/26.1.2/0.18.6/1.1.1/server/jar",
+    "sha256": "0yhbqr9amsbid387s3nfv0hrxvhxhjba6hw5zcmz7al6dp5qgfcc"
+  },
+  "26.1.1": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/26.1.1/0.18.6/1.1.1/server/jar",
+    "sha256": "0w1y4b50zwxqrc7jh317cl4x3xr6ia2b79zg8bsssh1f6630qckj"
+  },
+  "26.1": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/26.1/0.18.6/1.1.1/server/jar",
+    "sha256": "0z16rkn0jg89hik1kc8hb3k0pngb5ckg69n5z8wlk7h8x9pr9psn"
+  },
+  "1.21.11": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.21.11/0.18.6/1.1.1/server/jar",
+    "sha256": "09z498pw6xmbqwd7c2di02ml8fc6586xlysdwzii1fdhvnxw5cgy"
+  },
+  "1.21.10": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.21.10/0.18.6/1.1.1/server/jar",
+    "sha256": "1v424wg7lngb36pcxjxijjxyw1ibfzwk8snix1gk35447807x52s"
+  },
+  "1.21.9": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.21.9/0.18.6/1.1.1/server/jar",
+    "sha256": "1fjwpgz4knj194yxqv82qn51mn0jvdmgm93z0wpc18iwfhva5b6p"
+  },
+  "1.21.8": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.21.8/0.18.6/1.1.1/server/jar",
+    "sha256": "0jkx2mwlir02grv6jc1ka8lrsvd4cqjkdpl7vcl623zx2aqma633"
+  },
+  "1.21.7": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.21.7/0.18.6/1.1.1/server/jar",
+    "sha256": "1f2yw17s9amb98rpsiqxsanapzk69kraacbqklv64hhw3x3jch40"
+  },
+  "1.21.6": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.21.6/0.18.6/1.1.1/server/jar",
+    "sha256": "053226qsdmvik6ip7wn9jpwrqlv4c6whki7ilzmydr2ka9h8p1ya"
+  },
+  "1.21.5": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.21.5/0.18.6/1.1.1/server/jar",
+    "sha256": "0liwcvmdk6xsf3mv82mhprzkza9j76hakjrbcy85gkgpg87ibzd3"
+  },
+  "1.21.4": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.21.4/0.18.6/1.1.1/server/jar",
+    "sha256": "00b0fw0g78lvwgica72zl23wich1msh7l028v15gn0skqlvp5041"
+  },
+  "1.21.3": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.21.3/0.18.6/1.1.1/server/jar",
+    "sha256": "1liypgv8hxryrkddriqbdchfvi8dsdq4wsw2jm2ncr4c83hlggz9"
+  },
+  "1.21.2": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.21.2/0.18.6/1.1.1/server/jar",
+    "sha256": "0q7jlrkm8i3klw21sn5wyhcdzap929yxxq2xg09a8dnbpy83h72r"
+  },
+  "1.21.1": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.21.1/0.18.6/1.1.1/server/jar",
+    "sha256": "1r3x3wdgw4m4sg4bf8ginz1bv4igznndylxm4anrmjr3krvjplf8"
+  },
+  "1.21": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.21/0.18.6/1.1.1/server/jar",
+    "sha256": "1g8vnnl9djj6amncklgds992ymik09pprpv8ibfa8fmq0qxi7zmq"
+  },
+  "1.20.6": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.20.6/0.18.6/1.1.1/server/jar",
+    "sha256": "12awfab2znmlvzq9wpv7clbjd83z57xz4c8vg87d8jnamd4zjff7"
+  },
+  "1.20.5": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.20.5/0.18.6/1.1.1/server/jar",
+    "sha256": "0awf05dbfh1rzi7vswk12q82i02fmy7sw73kfzzvf2x384fili7d"
+  },
+  "1.20.4": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.20.4/0.18.6/1.1.1/server/jar",
+    "sha256": "0nl6g3ndk69ckdcxmx1117bi56hjb8wwp8fi3cpws87xqccvic8m"
+  },
+  "1.20.3": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.20.3/0.18.6/1.1.1/server/jar",
+    "sha256": "0qpbbcm9sdi4z90qhlmpqkk8mll18kcg5d33a599ha4c7fyywn2k"
+  },
+  "1.20.2": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.20.2/0.18.6/1.1.1/server/jar",
+    "sha256": "0463vbxjxz3sgb08vll4wwkcssfwkwdjga2ffz3xhzbx9nasqw1j"
+  },
+  "1.20.1": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.20.1/0.18.6/1.1.1/server/jar",
+    "sha256": "10h7z5p92zdlgrhanmipz3b0n38yn16jgaxg47mmh0fy8kflk0z3"
+  },
+  "1.20": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.20/0.18.6/1.1.1/server/jar",
+    "sha256": "11v4nsvqxcqlaq1732xm4rsr1yk6aiypz9yy4yncq6jn9j956ljl"
+  },
+  "1.19.4": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.19.4/0.18.6/1.1.1/server/jar",
+    "sha256": "00id9w5iijykbk3ac21k3f4zkw2v55zz4873vr77d9k9frzjgaby"
+  },
+  "1.19.3": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.19.3/0.18.6/1.1.1/server/jar",
+    "sha256": "1n05a8qmch1v9l415ivwvf00v3mwr69cwls6vnqn5pq6pwg89fvg"
+  },
+  "1.19.2": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.19.2/0.18.6/1.1.1/server/jar",
+    "sha256": "1rk6l3s41vhb90f4irxylcsaq94lnbgs4966ggi8pbgkjbjb5wwr"
+  },
+  "1.19.1": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.19.1/0.18.6/1.1.1/server/jar",
+    "sha256": "166r2gv8zcwlxkb0zkvsha6v1vlp5hwgkb0y2qg3wczhsbnymfy2"
+  },
+  "1.19": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.19/0.18.6/1.1.1/server/jar",
+    "sha256": "10sbpzp732pyraph26vdb4f4an29zlj0zvbkp4q41wz7gvfwc669"
+  },
+  "1.18.2": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.18.2/0.18.6/1.1.1/server/jar",
+    "sha256": "033bslv0pkxv3jfnj4czxbp3yrjiqqka5gy1krinv3743a4bc44l"
+  },
+  "1.18.1": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.18.1/0.18.6/1.1.1/server/jar",
+    "sha256": "07fpqg5w1yj4i603g7k9vvx69y5mb075x5x6fk3nx5i1qsjhav6q"
+  },
+  "1.18": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.18/0.18.6/1.1.1/server/jar",
+    "sha256": "0cl0wi1w3d4azgk8810vw223ypzaqqvcqfbqks3qg4b2bhssd4ii"
+  },
+  "1.17.1": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.17.1/0.18.6/1.1.1/server/jar",
+    "sha256": "13z5fg0s5myhxhz1np539260a9rnxv126nay2cxnjqxmckf1pwv8"
+  },
+  "1.17": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.17/0.18.6/1.1.1/server/jar",
+    "sha256": "1qn13kk8sw9d9irwmn112kvqn68yyjqfs211hb9hfg4k8r5vc0ym"
+  },
+  "1.16.5": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.16.5/0.18.6/1.1.1/server/jar",
+    "sha256": "0np5yyvpnis0rgqsa8yfqrgh3hgnk8ddaxxvzi86k8qm0q6hkawa"
+  },
+  "1.16.4": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.16.4/0.18.6/1.1.1/server/jar",
+    "sha256": "09h140sz6s98f3gwgfwqnbwg64hviri7vc7hg0rkvavic8dywylh"
+  },
+  "1.16.3": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.16.3/0.18.6/1.1.1/server/jar",
+    "sha256": "0cf0jdvy8f30hxl38i02lxf43cggymfhya7kf5brb98cashgqszq"
+  },
+  "1.16.2": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.16.2/0.18.6/1.1.1/server/jar",
+    "sha256": "045xlhfx01lvk0w7k2vi548i2m9bkgnslbxfh9snwpkgjqfrdgjz"
+  },
+  "1.16.1": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.16.1/0.18.6/1.1.1/server/jar",
+    "sha256": "0alibb8sk5ys5g91sjyx1hqjanlqvpi2y2cgmvhbmfwcyr1v5dxd"
+  },
+  "1.16": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.16/0.18.6/1.1.1/server/jar",
+    "sha256": "1lh7pixm2g41mklddjvr3584rgra1ddgvdnmbs7n8h8vrhjkiqm8"
+  },
+  "1.15.2": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.15.2/0.18.6/1.1.1/server/jar",
+    "sha256": "0vq3l2f4v6szzgrws23yp443xh73fx8pax8px8p6fmbdhrlw7gxh"
+  },
+  "1.15.1": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.15.1/0.18.6/1.1.1/server/jar",
+    "sha256": "00virvbpxv0xa396qmwmh9f8zs7x95pi1gm2qmds6rspxr63wrr2"
+  },
+  "1.15": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.15/0.18.6/1.1.1/server/jar",
+    "sha256": "0wha292hlk5c6la3d84288v2sfv5inx6qjsp7v0h4zkbxx2hcfzj"
+  },
+  "1.14.4": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.14.4/0.18.6/1.1.1/server/jar",
+    "sha256": "173s5g9vzi9np33if1pbcd05452hfh3lv8mb56s7ljk5iaq44wbh"
+  },
+  "1.14.3": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.14.3/0.18.6/1.1.1/server/jar",
+    "sha256": "0avl5qgsq6zpyiy8mcizmabgcqwvkyiwvq957j980kn336a0cv71"
+  },
+  "1.14.2": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.14.2/0.18.6/1.1.1/server/jar",
+    "sha256": "1iq883va248rzzx31mivwl8hd3bmir9xpdsgbx7vni9kigshsrgl"
+  },
+  "1.14.1": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.14.1/0.18.6/1.1.1/server/jar",
+    "sha256": "0f93ib5hilc3pdjpigpyblyg00dqg0ffw6wdjkbnd893v3nmngh7"
+  },
+  "1.14": {
+    "url": "https://meta.fabricmc.net/v2/versions/loader/1.14/0.18.6/1.1.1/server/jar",
+    "sha256": "0p88xsq5qggfxi57y0n3zcpiqp6dmrcwa86c64nycq8bhkdpwvfa"
+  }
+}

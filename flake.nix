@@ -102,6 +102,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    server-mods.url = "git+ssh://git@github.com/sebastianrasor/server-mods.git?ref=main&shallow=1";
+
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";

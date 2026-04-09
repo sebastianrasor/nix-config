@@ -144,7 +144,7 @@ in
 
     dir = lib.mkOption {
       type = lib.types.path;
-      default = config.sebastianrasor.minecraft-server.dir;
+      default = config.services.minecraft-server.dataDir;
     };
   };
 
