@@ -1,4 +1,4 @@
-{ config, ... }:
+{ constants, ... }:
 {
   networking.hostName = "carbon";
 
@@ -24,7 +24,7 @@
     radicale.enable = true;
     reverse-proxy = {
       enable = true;
-      baseDomainName = "ts.${config.sebastianrasor.domain}";
+      baseDomainName = "ts.${constants.domain}";
     };
     systemd-boot.enable = true;
     systemd-networkd.interfacesRequiredForOnline."enp10s0f0np0" = "routable";

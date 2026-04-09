@@ -1,5 +1,6 @@
 {
   config,
+  constants,
   lib,
   ...
 }:
@@ -20,9 +21,9 @@ in
       enableDefaultConfig = false;
       extraOptionOverrides = {
         CanonicalizeHostname = "yes";
-        CanonicalDomains = "ts.${config.sebastianrasor.domain}";
+        CanonicalDomains = "ts.${constants.domain}";
       };
-      matchBlocks."*.ts.${config.sebastianrasor.domain}" = {
+      matchBlocks."*.ts.${constants.domain}" = {
         controlMaster = "auto";
         controlPath = "\${XDG_RUNTIME_DIR}/ssh/control/%C";
         controlPersist = "10m";

@@ -1,5 +1,6 @@
 {
   config,
+  constants,
   lib,
   ...
 }:
@@ -15,7 +16,6 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    sebastianrasor.reverse-proxy.proxies."authentik" =
-      "https://authentik.ts.${config.sebastianrasor.domain}";
+    sebastianrasor.reverse-proxy.proxies."authentik" = "https://authentik.ts.${constants.domain}";
   };
 }

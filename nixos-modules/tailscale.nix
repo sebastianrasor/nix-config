@@ -1,5 +1,6 @@
 {
   config,
+  constants,
   lib,
   ...
 }:
@@ -25,7 +26,7 @@ in
 
     loginServer = lib.mkOption {
       type = lib.types.str;
-      default = "https://headscale.${config.sebastianrasor.domain}";
+      default = "https://headscale.${constants.domain}";
     };
 
     operator = lib.mkOption {

@@ -1,5 +1,6 @@
 {
   config,
+  constants,
   lib,
   pkgs,
   ...
@@ -20,7 +21,7 @@ let
               "secret" = cfg.oidcSecret;
               "settings" = {
                 "server_url" =
-                  "https://authentik.${config.sebastianrasor.domain}/application/o/paperless/.well-known/openid-configuration";
+                  "https://authentik.${constants.domain}/application/o/paperless/.well-known/openid-configuration";
                 "claims"."username" = "email";
               };
             }
@@ -65,14 +66,14 @@ in
     services.paperless = {
       enable = true;
       database.createLocally = true;
-      domain = "paperless.ts.${config.sebastianrasor.domain}";
+      domain = "paperless.ts.${constants.domain}";
       environmentFile = lib.mkIf secretsEnabled config.sops.templates."paperless/environment".path;
       settings = {
         PAPERLESS_ENABLE_ALLAUTH = lib.mkIf cfg.oidc true;
         PAPERLESS_APPS = lib.mkIf cfg.oidc "allauth.socialaccount.providers.openid_connect";
         PAPERLESS_AUTO_LOGIN = lib.mkIf cfg.oidc true;
         PAPERLESS_AUTO_CREATE = lib.mkIf cfg.oidc true;
-        PAPERLESS_LOGOUT_REDIRECT_URL = lib.mkIf cfg.oidc "https://authentik.${config.sebastianrasor.domain}/application/o/paperless/end-session/";
+        PAPERLESS_LOGOUT_REDIRECT_URL = lib.mkIf cfg.oidc "https://authentik.${constants.domain}/application/o/paperless/end-session/";
       };
     };
 

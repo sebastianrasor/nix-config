@@ -1,13 +1,17 @@
 {
   config,
+  inputs,
   lib,
-  options,
   ...
 }:
 let
   cfg = config.sebastianrasor.persistence;
 in
 {
+  imports = [
+    inputs.impermanence.nixosModules.impermanence
+  ];
+
   options.sebastianrasor.persistence = {
     enable = lib.mkOption {
       type = lib.types.bool;

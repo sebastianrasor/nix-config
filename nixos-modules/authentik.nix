@@ -1,5 +1,7 @@
 {
   config,
+  constants,
+  inputs,
   lib,
   ...
 }:
@@ -9,6 +11,10 @@ let
   acmeBaseDomain = config.sebastianrasor.acme.baseDomainName;
 in
 {
+  imports = [
+    inputs.authentik-nix.nixosModules.default
+  ];
+
   options.sebastianrasor.authentik = {
     enable = lib.mkOption {
       type = lib.types.bool;
@@ -22,7 +28,7 @@ in
       environmentFile = lib.mkIf config.sebastianrasor.secrets.enable config.sops.secrets.authentik-env.path;
       nginx = {
         enable = true;
-        host = "authentik.ts.${config.sebastianrasor.domain}";
+        host = "authentik.ts.${constants.domain}";
       };
       settings = {
         disable_startup_analytics = true;
@@ -34,12 +40,12 @@ in
     services.nginx.virtualHosts.${config.services.authentik.nginx.host} = {
       forceSSL = lib.mkForce acmeEnabled;
       useACMEHost = lib.mkIf acmeEnabled acmeBaseDomain;
-      serverAliases = [ "authentik.${config.sebastianrasor.domain}" ];
+      serverAliases = [ "authentik.${constants.domain}" ];
     };
 
     sebastianrasor.acme.extraDomainNames = [
-      "authentik.${config.sebastianrasor.domain}"
-      "authentik.ts.${config.sebastianrasor.domain}"
+      "authentik.${constants.domain}"
+      "authentik.ts.${constants.domain}"
     ];
 
     sops.secrets.authentik-env = lib.mkIf config.sebastianrasor.secrets.enable { };

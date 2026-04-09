@@ -1,5 +1,7 @@
 {
   config,
+  constants,
+  inputs,
   lib,
   ...
 }:
@@ -8,6 +10,10 @@ let
   secretsEnabled = config.sebastianrasor.secrets.enable;
 in
 {
+  imports = [
+    inputs.tailscale-golink.nixosModules.default
+  ];
+
   options.sebastianrasor.tailscale-golink = {
     enable = lib.mkOption {
       type = lib.types.bool;
@@ -19,7 +25,7 @@ in
     services.golink = {
       enable = true;
 
-      controlUrl = "https://headscale.${config.sebastianrasor.domain}";
+      controlUrl = "https://headscale.${constants.domain}";
 
       tailscaleAuthKeyFile = lib.mkIf secretsEnabled config.sops.secrets.tailscale_key.path;
     };

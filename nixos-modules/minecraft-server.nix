@@ -1,5 +1,6 @@
 {
   config,
+  constants,
   inputs,
   lib,
   pkgs,
@@ -39,7 +40,7 @@ let
     hackOnlineMode = false;
     hackEarlySend = true;
     hackMessageChain = false;
-    disconnectMessage = "This server requires you connect at the following server IP mc.${config.sebastianrasor.domain}";
+    disconnectMessage = "This server requires you connect at the following server IP mc.${constants.domain}";
     secret = if secretsEnabled then config.sops.placeholder."minecraft/velocity-secret" else null;
   };
 

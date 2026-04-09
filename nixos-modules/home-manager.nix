@@ -1,6 +1,9 @@
 {
   config,
+  constants,
+  inputs,
   lib,
+  outputs,
   pkgs,
   ...
 }:
@@ -8,6 +11,10 @@ let
   cfg = config.sebastianrasor.home-manager;
 in
 {
+  imports = [
+    inputs.home-manager.nixosModules.home-manager
+  ];
+
   options.sebastianrasor.home-manager = {
     enable = lib.mkOption {
       type = lib.types.bool;
@@ -19,6 +26,12 @@ in
     environment.systemPackages = with pkgs; [
       home-manager
     ];
-    home-manager.backupFileExtension = "backup";
+    home-manager = {
+      backupFileExtension = "backup";
+      extraSpecialArgs = {
+        inherit constants inputs outputs;
+      };
+      sharedModules = lib.attrsets.attrValues outputs.homeModules;
+    };
   };
 }

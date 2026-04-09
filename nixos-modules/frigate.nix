@@ -1,5 +1,6 @@
 {
   config,
+  constants,
   lib,
   ...
 }:
@@ -17,7 +18,7 @@ in
   config = lib.mkIf cfg.enable {
     users.users.frigate.extraGroups = lib.mkIf config.sebastianrasor.unas.enable [ "unifi-drive-nfs" ];
 
-    services.nginx.virtualHosts."frigate.ts.${config.sebastianrasor.domain}" =
+    services.nginx.virtualHosts."frigate.ts.${constants.domain}" =
       lib.mkIf config.sebastianrasor.acme.enable
         {
           forceSSL = true;
@@ -27,7 +28,7 @@ in
 
     services.frigate = {
       enable = true;
-      hostname = "frigate.ts.${config.sebastianrasor.domain}";
+      hostname = "frigate.ts.${constants.domain}";
       vaapiDriver = "iHD";
       settings = {
         database.path = lib.mkIf config.sebastianrasor.unas.enable "/media/frigate/frigate.db";

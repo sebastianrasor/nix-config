@@ -1,5 +1,6 @@
 {
   config,
+  constants,
   lib,
   pkgs,
   ...
@@ -28,7 +29,7 @@ in
       publicKeys = [
         {
           trust = "ultimate";
-          source = config.sebastianrasor.gpg-key;
+          source = constants.gpgKey;
         }
       ];
     };

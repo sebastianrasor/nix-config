@@ -1,5 +1,6 @@
 {
   config,
+  constants,
   lib,
   pkgs,
   ...
@@ -41,10 +42,10 @@ in
     services.headscale = {
       enable = true;
       settings = {
-        server_url = "https://headscale.${config.sebastianrasor.domain}";
+        server_url = "https://headscale.${constants.domain}";
         oidc = lib.mkIf config.sebastianrasor.secrets.enable {
           only_start_if_oidc_is_available = false;
-          issuer = "https://authentik.${config.sebastianrasor.domain}/application/o/headscale/";
+          issuer = "https://authentik.${constants.domain}/application/o/headscale/";
           client_id = "t5tdQYkn2zReh1DCHhTwMNiZnSIq5nvLMjsT13nQ";
           client_secret_path = config.sops.secrets.headscale-openid-client-secret.path;
         };
@@ -60,69 +61,69 @@ in
         dns = {
           magic_dns = true;
           # https://github.com/juanfont/headscale/blob/3123d5286bbeb1d4958cec3c92d5a0969b201a9b/hscontrol/types/config_test.go#L414
-          base_domain = "ts.${config.sebastianrasor.domain}";
+          base_domain = "ts.${constants.domain}";
           override_local_dns = false;
           # eventually I'd like to set these to CNAMES to the magic dns records
           # for the respective nodes on the tailnet. that's not currently
           # possible, though. :(
           extra_records = [
             {
-              name = "actual.ts.${config.sebastianrasor.domain}";
+              name = "actual.ts.${constants.domain}";
               type = "A";
               value = "100.64.0.3";
             }
             {
-              name = "authentik.ts.${config.sebastianrasor.domain}";
+              name = "authentik.ts.${constants.domain}";
               type = "A";
               value = "100.64.0.3";
             }
             {
-              name = "frigate.ts.${config.sebastianrasor.domain}";
+              name = "frigate.ts.${constants.domain}";
               type = "A";
               value = "100.64.0.3";
             }
             {
-              name = "homeassistant.ts.${config.sebastianrasor.domain}";
+              name = "homeassistant.ts.${constants.domain}";
               type = "A";
               value = "100.64.0.6";
             }
             {
-              name = "homebox.ts.${config.sebastianrasor.domain}";
+              name = "homebox.ts.${constants.domain}";
               type = "A";
               value = "100.64.0.3";
             }
             {
-              name = "immich.ts.${config.sebastianrasor.domain}";
+              name = "immich.ts.${constants.domain}";
               type = "A";
               value = "100.64.0.3";
             }
             {
-              name = "jellyfin.ts.${config.sebastianrasor.domain}";
+              name = "jellyfin.ts.${constants.domain}";
               type = "A";
               value = "100.64.0.3";
             }
             {
-              name = "mc.ts.${config.sebastianrasor.domain}";
+              name = "mc.ts.${constants.domain}";
               type = "A";
               value = "100.64.0.3";
             }
             {
-              name = "ollama.ts.${config.sebastianrasor.domain}";
+              name = "ollama.ts.${constants.domain}";
               type = "A";
               value = "100.64.0.3";
             }
             {
-              name = "open-webui.ts.${config.sebastianrasor.domain}";
+              name = "open-webui.ts.${constants.domain}";
               type = "A";
               value = "100.64.0.3";
             }
             {
-              name = "paperless.ts.${config.sebastianrasor.domain}";
+              name = "paperless.ts.${constants.domain}";
               type = "A";
               value = "100.64.0.3";
             }
             {
-              name = "radicale.ts.${config.sebastianrasor.domain}";
+              name = "radicale.ts.${constants.domain}";
               type = "A";
               value = "100.64.0.3";
             }
