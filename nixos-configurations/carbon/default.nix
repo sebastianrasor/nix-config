@@ -15,7 +15,7 @@
     intel-arc-a380.enable = true;
     jellyfin.enable = true;
     minecraft-server.enable = true;
-    minecraft-world-backup.enable = true;
+    #minecraft-world-backup.enable = true;
     ollama.enable = true;
     open-webui.enable = true;
     paperless.enable = true;
