@@ -10,16 +10,17 @@ let
   cfg = config.sebastianrasor.cosmic;
 in
 {
-  imports = [
-    inputs.cosmic-manager.homeManagerModules.cosmic-manager
-  ];
-
   options.sebastianrasor.cosmic = {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
     };
   };
+}
+// lib.optionalAttrs (inputs ? cosmic-manager) {
+  imports = [
+    inputs.cosmic-manager.homeManagerModules.cosmic-manager
+  ];
 
   config = lib.mkIf cfg.enable {
     wayland.desktopManager.cosmic = {

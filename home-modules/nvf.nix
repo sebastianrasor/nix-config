@@ -9,16 +9,17 @@ let
   cfg = config.sebastianrasor.nvf;
 in
 {
-  imports = [
-    inputs.nvf.homeManagerModules.default
-  ];
-
   options.sebastianrasor.nvf = {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
     };
   };
+}
+// lib.optionalAttrs (inputs ? nvf) {
+  imports = [
+    inputs.nvf.homeManagerModules.default
+  ];
 
   config = lib.mkIf cfg.enable {
     programs.nvf = {

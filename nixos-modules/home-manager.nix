@@ -11,16 +11,17 @@ let
   cfg = config.sebastianrasor.home-manager;
 in
 {
-  imports = [
-    inputs.home-manager.nixosModules.home-manager
-  ];
-
   options.sebastianrasor.home-manager = {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
     };
   };
+}
+// lib.optionalAttrs (inputs ? home-manager) {
+  imports = [
+    inputs.home-manager.nixosModules.home-manager
+  ];
 
   config = lib.mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
