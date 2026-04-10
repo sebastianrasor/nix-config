@@ -48,6 +48,7 @@ in
             favicon = outputs.packages.${pkgs.stdenv.hostPlatform.system}.server-icon;
           };
           builtinCommands = false;
+          forceKeyAuthentication = true;
           forwarding = {
             mode = "velocity";
             velocitySecret =

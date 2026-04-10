@@ -126,9 +126,9 @@ let
 
   toml = pkgs.formats.toml { };
   fabricProxyLiteTomlFile = toml.generate "FabricProxy-Lite.toml" {
-    hackOnlineMode = true;
+    #hackOnlineMode = true;
     hackEarlySend = true;
-    hackMessageChain = true;
+    #hackMessageChain = true;
     disconnectMessage = "This server requires you connect at the following server IP mc.${constants.domain}";
     secret = if secretsEnabled then config.sops.placeholder."minecraft/velocity-secret" else null;
   };
