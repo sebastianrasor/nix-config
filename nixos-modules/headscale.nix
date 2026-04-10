@@ -93,6 +93,11 @@ in
               value = "100.64.0.3";
             }
             {
+              name = "hydra.ts.${constants.domain}";
+              type = "A";
+              value = "100.64.0.3";
+            }
+            {
               name = "immich.ts.${constants.domain}";
               type = "A";
               value = "100.64.0.3";

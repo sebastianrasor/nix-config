@@ -21,6 +21,7 @@ in
       settings = {
         loginMethod = "openid";
         allowedLoginMethods = [ "openid" ];
+        port = 5006;
       };
     };
 
