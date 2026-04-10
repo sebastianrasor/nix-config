@@ -52,8 +52,25 @@ stdenvNoCC.mkDerivation (finalAttrs: {
 
   dontUnpack = true;
 
-  passthru = {
-    updateScript = lib.getExe (writeShellApplication {
+  passthru.updateScript =
+    let
+      directExecutable =
+        p:
+        stdenvNoCC.mkDerivation {
+          name = "update-versions";
+
+          src = p;
+
+          installPhase = ''
+            runHook preInstall
+
+            install -D $src/bin/${p.meta.mainProgram} $out
+
+            runHook postInstall
+          '';
+        };
+    in
+    directExecutable (writeShellApplication {
       name = "update-versions";
 
       runtimeInputs = [
@@ -62,10 +79,6 @@ stdenvNoCC.mkDerivation (finalAttrs: {
       ];
 
       text = ''
-        echo "1" >&2
-        echo "${dirOf finalAttrs.finalPackage.meta.position}/versions.json" >&2
-        echo "2" >&2
-
         outPath="${
           # if this is an absolute path in nix store, use path relative to the store path
           if lib.hasPrefix "${builtins.storeDir}/" (toString ./versions.json) then
@@ -80,7 +93,6 @@ stdenvNoCC.mkDerivation (finalAttrs: {
           # otherwise, use a path relative to the package
           else
             "${dirOf finalAttrs.finalPackage.meta.position}/versions.json"
-          #throw "don't know how to proceed"
         }"
 
         versions="$(curl 'https://meta.fabricmc.net/v2/versions' | jq --from-file ${./parse_versions.jq})"
@@ -88,7 +100,6 @@ stdenvNoCC.mkDerivation (finalAttrs: {
         echo "''${versions@P}" >$outPath
       '';
     });
-  };
 
   meta = {
     description = "aoeu";
