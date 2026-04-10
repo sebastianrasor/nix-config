@@ -11,6 +11,7 @@
     frigate.enable = false;
     gate.enable = true;
     homebox.enable = true;
+    hydra.enable = true;
     immich.enable = true;
     intel-arc-a380.enable = true;
     jellyfin.enable = true;

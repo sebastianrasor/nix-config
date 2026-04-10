@@ -10,7 +10,10 @@
     }:
     let
       constants = import ./constants.nix;
-      eachSupportedSystem = nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed;
+      supportedSystems = [
+        "x86_64-linux"
+      ];
+      eachSupportedSystem = nixpkgs.lib.genAttrs supportedSystems;
       forAllSystems =
         f:
         eachSupportedSystem (
@@ -33,25 +36,22 @@
 
       homeModules = import ./home-modules self;
 
+      hydraJobs = {
+        inherit (self) packages;
+        nixosConfigurations = builtins.mapAttrs (
+          _: n: n.config.system.build.toplevel
+        ) self.nixosConfigurations;
+      };
+
       legacyPackages = forAllSystems (pkgs: pkgs.callPackages ./legacy-packages { });
 
       nixosConfigurations = import ./nixos-configurations self;
 
       nixosModules = import ./nixos-modules self;
 
-      overlays = (import ./overlays self);
+      overlays = import ./overlays self;
 
-      packages = forAllSystems (
-        pkgs:
-        (import ./packages pkgs)
-        // {
-          default = (cachix-deploy-flake.lib pkgs).spec {
-            agents = builtins.mapAttrs (
-              _: nixosSystem: nixosSystem.config.system.build.toplevel
-            ) self.nixosConfigurations;
-          };
-        }
-      );
+      packages = forAllSystems (pkgs: import ./packages pkgs);
     };
 
   inputs = {
