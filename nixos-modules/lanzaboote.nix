@@ -9,16 +9,17 @@ let
   cfg = config.sebastianrasor.lanzaboote;
 in
 {
-  imports = [
-    inputs.lanzaboote.nixosModules.lanzaboote
-  ];
-
   options.sebastianrasor.lanzaboote = {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
     };
   };
+}
+// lib.optionalAttrs (inputs ? lanzaboote) {
+  imports = [
+    inputs.lanzaboote.nixosModules.lanzaboote
+  ];
 
   config = lib.mkIf cfg.enable {
     environment.systemPackages = with pkgs; [

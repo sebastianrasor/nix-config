@@ -8,10 +8,6 @@ let
   cfg = config.sebastianrasor.persistence;
 in
 {
-  imports = [
-    inputs.impermanence.nixosModules.impermanence
-  ];
-
   options.sebastianrasor.persistence = {
     enable = lib.mkOption {
       type = lib.types.bool;
@@ -33,6 +29,11 @@ in
       default = [ ];
     };
   };
+}
+// lib.optionalAttrs (inputs ? impermanence) {
+  imports = [
+    inputs.impermanence.nixosModules.impermanence
+  ];
 
   config = lib.mkIf cfg.enable {
     environment.persistence."${cfg.storagePath}" = {

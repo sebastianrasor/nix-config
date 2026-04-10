@@ -10,16 +10,17 @@ let
   secretsEnabled = config.sebastianrasor.secrets.enable;
 in
 {
-  imports = [
-    inputs.tailscale-golink.nixosModules.default
-  ];
-
   options.sebastianrasor.tailscale-golink = {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
     };
   };
+}
+// lib.optionalAttrs (inputs ? tailscale-golink) {
+  imports = [
+    inputs.tailscale-golink.nixosModules.default
+  ];
 
   config = lib.mkIf cfg.enable {
     services.golink = {

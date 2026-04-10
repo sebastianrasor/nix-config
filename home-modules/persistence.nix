@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  options,
   ...
 }:
 let
@@ -38,10 +39,13 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    home.persistence."${cfg.storagePath}" = {
-      inherit (cfg) directories files;
-      hideMounts = true;
-    };
-  };
+  # Only persist data if impermanence nixos module has provided impermanence home-manager options
+  config = lib.optionalAttrs (options.home ? persistence) (
+    lib.mkIf cfg.enable {
+      home.persistence."${cfg.storagePath}" = {
+        inherit (cfg) directories files;
+        hideMounts = true;
+      };
+    }
+  );
 }

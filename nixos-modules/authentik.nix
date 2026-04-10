@@ -11,16 +11,17 @@ let
   acmeBaseDomain = config.sebastianrasor.acme.baseDomainName;
 in
 {
-  imports = [
-    inputs.authentik-nix.nixosModules.default
-  ];
-
   options.sebastianrasor.authentik = {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
     };
   };
+}
+// lib.optionalAttrs (inputs ? authentik-nix) {
+  imports = [
+    inputs.authentik-nix.nixosModules.default
+  ];
 
   config = lib.mkIf cfg.enable {
     services.authentik = {
