@@ -17,7 +17,7 @@ in
 
     websocket = lib.mkOption {
       type = lib.types.str;
-      default = "ws://carbon.ts.rasor.us:9999";
+      default = "wss://deploy.ts.rasor.us";
     };
 
     hydraURL = lib.mkOption {
