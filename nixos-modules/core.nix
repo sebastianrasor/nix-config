@@ -23,8 +23,6 @@ in
   config = lib.mkMerge [
     (lib.mkIf cfg.enable {
       sebastianrasor = {
-        cachix-agent.enable = true;
-        cachix-watch-store.enable = true;
         home-manager.enable = true;
         i18n.enable = true;
         nh.enable = true;
