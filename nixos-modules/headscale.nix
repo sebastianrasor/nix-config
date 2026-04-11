@@ -83,6 +83,11 @@ in
               value = "100.64.0.3";
             }
             {
+              name = "deploy.ts.${constants.domain}";
+              type = "A";
+              value = "100.64.0.3";
+            }
+            {
               name = "frigate.ts.${constants.domain}";
               type = "A";
               value = "100.64.0.3";

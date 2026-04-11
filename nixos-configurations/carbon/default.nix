@@ -8,6 +8,7 @@
     acme.enable = true;
     actual.enable = true;
     authentik.enable = true;
+    deploy-server.enable = true;
     frigate.enable = false;
     gate.enable = true;
     homebox.enable = true;
