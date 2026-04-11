@@ -45,6 +45,14 @@
         nixosConfigurations = builtins.mapAttrs (
           _: n: n.config.system.build.toplevel
         ) self.nixosConfigurations;
+
+        runCommandHook = forAllSystems (
+          pkgs:
+          (import ./hydra-jobs/run-command-hook pkgs)
+          // {
+            recurseForDerivations = true;
+          }
+        );
       };
 
       legacyPackages = forAllSystems (pkgs: pkgs.callPackages ./legacy-packages { });
