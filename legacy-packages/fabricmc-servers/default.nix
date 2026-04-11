@@ -23,6 +23,6 @@ in
 lib.recurseIntoAttrs (
   packages
   // {
-    fabricmc-server = builtins.getAttr "fabricmc-server-${escapeVersion latestVersion}" packages;
+    fabricmc-server-latest = builtins.getAttr "fabricmc-server-${escapeVersion latestVersion}" packages;
   }
 )

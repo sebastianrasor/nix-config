@@ -179,6 +179,7 @@ in
 
     systemd.services.minecraft-server.preStart = lib.optionalString (config.services.minecraft-server.declarative) ''
       cp --dereference --remove-destination ${opsFile} ops.json
+      chmod 644 ops.json
 
       ${lib.getExe pkgs.fd} . 'mods/' -e jar -X rm
 
