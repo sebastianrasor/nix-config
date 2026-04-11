@@ -37,6 +37,11 @@
 
       hydraJobs = {
         inherit (self) packages;
+        legacyPackages =
+          (nixpkgs.lib.filterAttrsRecursive (
+            n: _: n != "recurseForDerivations" && n != "overrideDerivation" && n != "override"
+          ))
+            self.legacyPackages;
         nixosConfigurations = builtins.mapAttrs (
           _: n: n.config.system.build.toplevel
         ) self.nixosConfigurations;
