@@ -23,7 +23,8 @@ in
       };
     };
 
-    sebastianrasor.reverse-proxy.proxies."open-webui" = "http://${config.services.open-webui.host}:${toString config.services.open-webui.port}";
+    sebastianrasor.reverse-proxy.proxies."open-webui" =
+      "http://${config.services.open-webui.host}:${toString config.services.open-webui.port}";
 
     #sebastianrasor.persistence.directories = [
     #  config.services.open-webui.stateDir
