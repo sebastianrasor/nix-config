@@ -20,6 +20,9 @@ in
       bindsTo = [ "deploy-server.service" ];
       socketConfig = {
         ListenFIFO = "/run/deploy-server.stdin";
+        SocketMode = "0660";
+        SocketUser = "hydra-queue-runner";
+        SocketGroup = "hydra";
         RemoveOnStop = true;
         FlushPending = true;
       };
