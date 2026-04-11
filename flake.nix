@@ -5,7 +5,6 @@
     {
       self,
       nixpkgs,
-      cachix-deploy-flake,
       ...
     }:
     let
@@ -62,8 +61,6 @@
     authentik-nix = {
       url = "github:nix-community/authentik-nix";
     };
-
-    cachix-deploy-flake.url = "github:cachix/cachix-deploy-flake";
 
     checkemail = {
       url = "github:sebastianrasor/checkemail";
