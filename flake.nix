@@ -35,7 +35,7 @@
 
       homeModules = import ./home-modules self;
 
-      hydraJobs = {
+      hydraJobs = rec {
         inherit (self) packages;
         legacyPackages =
           (nixpkgs.lib.filterAttrsRecursive (
@@ -46,13 +46,33 @@
           _: n: n.config.system.build.toplevel
         ) self.nixosConfigurations;
 
-        runCommandHook = forAllSystems (
-          pkgs:
-          (import ./hydra-jobs/run-command-hook pkgs)
-          // {
-            recurseForDerivations = true;
-          }
-        );
+        runCommandHook = forAllSystems (pkgs: {
+          deploy = pkgs.stdenvNoCC.mkDerivation {
+            name = "deploy";
+
+            src = pkgs.writeShellApplication {
+              name = "deploy";
+
+              runtimeInputs = builtins.attrValues nixosConfigurations;
+
+              text = ''
+                if [ -p /run/deploy-server.stdin ]; then
+                  echo switch > /run/deploy-server.stdin
+                else
+                  echo "No deploy socket" >&2
+                fi
+              '';
+            };
+
+            installPhase = ''
+              runHook preInstall
+
+              install -D $src/bin/deploy $out
+
+              runHook postInstall
+            '';
+          };
+        });
       };
 
       legacyPackages = forAllSystems (pkgs: pkgs.callPackages ./legacy-packages { });
