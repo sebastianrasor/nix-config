@@ -21,7 +21,8 @@ in
       package = pkgs.ollama-vulkan;
     };
 
-    sebastianrasor.reverse-proxy.proxies."ollama" = "http://${config.services.ollama.host}:${toString config.services.ollama.port}";
+    sebastianrasor.reverse-proxy.proxies."ollama" =
+      "http://${config.services.ollama.host}:${toString config.services.ollama.port}";
 
     #sebastianrasor.persistence.directories = [
     #  config.services.ollama.home
