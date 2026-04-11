@@ -22,6 +22,11 @@ in
       listenHost = "localhost";
       notificationSender = "hydra@${constants.domain}";
       useSubstitutes = true;
+      extraConfig = ''
+        <dynamicruncommand>
+          enable = 1
+        </dynamicruncommand>
+      '';
     };
 
     sebastianrasor.reverse-proxy.proxies."hydra" =
