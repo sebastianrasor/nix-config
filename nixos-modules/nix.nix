@@ -37,12 +37,10 @@ in
           "flakes"
         ];
         substituters = [
-          "https://nix-community.cachix.org"
-          "https://sebastianrasor.cachix.org"
+          "https://cache.ts.rasor.us"
         ];
         trusted-public-keys = [
-          "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-          "sebastianrasor.cachix.org-1:GLTqReyK+C9RY+2NQoLu/S/jdJ9nQ1TJGGuaV7oSuMg="
+          "cache.ts.rasor.us-1:f2inISwhx2bWqv3HkEjsZw6VXJpKGxKqzTAqRl6rJWc="
         ];
         trusted-users = [
           "@wheel"

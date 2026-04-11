@@ -17,6 +17,7 @@
     jellyfin.enable = true;
     minecraft-server.enable = true;
     #minecraft-world-backup.enable = true;
+    nix-serve.enable = true;
     ollama.enable = true;
     open-webui.enable = true;
     paperless.enable = true;
