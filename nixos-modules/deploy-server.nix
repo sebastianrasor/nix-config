@@ -41,6 +41,6 @@ in
       };
     };
 
-    sebastianrasor.reverse-proxy.proxies."deploy" = "ws://127.0.0.1:9999";
+    sebastianrasor.reverse-proxy.proxies."deploy" = "http://127.0.0.1:9999";
   };
 }
