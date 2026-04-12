@@ -39,8 +39,8 @@ in
       "http://${config.services.hydra.listenHost}:${toString config.services.hydra.port}";
 
     sops.secrets."hydra-github-authorization" = lib.mkIf secretsEnabled {
-      owner = lib.mkDefault config.users.users.gate.name;
-      group = lib.mkDefault config.users.users.gate.group;
+      owner = "hydra";
+      group = "hydra";
     };
   };
 }
