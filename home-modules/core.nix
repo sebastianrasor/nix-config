@@ -60,11 +60,11 @@ in
         discord.enable = true;
         google-chrome.enable = true;
         gpg.enable = true;
-        nvf.enable = true;
         pass.enable = true;
         posy-cursors.enable = true;
         tailscale-systray.enable = true;
         thunderbird.enable = true;
+        vscode.enable = true;
         yubikey-touch-detector.enable = true;
       };
     })
