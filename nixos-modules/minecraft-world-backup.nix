@@ -6,8 +6,9 @@
   ...
 }:
 let
+  inherit (config.sebastianrasor.minecraft-server) serverProperties;
+
   cfg = config.sebastianrasor.minecraft-world-backup;
-  serverProperties = config.sebastianrasor.minecraft-server.serverProperties;
 
   secretsEnabled = config.sebastianrasor.secrets.enable;
   managementServerTarget = "ws://${serverProperties.management-server-host}:${toString serverProperties.management-server-port}";
@@ -188,15 +189,15 @@ in
     sops = lib.mkIf secretsEnabled {
       secrets = {
         "minecraft/management-server-secret" = {
+          inherit (config.users.users.minecraft) group;
           owner = config.users.users.minecraft.name;
-          group = config.users.users.minecraft.group;
         };
       };
       templates = {
         "minecraft/world-backup" = {
+          inherit (config.users.users.minecraft) group;
           file = lib.getExe minecraftWorldBackupScript;
           owner = config.users.users.minecraft.name;
-          group = config.users.users.minecraft.group;
           mode = "0500";
         };
       };

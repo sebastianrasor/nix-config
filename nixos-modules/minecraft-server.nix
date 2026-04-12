@@ -177,7 +177,7 @@ in
       };
     };
 
-    systemd.services.minecraft-server.preStart = lib.optionalString (config.services.minecraft-server.declarative) ''
+    systemd.services.minecraft-server.preStart = lib.optionalString config.services.minecraft-server.declarative ''
       cp --dereference --remove-destination ${opsFile} ops.json
       chmod 644 ops.json
 
@@ -199,24 +199,24 @@ in
     sops = lib.mkIf secretsEnabled {
       secrets = {
         "minecraft/luckperms-postgres-password" = {
+          inherit (config.users.users.minecraft) group;
           owner = config.users.users.minecraft.name;
-          group = config.users.users.minecraft.group;
         };
         "minecraft/velocity-secret" = {
+          inherit (config.users.users.minecraft) group;
           owner = config.users.users.minecraft.name;
-          group = config.users.users.minecraft.group;
         };
       };
       templates = {
         "minecraft/luckperms.conf" = {
+          inherit (config.users.users.minecraft) group;
           file = luckPermsConfFile;
           owner = config.users.users.minecraft.name;
-          group = config.users.users.minecraft.group;
         };
         "minecraft/FabricProxy-Lite.toml" = {
+          inherit (config.users.users.minecraft) group;
           file = fabricProxyLiteTomlFile;
           owner = config.users.users.minecraft.name;
-          group = config.users.users.minecraft.group;
         };
       };
     };

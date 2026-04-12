@@ -1,4 +1,3 @@
-{ ... }:
 {
   sebastianrasor = {
     core.enable = true;

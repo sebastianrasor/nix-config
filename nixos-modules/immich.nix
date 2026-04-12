@@ -25,43 +25,47 @@ in
       "render"
     ];
 
-    sebastianrasor.persistence.directories = [ config.services.immich.mediaLocation ];
+    sebastianrasor = {
+      persistence.directories = [ config.services.immich.mediaLocation ];
 
-    sebastianrasor.reverse-proxy.proxies."immich" =
-      "http://[::1]:${toString config.services.immich.port}";
+      reverse-proxy.proxies."immich" =
+        "http://[::1]:${toString config.services.immich.port}";
 
-    sebastianrasor.unas.mounts."Immich" = "/srv/immich";
-
-    fileSystems."/var/lib/immich/backups" = {
-      device = "/srv/immich/backups";
-      fsType = "none";
-      options = [
-        "bind"
-      ];
+      unas.mounts."Immich" = "/srv/immich";
     };
 
-    fileSystems."/var/lib/immich/library" = {
-      device = "/srv/immich/library";
-      fsType = "none";
-      options = [
-        "bind"
-      ];
-    };
+    fileSystems = {
+      "/var/lib/immich/backups" = {
+        device = "/srv/immich/backups";
+        fsType = "none";
+        options = [
+          "bind"
+        ];
+      };
 
-    fileSystems."/var/lib/immich/profile" = {
-      device = "/srv/immich/profile";
-      fsType = "none";
-      options = [
-        "bind"
-      ];
-    };
+      "/var/lib/immich/library" = {
+        device = "/srv/immich/library";
+        fsType = "none";
+        options = [
+          "bind"
+        ];
+      };
 
-    fileSystems."/var/lib/immich/upload" = {
-      device = "/srv/immich/upload";
-      fsType = "none";
-      options = [
-        "bind"
-      ];
+      "/var/lib/immich/profile" = {
+        device = "/srv/immich/profile";
+        fsType = "none";
+        options = [
+          "bind"
+        ];
+      };
+
+      "/var/lib/immich/upload" = {
+        device = "/srv/immich/upload";
+        fsType = "none";
+        options = [
+          "bind"
+        ];
+      };
     };
 
     systemd.services.immich.unitConfig.RequiresMountsFor = [

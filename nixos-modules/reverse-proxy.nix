@@ -61,8 +61,8 @@ in
     };
 
     sebastianrasor.acme = {
+      inherit (config.services.nginx) group;
       extraDomainNames = builtins.attrNames cfg.proxies;
-      group = config.services.nginx.group;
     };
 
     networking.firewall.allowedTCPPorts = lib.mkIf cfg.openFirewall [
