@@ -27,22 +27,24 @@ in
       };
     };
 
-    sebastianrasor.reverse-proxy.proxies."radicale" = "http://127.0.0.1:5232";
+    sebastianrasor = {
+      reverse-proxy.proxies."radicale" = "http://127.0.0.1:5232";
 
-    sebastianrasor.unas.mounts."Radicale" = "/media/radicale";
+      unas.mounts."Radicale" = "/media/radicale";
 
-    sebastianrasor.persistence.directories = [
-      (
-        if lib.hasAttrByPath [ "storage" "filesystem_folder" ] config.services.radicale.settings then
-          config.services.radicale.settings.storage.filesystem_folder
-        else
-          "/var/lib/radicale/collections"
-      )
-    ];
+      persistence.directories = [
+        (
+          if lib.hasAttrByPath [ "storage" "filesystem_folder" ] config.services.radicale.settings then
+            config.services.radicale.settings.storage.filesystem_folder
+          else
+            "/var/lib/radicale/collections"
+        )
+      ];
+    };
 
     sops.secrets.radicale_users = lib.mkIf config.sebastianrasor.secrets.enable {
+      inherit (config.users.users.radicale) group;
       owner = config.users.users.radicale.name;
-      group = config.users.users.radicale.group;
     };
   };
 }

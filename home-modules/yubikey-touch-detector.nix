@@ -6,9 +6,8 @@
   ...
 }:
 let
+  inherit (inputs.yubikey-touch-detector.packages.${pkgs.stdenv.hostPlatform.system}) yubikey-touch-detector;
   cfg = config.sebastianrasor.yubikey-touch-detector;
-  yubikey-touch-detector =
-    inputs.yubikey-touch-detector.packages.${pkgs.stdenv.hostPlatform.system}.yubikey-touch-detector;
 in
 {
   options.sebastianrasor.yubikey-touch-detector = {

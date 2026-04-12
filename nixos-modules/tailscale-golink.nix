@@ -36,8 +36,8 @@ in
     sops.secrets.tailscale_key = lib.mkIf secretsEnabled {
       # This doesn't interfere with tailscale at the moment because the current
       # tailscale module runs tailscale as root.
+      inherit (config.services.golink) group;
       owner = config.services.golink.user;
-      group = config.services.golink.group;
     };
   };
 }

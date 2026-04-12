@@ -84,8 +84,8 @@ in
 
     sebastianrasor.persistence.directories = [
       {
+        inherit (config.services.paperless) user;
         directory = config.services.paperless.dataDir;
-        user = config.services.paperless.user;
       }
     ];
 

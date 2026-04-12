@@ -100,17 +100,17 @@ in
           group = lib.mkDefault config.users.users.gate.group;
         };
         "minecraft/floodgate.pem" = {
+          inherit (config.users.users.gate) group;
           format = "binary";
           sopsFile = (builtins.toString inputs.nix-secrets) + "/floodgate.pem";
           owner = config.users.users.gate.name;
-          group = config.users.users.gate.group;
         };
       };
       templates = {
         "gate/config.yaml" = {
+          inherit (config.users.users.gate) group;
           file = gateConfigYamlFile;
           owner = config.users.users.gate.name;
-          group = config.users.users.gate.group;
           restartUnits = [ "gate.service" ];
         };
       };

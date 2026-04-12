@@ -150,30 +150,33 @@ in
     systemd.services.frigate.bindsTo = lib.mkIf config.sebastianrasor.unas.enable [
       "media-frigate.mount"
     ];
-    fileSystems."/media/frigate" = lib.mkIf config.sebastianrasor.unas.enable {
-      device = "${config.sebastianrasor.unas.host}:${config.sebastianrasor.unas.basePath}/Frigate";
-      fsType = "nfs";
-    };
 
-    fileSystems."/var/lib/frigate/clips" = lib.mkIf config.sebastianrasor.unas.enable {
-      depends = [ "/media/frigate" ];
-      device = "/media/frigate/clips";
-      fsType = "none";
-      options = [ "bind" ];
-    };
+    fileSystems = lib.mkIf config.sebastianrasor.unas.enable {
+      "/media/frigate" = {
+        device = "${config.sebastianrasor.unas.host}:${config.sebastianrasor.unas.basePath}/Frigate";
+        fsType = "nfs";
+      };
 
-    fileSystems."/var/lib/frigate/exports" = lib.mkIf config.sebastianrasor.unas.enable {
-      depends = [ "/media/frigate" ];
-      device = "/media/frigate/exports";
-      fsType = "none";
-      options = [ "bind" ];
-    };
+      "/var/lib/frigate/clips" = {
+        depends = [ "/media/frigate" ];
+        device = "/media/frigate/clips";
+        fsType = "none";
+        options = [ "bind" ];
+      };
 
-    fileSystems."/var/lib/frigate/recordings" = lib.mkIf config.sebastianrasor.unas.enable {
-      depends = [ "/media/frigate" ];
-      device = "/media/frigate/recordings";
-      fsType = "none";
-      options = [ "bind" ];
+      "/var/lib/frigate/exports" = {
+        depends = [ "/media/frigate" ];
+        device = "/media/frigate/exports";
+        fsType = "none";
+        options = [ "bind" ];
+      };
+
+      "/var/lib/frigate/recordings" = {
+        depends = [ "/media/frigate" ];
+        device = "/media/frigate/recordings";
+        fsType = "none";
+        options = [ "bind" ];
+      };
     };
   };
 }
