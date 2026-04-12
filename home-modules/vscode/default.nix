@@ -27,8 +27,6 @@ in
           vscodevim.vim
         ];
       };
-      nameShort = "VSCodium";
-      dataFolderName = ".vscodium";
       mutableExtensionsDir = false;
       profiles.default.userSettings = {
         "terminal.integrated.defaultProfile.linux" = "fish";
