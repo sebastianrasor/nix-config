@@ -35,6 +35,7 @@ in
         git.enable = true;
         gping.enable = true;
         hyperfine.enable = true;
+        jujutsu.enable = true;
         jq.enable = true;
         monolith.enable = true;
         persistence.directories = [
