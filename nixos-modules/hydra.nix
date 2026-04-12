@@ -39,7 +39,7 @@ in
       "http://${config.services.hydra.listenHost}:${toString config.services.hydra.port}";
 
     sops.secrets."hydra-github-authorization" = lib.mkIf secretsEnabled {
-      owner = "hydra";
+      owner = "hydra-queue-runner";
       group = "hydra";
     };
   };
