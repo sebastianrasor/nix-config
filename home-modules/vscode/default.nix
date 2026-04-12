@@ -27,7 +27,10 @@ in
           vscodevim.vim
         ];
       };
-      profiles.sebastian.userSettings = {
+      nameShort = "VSCodium";
+      dataFolderName = ".vscodium";
+      mutableExtensionsDir = false;
+      profiles.default.userSettings = {
         "terminal.integrated.defaultProfile.linux" = "fish";
         "editor.fontFamily" = "'Atkinson Hyperlegible Mono', monospace";
         "workbench.activityBar.experimental.fontFamily" = "'Atkinson Hyperlegible Next'";
