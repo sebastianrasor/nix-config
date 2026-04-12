@@ -27,6 +27,7 @@ in
           backend = "gpg";
           key = "9CBD407F060D20898ED1F280E346A2A083D90F7D";
         };
+        git.sign-on-push = true;
       };
     };
   };
