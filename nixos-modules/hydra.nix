@@ -24,7 +24,7 @@ in
       notificationSender = "hydra@${constants.domain}";
       useSubstitutes = true;
       extraConfig = ''
-        Import ${config.sops.secrets."hydra-github-authorization".path}
+        Include ${config.sops.secrets."hydra-github-authorization".path}
         <dynamicruncommand>
           enable = 1
         </dynamicruncommand>
@@ -39,7 +39,7 @@ in
       "http://${config.services.hydra.listenHost}:${toString config.services.hydra.port}";
 
     sops.secrets."hydra-github-authorization" = lib.mkIf secretsEnabled {
-      owner = "hydra-queue-runner";
+      owner = "hydra";
       group = "hydra";
     };
   };
