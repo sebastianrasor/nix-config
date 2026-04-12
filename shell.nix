@@ -2,7 +2,7 @@
   pkgs ? import <nixpkgs> { },
 }:
 pkgs.mkShellNoCC {
-  nativeBuildInputs = with pkgs; [
+  packages = with pkgs; [
     fd
     git
     nh
@@ -12,5 +12,7 @@ pkgs.mkShellNoCC {
   ];
   shellHook = ''
     export NH_FLAKE=".";
+
+    git config core.hooksPath .githooks
   '';
 }
