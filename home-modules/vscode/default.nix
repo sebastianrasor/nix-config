@@ -36,6 +36,7 @@ in
         "workbench.sideBar.experimental.fontFamily" = "'Atkinson Hyperlegible Next'";
         "workbench.experimental.fontFamily" = "'Atkinson Hyperlegible Next'";
         "workbench.bottomPane.experimental.fontFamily" = "'Atkinson Hyperlegible Next'";
+        "editor.lineNumbers" = "relative";
         "editor.wordBasedSuggestions" = "off";
         "nix.enableLanguageServer" = true;
         "nix.serverPath" = "nixd";
