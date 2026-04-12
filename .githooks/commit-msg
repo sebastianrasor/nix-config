@@ -1,0 +1,6 @@
+#!/usr/bin/env nix
+#! nix shell --quiet --inputs-from . nixpkgs#bash nixpkgs#commitlint-rs --command bash
+# vim: ft=bash
+
+commitlint --edit "$1"
+
