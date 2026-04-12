@@ -4,7 +4,7 @@
 pkgs.mkShellNoCC {
   packages = with pkgs; [
     fd
-    git
+    jujutsu
     nh
     nixd
     nixf
@@ -12,7 +12,5 @@ pkgs.mkShellNoCC {
   ];
   shellHook = ''
     export NH_FLAKE=".";
-
-    git config core.hooksPath .githooks
   '';
 }

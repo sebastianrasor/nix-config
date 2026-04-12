@@ -21,7 +21,7 @@ in
       package = pkgs.vscode-with-extensions.override {
         vscode = pkgs.vscodium;
         vscodeExtensions = with pkgs.vscode-extensions; [
-          github.vscode-pull-request-github
+          jjk.jjk
           jnoortheen.nix-ide
           mkhl.direnv
           vscodevim.vim
