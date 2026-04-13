@@ -95,6 +95,11 @@
       url = "github:nix-community/authentik-nix";
     };
 
+    buildbot-nix = {
+      url = "github:nix-community/buildbot-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     checkemail = {
       url = "github:sebastianrasor/checkemail";
       inputs.nixpkgs.follows = "nixpkgs";
