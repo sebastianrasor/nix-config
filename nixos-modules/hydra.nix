@@ -41,6 +41,7 @@ in
     sops.secrets."hydra-github-authorization" = lib.mkIf secretsEnabled {
       owner = "hydra";
       group = "hydra";
+      mode = "0440";
     };
   };
 }
