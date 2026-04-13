@@ -19,7 +19,7 @@ in
   config = lib.mkIf cfg.enable {
     services.hydra = {
       enable = true;
-      hydraURL = "hydra.${config.sebastianrasor.reverse-proxy.baseDomainName}";
+      hydraURL = "https://hydra.${config.sebastianrasor.reverse-proxy.baseDomainName}";
       listenHost = "localhost";
       notificationSender = "hydra@${constants.domain}";
       useSubstitutes = true;
