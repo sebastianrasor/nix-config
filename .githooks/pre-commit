@@ -1,6 +1,0 @@
-#!/usr/bin/env nix
-#! nix shell --quiet --inputs-from . nixpkgs#bash --command bash
-# vim: ft=bash
-
-nix fmt
-
