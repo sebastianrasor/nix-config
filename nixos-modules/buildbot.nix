@@ -30,6 +30,7 @@ in
         workersFile = config.sops.templates."workers.json".path;
         admins = ["sebastian"];
         github = {
+          enable = true;
           appId = 3369053;
           appSecretKeyFile = config.sops.secrets."github/appClientSecrets/buildbot".path;
           webhookSecretFile = config.sops.secrets."buildbot/webhookSecret".path;
