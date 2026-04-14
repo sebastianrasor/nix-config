@@ -52,6 +52,9 @@ in
     };
 
     sebastianrasor.reverse-proxy.proxies."buildbot" = "http://127.0.0.1:${toString config.services.buildbot-master.port}";
+    services.nginx.virtualHosts."buildbot.${config.sebastianrasor.reverse-proxy.baseDomainName}".serverAliases = [
+      "buildbot.${constants.domain}"
+    ];
 
     sops = {
       secrets = {
