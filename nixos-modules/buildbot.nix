@@ -57,7 +57,10 @@ in
       secrets = {
         "buildbot/webhookSecret" = { };
         "buildbot/workerPassword" = { };
-        "github/appClientSecrets/buildbot" = { };
+        "github/privateKeys/buildbot" = {
+          format = "binary";
+          sopsFile = ./secrets/github-buildbot-private-key.pem;
+        };
         "oidc/clientSecrets/buildbot" = { };
       };
       templates."workers.json".content = ''
