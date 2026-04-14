@@ -18,12 +18,11 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    sebastianrasor.reverse-proxy.proxies."buildbot" = "https://buildbot.ts.${constants.domain}";
     services.nginx.virtualHosts."buildbot.${constants.domain}" = {
       forceSSL = acmeEnabled;
       useACMEHost = lib.mkIf acmeEnabled acmeBaseDomain;
-      locations."/change_hook/github" = {
-        proxyPass = "https://buildbot.ts.${constants.domain}/change_hook/github";
+      locations."/change_hook/" = {
+        proxyPass = "https://buildbot.ts.${constants.domain}/change_hook/";
         proxyWebsockets = true;
         extraConfig = ''
           client_max_body_size 50000M;
