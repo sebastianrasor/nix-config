@@ -41,11 +41,11 @@ in
       virtualHosts = lib.mapAttrs' (
         source: target:
         lib.nameValuePair source {
-          forceSSL = acmeEnabled;
-          useACMEHost = lib.mkIf acmeEnabled acmeBaseDomain;
+          forceSSL = lib.mkForce acmeEnabled;
+          useACMEHost = lib.mkIf acmeEnabled (lib.mkForce acmeBaseDomain);
           locations."/" = {
-            proxyPass = target;
-            proxyWebsockets = true;
+            proxyPass = lib.mkForce target;
+            proxyWebsockets = lib.mkForce true;
             extraConfig = ''
               client_max_body_size 50000M;
               proxy_buffering off;
