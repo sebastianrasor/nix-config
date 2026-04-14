@@ -8,7 +8,7 @@
     acme.enable = true;
     actual.enable = true;
     authentik.enable = true;
-    buildbot-nix.enable = true;
+    buildbot.enable = true;
     deploy-server.enable = true;
     frigate.enable = false;
     gate.enable = true;
@@ -18,7 +18,6 @@
     intel-arc-a380.enable = true;
     jellyfin.enable = true;
     minecraft-server.enable = true;
-    #minecraft-world-backup.enable = true;
     nix-serve.enable = true;
     ollama.enable = true;
     open-webui.enable = true;
