@@ -32,7 +32,7 @@ in
         github = {
           enable = true;
           appId = 3369053;
-          appSecretKeyFile = config.sops.secrets."github/appClientSecrets/buildbot".path;
+          appSecretKeyFile = config.sops.secrets."github/privateKeys/buildbot".path;
           webhookSecretFile = config.sops.secrets."buildbot/webhookSecret".path;
         };
         webhookBaseUrl = "https://buildbot.${constants.domain}/";
