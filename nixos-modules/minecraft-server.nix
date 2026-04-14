@@ -135,7 +135,14 @@ in
           };
         }
       );
-      default = inputs.nix-secrets.minecraft.ops;
+      default = [
+        {
+          uuid = "e4722f02-7b74-434c-912b-ec7805ace63c";
+          name = "sebastianrasor";
+          level = 4;
+          bypassesPlayerLimit = true;
+        }
+      ];
     };
   };
 
@@ -160,9 +167,11 @@ in
       ${lib.getExe pkgs.fd} . 'mods/' -e jar -X rm
 
       mkdir -p config/luckperms
-      ln -sf ${ config.sops.templates."minecraft/luckperms.conf".path } config/luckperms/luckperms.conf
+      ln -sf ${config.sops.templates."minecraft/luckperms.conf".path} config/luckperms/luckperms.conf
 
-      cp --dereference --remove-destination ${ config.sops.templates."minecraft/FabricProxy-Lite.toml".path } config/FabricProxy-Lite.toml
+      cp --dereference --remove-destination ${
+        config.sops.templates."minecraft/FabricProxy-Lite.toml".path
+      } config/FabricProxy-Lite.toml
     '';
 
     sops = {
