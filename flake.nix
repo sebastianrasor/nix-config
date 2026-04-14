@@ -27,6 +27,45 @@
         );
     in
     {
+      checks =
+        let
+          packages = eachSupportedSystem (
+            system: nixpkgs.lib.mapAttrs' (n: nixpkgs.lib.nameValuePair "package-${n}") self.packages.${system}
+          );
+          legacyPackages =
+            let
+              lib = nixpkgs.lib;
+              nameValuePair = path: value: {
+                inherit value;
+                name = "legacyPackage-${lib.last path}";
+              };
+              recurseForDerivations =
+                _: value: (builtins.isAttrs value && value ? recurseForDerivations && value.recurseForDerivations);
+              optionalDerivation = path: value: lib.optional (lib.isDerivation value) (nameValuePair path value);
+            in
+            eachSupportedSystem (
+              system:
+              # Shamelessly stolen from here:
+              # https://github.com/liquidnya/infrastructure/blob/7441244acb50625da2d9221308bf1ce0581197ec/packages/default.nix#L9-L24
+              nixpkgs.lib.pipe self.legacyPackages.${system} [
+                (nixpkgs.lib.mapAttrsToListRecursiveCond recurseForDerivations optionalDerivation)
+                (nixpkgs.lib.concatMap nixpkgs.lib.id)
+                builtins.listToAttrs
+              ]
+            );
+          checks = {
+            x86_64-linux = nixpkgs.lib.mapAttrs' (
+              name: value:
+              nixpkgs.lib.nameValuePair "nixosConfiguration-${name}" value.config.system.build.toplevel
+            ) self.nixosConfigurations;
+          };
+        in
+        builtins.foldl' nixpkgs.lib.recursiveUpdate { } [
+          checks
+          legacyPackages
+          packages
+        ];
+
       devShells = forAllSystems (pkgs: {
         default = import ./shell.nix { inherit pkgs; };
       });
