@@ -47,6 +47,7 @@ in
       worker = {
         enable = true;
         workerPasswordFile = config.sops.secrets."buildbot/workerPassword".path;
+        workers = 24;
       };
     };
 
