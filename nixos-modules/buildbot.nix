@@ -62,7 +62,7 @@ in
           {
             "name": "localhost",
             "pass": "${config.sops.placeholder."buildbot/workerPassword"}",
-            "cores": 0
+            "cores": 24
           }
         ]
       '';
