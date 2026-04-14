@@ -22,7 +22,7 @@ in
       forceSSL = acmeEnabled;
       useACMEHost = lib.mkIf acmeEnabled acmeBaseDomain;
       locations."/change_hook/" = {
-        proxyPass = "https://buildbot.ts.${constants.domain}/change_hook/";
+        proxyPass = "https://buildbot.ts.${constants.domain}";
         proxyWebsockets = true;
         extraConfig = ''
           client_max_body_size 50000M;
