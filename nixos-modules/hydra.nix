@@ -43,7 +43,7 @@ in
         content = ''
           <github_authorization>
             sebastianrasor = Bearer ${config.sops.placeholder."github/personalAccessTokens/hydra"}
-          <github_authorization>
+          </github_authorization>
         '';
         owner = "hydra";
         group = "hydra";
