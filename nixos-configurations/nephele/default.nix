@@ -7,6 +7,7 @@
 
     authentik-public-proxy.enable = true;
     acme.enable = true;
+    buildbot-webhook-public-proxy.enable = true;
     checkemail.enable = true;
     gate.enable = true;
     headscale.enable = true;
