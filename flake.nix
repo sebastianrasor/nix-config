@@ -2,7 +2,7 @@
   description = "Sebastian Rasor's Nix configurations";
 
   outputs =
-    {
+    inputs@{
       self,
       nixpkgs,
       ...
@@ -66,6 +66,29 @@
           packages
         ];
 
+      herculesCI = self.inputs.hercules-ci-effects.lib.mkHerculesCI { inherit inputs; } {
+        herculesCI = herculesCI: {
+          onPush.default.outputs.effects.deploy =
+            let
+              hci-effects = self.inputs.hercules-ci-effects.lib.withPkgs (
+                import nixpkgs { system = "x86_64-linux"; }
+              );
+            in
+            hci-effects.runIf (herculesCI.config.repo.branch == "main") (
+              hci-effects.mkEffect {
+                effectScript = ''
+                  if [ -p /run/deploy-server.stdin ]; then
+                    echo "Triggering client deployments"
+                    echo switch > /run/deploy-server.stdin
+                  else
+                    echo "No deploy socket" >&2
+                  fi
+                '';
+              }
+            );
+        };
+      };
+
       devShells = forAllSystems (pkgs: {
         default = import ./shell.nix { inherit pkgs; };
       });
@@ -73,46 +96,6 @@
       formatter = forAllSystems (pkgs: pkgs.nixfmt-tree);
 
       homeModules = import ./home-modules self;
-
-      hydraJobs = rec {
-        inherit (self) packages;
-        legacyPackages =
-          (nixpkgs.lib.filterAttrsRecursive (
-            n: _: n != "recurseForDerivations" && n != "overrideDerivation" && n != "override"
-          ))
-            self.legacyPackages;
-        nixosConfigurations = builtins.mapAttrs (
-          _: n: n.config.system.build.toplevel
-        ) self.nixosConfigurations;
-
-        runCommandHook = forAllSystems (pkgs: {
-          deploy = pkgs.stdenvNoCC.mkDerivation {
-            name = "deploy";
-
-            src = pkgs.writeShellApplication {
-              name = "deploy";
-
-              runtimeInputs = builtins.attrValues nixosConfigurations;
-
-              text = ''
-                if [ -p /run/deploy-server.stdin ]; then
-                  echo switch > /run/deploy-server.stdin
-                else
-                  echo "No deploy socket" >&2
-                fi
-              '';
-            };
-
-            installPhase = ''
-              runHook preInstall
-
-              install -D $src/bin/deploy $out
-
-              runHook postInstall
-            '';
-          };
-        });
-      };
 
       legacyPackages = forAllSystems (pkgs: pkgs.callPackages ./legacy-packages { });
 
@@ -156,6 +139,8 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
 
     home-manager = {
       url = "github:nix-community/home-manager";
