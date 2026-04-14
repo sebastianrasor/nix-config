@@ -47,7 +47,6 @@ in
       worker = {
         enable = true;
         workerPasswordFile = config.sops.secrets."buildbot/workerPassword".path;
-        workers = 24;
       };
     };
 
@@ -63,7 +62,7 @@ in
       templates."workers.json".content = ''
         [
           {
-            "name": "localhost",
+            "name": "carbon",
             "pass": "${config.sops.placeholder."buildbot/workerPassword"}",
             "cores": 24
           }
