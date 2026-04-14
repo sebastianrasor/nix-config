@@ -28,7 +28,7 @@ in
         enable = true;
         domain = "buildbot.ts.${constants.domain}";
         workersFile = config.sops.templates."workers.json".path;
-        admins = ["sebastianrasor"];
+        admins = ["sebastian"];
         github = {
           appId = 3369053;
           appSecretKeyFile = config.sops.secrets."github/appClientSecrets/buildbot".path;
