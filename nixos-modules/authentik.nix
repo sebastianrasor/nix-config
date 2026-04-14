@@ -26,7 +26,7 @@ in
   config = lib.mkIf cfg.enable {
     services.authentik = {
       enable = true;
-      environmentFile = lib.mkIf config.sebastianrasor.secrets.enable config.sops.secrets.authentik-env.path;
+      environmentFile = config.sops.templates."authentik.env".path;
       nginx = {
         enable = true;
         host = "authentik.ts.${constants.domain}";
@@ -49,6 +49,11 @@ in
       "authentik.ts.${constants.domain}"
     ];
 
-    sops.secrets.authentik-env = lib.mkIf config.sebastianrasor.secrets.enable { };
+    sops = {
+      secrets."authentik/secretKey" = { };
+      templates."authentik.env".content = ''
+        AUTHENTIK_SECRET_KEY=${config.sops.placeholder."authentik/secretKey"}
+      '';
+    };
   };
 }

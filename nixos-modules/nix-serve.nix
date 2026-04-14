@@ -17,12 +17,12 @@ in
   config = lib.mkIf cfg.enable {
     services.nix-serve = {
       enable = true;
-      secretKeyFile = lib.mkIf config.sebastianrasor.secrets.enable config.sops.secrets.nix-binary-cache-secret-key.path;
+      secretKeyFile = config.sops.secrets."nix/binaryCacheSecretKey".path;
     };
 
     sebastianrasor.reverse-proxy.proxies."cache" =
       "http://${config.services.nix-serve.bindAddress}:${toString config.services.nix-serve.port}";
 
-    sops.secrets.nix-binary-cache-secret-key = lib.mkIf config.sebastianrasor.secrets.enable { };
+    sops.secrets."nix/binaryCacheSecretKey" = { };
   };
 }

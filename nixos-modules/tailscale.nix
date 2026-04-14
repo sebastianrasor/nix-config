@@ -36,11 +36,11 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    sops.secrets.tailscale_key = lib.mkIf config.sebastianrasor.secrets.enable { };
+    sops.secrets."tailscale/authKey" = { };
     networking.firewall.trustedInterfaces = [ config.services.tailscale.interfaceName ];
     services.tailscale = {
       enable = true;
-      authKeyFile = lib.mkIf config.sebastianrasor.secrets.enable config.sops.secrets.tailscale_key.path;
+      authKeyFile = config.sops.secrets."tailscale/authKey".path;
       extraDaemonFlags = [ "--encrypt-state=false" ];
       extraUpFlags = [ "--login-server=${cfg.loginServer}" ];
       extraSetFlags = [

@@ -17,7 +17,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    sops.secrets.headscale-openid-client-secret = lib.mkIf config.sebastianrasor.secrets.enable {
+    sops.secrets."oidc/clientSecrets/headscale" = {
       owner = config.systemd.services.headscale.serviceConfig.User;
     };
     networking.firewall.allowedUDPPorts = [ 3478 ];
@@ -47,7 +47,7 @@ in
           only_start_if_oidc_is_available = false;
           issuer = "https://authentik.${constants.domain}/application/o/headscale/";
           client_id = "t5tdQYkn2zReh1DCHhTwMNiZnSIq5nvLMjsT13nQ";
-          client_secret_path = config.sops.secrets.headscale-openid-client-secret.path;
+          client_secret_path = config.sops.secrets."oidc/clientSecrets/headscale".path;
         };
         derp.urls = [ ];
         derp.server = {
