@@ -1,6 +1,5 @@
 {
   config,
-  constants,
   inputs,
   lib,
   outputs,
@@ -9,7 +8,6 @@
 }:
 let
   cfg = config.sebastianrasor.minecraft-server;
-  secretsEnabled = config.sebastianrasor.secrets.enable;
 
   modrinthMod =
     {
@@ -110,28 +108,6 @@ let
       };
 
   opsFile = pkgs.writeText "ops.json" (builtins.toJSON cfg.ops);
-
-  hocon = pkgs.formats.hocon { };
-  luckPermsConfFile = hocon.generate "luckperms.conf" {
-    storage-method = "postgresql";
-    data = {
-      address = "localhost";
-      database = "minecraft_luckperms";
-      username = "minecraft_luckperms";
-      password =
-        if secretsEnabled then config.sops.placeholder."minecraft/luckperms-postgres-password" else null;
-    };
-
-  };
-
-  toml = pkgs.formats.toml { };
-  fabricProxyLiteTomlFile = toml.generate "FabricProxy-Lite.toml" {
-    #hackOnlineMode = true;
-    hackEarlySend = true;
-    #hackMessageChain = true;
-    disconnectMessage = "This server requires you connect at the following server IP mc.${constants.domain}";
-    secret = if secretsEnabled then config.sops.placeholder."minecraft/velocity-secret" else null;
-  };
 in
 {
   options.sebastianrasor.minecraft-server = {
@@ -184,25 +160,18 @@ in
       ${lib.getExe pkgs.fd} . 'mods/' -e jar -X rm
 
       mkdir -p config/luckperms
-      ln -sf ${
-        if secretsEnabled then config.sops.templates."minecraft/luckperms.conf".path else luckPermsConfFile
-      } config/luckperms/luckperms.conf
+      ln -sf ${ config.sops.templates."minecraft/luckperms.conf".path } config/luckperms/luckperms.conf
 
-      cp --dereference --remove-destination ${
-        if secretsEnabled then
-          config.sops.templates."minecraft/FabricProxy-Lite.toml".path
-        else
-          fabricProxyLiteTomlFile
-      } config/FabricProxy-Lite.toml
+      cp --dereference --remove-destination ${ config.sops.templates."minecraft/FabricProxy-Lite.toml".path } config/FabricProxy-Lite.toml
     '';
 
-    sops = lib.mkIf secretsEnabled {
+    sops = {
       secrets = {
-        "minecraft/luckperms-postgres-password" = {
+        "postgres/databasePasswords/minecraft_luckperms" = {
           inherit (config.users.users.minecraft) group;
           owner = config.users.users.minecraft.name;
         };
-        "minecraft/velocity-secret" = {
+        "minecraft/velocitySecret" = {
           inherit (config.users.users.minecraft) group;
           owner = config.users.users.minecraft.name;
         };
@@ -210,13 +179,24 @@ in
       templates = {
         "minecraft/luckperms.conf" = {
           inherit (config.users.users.minecraft) group;
-          file = luckPermsConfFile;
           owner = config.users.users.minecraft.name;
+          content = ''
+            storage-method: postgresql
+            data:
+              address = "localhost"
+              database = "minecraft_luckperms"
+              user = "minecraft_luckperms"
+              password = ${config.sops.placeholder."postgres/databasePasswords/minecraft_luckperms"}
+          '';
         };
         "minecraft/FabricProxy-Lite.toml" = {
           inherit (config.users.users.minecraft) group;
-          file = fabricProxyLiteTomlFile;
           owner = config.users.users.minecraft.name;
+          content = ''
+            disconnectMessage = "You did not connect using the proper IP address.";
+            hackEarlySend = true
+            secret = "${config.sops.placeholder."minecraft/velocitySecret"}"
+          '';
         };
       };
     };

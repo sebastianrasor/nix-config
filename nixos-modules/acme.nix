@@ -38,7 +38,7 @@ in
         dnsProvider = "cloudflare";
         dnsResolver = "1.1.1.1:53";
         email = "general@rasor.us";
-        environmentFile = lib.mkIf config.sebastianrasor.secrets.enable config.sops.secrets.acme-env.path;
+        environmentFile = config.sops.templates."acme.env".path;
       };
       certs.${cfg.baseDomainName} = {
         inherit (cfg) extraDomainNames group;
@@ -56,6 +56,11 @@ in
 
     sebastianrasor.persistence.directories = [ "/var/lib/acme" ];
 
-    sops.secrets.acme-env = lib.mkIf config.sebastianrasor.secrets.enable { };
+    sops = {
+      secrets."cloudflare/dnsApiToken" = { };
+      templates."acme.env".content = ''
+        CF_DNS_API_TOKEN=${config.sops.placeholder."cloudflare/dnsApiToken"}
+      '';
+    };
   };
 }

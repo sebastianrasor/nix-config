@@ -21,7 +21,7 @@ in
         server.hosts = [ "127.0.0.1:5232" ];
         auth = {
           type = "htpasswd";
-          htpasswd_filename = lib.mkIf config.sebastianrasor.secrets.enable config.sops.secrets.radicale_users.path;
+          htpasswd_filename = config.sops.secrets."radicale/users".path;
           htpasswd_encryption = "bcrypt";
         };
       };
@@ -42,7 +42,7 @@ in
       ];
     };
 
-    sops.secrets.radicale_users = lib.mkIf config.sebastianrasor.secrets.enable {
+    sops.secrets."radicale/users" = {
       inherit (config.users.users.radicale) group;
       owner = config.users.users.radicale.name;
     };

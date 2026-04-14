@@ -2,42 +2,10 @@
   config,
   constants,
   lib,
-  pkgs,
   ...
 }:
 let
   cfg = config.sebastianrasor.paperless;
-  secretsEnabled = config.sebastianrasor.secrets.enable;
-
-  socialAccountProviders =
-    if secretsEnabled then
-      {
-        "openid_connect" = {
-          "APPS" = [
-            {
-              "provider_id" = "authentik";
-              "name" = "authentik";
-              "client_id" = cfg.oidcClientId;
-              "secret" = cfg.oidcSecret;
-              "settings" = {
-                "server_url" =
-                  "https://authentik.${constants.domain}/application/o/paperless/.well-known/openid-configuration";
-                "claims"."username" = "email";
-              };
-            }
-          ];
-          "OAUTH_PKCE_ENABLED" = "True";
-        };
-      }
-    else
-      null;
-  environmentFile =
-    if secretsEnabled then
-      pkgs.writeText "paperlessEnvironment" ''
-        PAPERLESS_SOCIALACCOUNT_PROVIDERS=${builtins.toJSON socialAccountProviders}
-      ''
-    else
-      null;
 in
 {
   options.sebastianrasor.paperless = {
@@ -50,16 +18,6 @@ in
       type = lib.types.bool;
       default = true;
     };
-
-    oidcClientId = lib.mkOption {
-      type = lib.types.str;
-      default = "mEHjbCfj26egw2cZ1IJPQs9coBJbOCYw0j7hDPOd";
-    };
-
-    oidcSecret = lib.mkOption {
-      type = lib.types.str;
-      default = config.sops.placeholder.paperless-openid-client-secret;
-    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -67,19 +25,38 @@ in
       enable = true;
       database.createLocally = true;
       domain = "paperless.ts.${constants.domain}";
-      environmentFile = lib.mkIf secretsEnabled config.sops.templates."paperless/environment".path;
+      environmentFile = config.sops.templates."paperless.env".path;
       settings = {
-        PAPERLESS_ENABLE_ALLAUTH = lib.mkIf cfg.oidc true;
-        PAPERLESS_APPS = lib.mkIf cfg.oidc "allauth.socialaccount.providers.openid_connect";
-        PAPERLESS_AUTO_LOGIN = lib.mkIf cfg.oidc true;
-        PAPERLESS_AUTO_CREATE = lib.mkIf cfg.oidc true;
-        PAPERLESS_LOGOUT_REDIRECT_URL = lib.mkIf cfg.oidc "https://authentik.${constants.domain}/application/o/paperless/end-session/";
+        PAPERLESS_ENABLE_ALLAUTH = true;
+        PAPERLESS_APPS = "allauth.socialaccount.providers.openid_connect";
+        PAPERLESS_AUTO_LOGIN = true;
+        PAPERLESS_AUTO_CREATE = true;
+        PAPERLESS_LOGOUT_REDIRECT_URL = "https://authentik.${constants.domain}/application/o/paperless/end-session/";
       };
     };
 
-    sops = lib.mkIf secretsEnabled {
-      secrets.paperless-openid-client-secret = { };
-      templates."paperless/environment".file = lib.mkIf secretsEnabled environmentFile;
+    sops = {
+      secrets."oidc/clientSecrets/paperless" = { };
+      templates."paperless.env".content = ''
+        PAPERLESS_SOCIALACCOUNT_PROVIDERS=${builtins.toJSON {
+          "openid_connect" = {
+            "APPS" = [
+              {
+                "provider_id" = "authentik";
+                "name" = "authentik";
+                "client_id" = "mEHjbCfj26egw2cZ1IJPQs9coBJbOCYw0j7hDPOd";
+                "secret" = config.sops.placeholder."oidc/clientSecrets/paperless";
+                "settings" = {
+                  "server_url" =
+                    "https://authentik.${constants.domain}/application/o/paperless/.well-known/openid-configuration";
+                  "claims"."username" = "email";
+                };
+              }
+            ];
+            "OAUTH_PKCE_ENABLED" = "True";
+          };
+        }}
+      '';
     };
 
     sebastianrasor.persistence.directories = [

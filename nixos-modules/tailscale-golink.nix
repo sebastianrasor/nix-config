@@ -7,7 +7,6 @@
 }:
 let
   cfg = config.sebastianrasor.tailscale-golink;
-  secretsEnabled = config.sebastianrasor.secrets.enable;
 in
 {
   options.sebastianrasor.tailscale-golink = {
@@ -28,12 +27,12 @@ in
 
       controlUrl = "https://headscale.${constants.domain}";
 
-      tailscaleAuthKeyFile = lib.mkIf secretsEnabled config.sops.secrets.tailscale_key.path;
+      tailscaleAuthKeyFile = config.sops.secrets."tailscale/authKey".path;
     };
 
     sebastianrasor.persistence.directories = [ config.services.golink.dataDir ];
 
-    sops.secrets.tailscale_key = lib.mkIf secretsEnabled {
+    sops.secrets."tailscale/authKey" = {
       # This doesn't interfere with tailscale at the moment because the current
       # tailscale module runs tailscale as root.
       inherit (config.services.golink) group;

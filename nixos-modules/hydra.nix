@@ -6,7 +6,6 @@
 }:
 let
   cfg = config.sebastianrasor.hydra;
-  secretsEnabled = config.sebastianrasor.secrets.enable;
 in
 {
   options.sebastianrasor.hydra = {
@@ -24,7 +23,7 @@ in
       notificationSender = "hydra@${constants.domain}";
       useSubstitutes = true;
       extraConfig = ''
-        Include ${config.sops.secrets."hydra-github-authorization".path}
+        Include ${config.sops.templates."hydra/github_authorizations.conf".path}
         <dynamicruncommand>
           enable = 1
         </dynamicruncommand>
@@ -38,10 +37,18 @@ in
     sebastianrasor.reverse-proxy.proxies."hydra" =
       "http://${config.services.hydra.listenHost}:${toString config.services.hydra.port}";
 
-    sops.secrets."hydra-github-authorization" = lib.mkIf secretsEnabled {
-      owner = "hydra";
-      group = "hydra";
-      mode = "0440";
+    sops = {
+      secrets."github/personalAccessTokens/hydra" = { };
+      templates."hydra/github_authorizations.conf" = {
+        content = ''
+          <github_authorization>
+            sebastianrasor = Bearer ${config.sops.placeholder."github/personalAccessTokens/hydra"}
+          <github_authorization>
+        '';
+        owner = "hydra";
+        group = "hydra";
+        mode = "0440";
+      };
     };
   };
 }
