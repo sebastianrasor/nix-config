@@ -46,7 +46,7 @@ in
           locations."/" = {
             proxyPass = lib.mkForce target;
             proxyWebsockets = lib.mkForce true;
-            extraConfig = ''
+            extraConfig = lib.mkForce ''
               client_max_body_size 50000M;
               proxy_buffering off;
               proxy_pass_header Authorization;
