@@ -6,10 +6,10 @@
   ...
 }:
 let
-  cfg = config.sebastianrasor.buildbot-nix;
+  cfg = config.sebastianrasor.buildbot;
 in
 {
-  options.sebastianrasor.buildbot-nix = {
+  options.sebastianrasor.buildbot = {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
