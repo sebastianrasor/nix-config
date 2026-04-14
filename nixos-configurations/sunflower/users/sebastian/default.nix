@@ -13,6 +13,7 @@
       "lp"
       "networkmanager"
       "scanner"
+      "tss"
       "wheel"
     ];
     openssh.authorizedKeys.keys = lib.mkIf config.sebastianrasor.sshd.enable [
