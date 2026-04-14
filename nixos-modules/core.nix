@@ -37,6 +37,7 @@ in
         systemd-resolved.enable = true;
         systemd-timesyncd.enable = true;
         tailscale.enable = true;
+        tpm2.enable = true;
 
         persistence = {
           directories = [
