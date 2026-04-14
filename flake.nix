@@ -130,8 +130,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nix-secrets.url = "git+ssh://git@github.com/sebastianrasor/nix-secrets.git?ref=main&shallow=1";
-
     nvf = {
       url = "github:notashelf/nvf";
       inputs.nixpkgs.follows = "nixpkgs";

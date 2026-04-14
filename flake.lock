@@ -550,23 +550,6 @@
         "type": "github"
       }
     },
-    "nix-secrets": {
-      "locked": {
-        "lastModified": 1775978857,
-        "narHash": "sha256-ggxdl5IcngDQz1M8gb7Wgfl9KMcyC2QRwZRwVmeRLJg=",
-        "ref": "main",
-        "rev": "1c13ce4f380f810981c0cf68cc1540cb1d6f22e4",
-        "shallow": true,
-        "type": "git",
-        "url": "ssh://git@github.com/sebastianrasor/nix-secrets.git"
-      },
-      "original": {
-        "ref": "main",
-        "shallow": true,
-        "type": "git",
-        "url": "ssh://git@github.com/sebastianrasor/nix-secrets.git"
-      }
-    },
     "nixos-hardware": {
       "locked": {
         "lastModified": 1775490113,
@@ -789,7 +772,6 @@
         "home-manager": "home-manager",
         "impermanence": "impermanence",
         "lanzaboote": "lanzaboote",
-        "nix-secrets": "nix-secrets",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_4",
         "nvf": "nvf",
