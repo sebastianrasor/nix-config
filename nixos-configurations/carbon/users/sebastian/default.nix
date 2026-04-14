@@ -10,6 +10,7 @@
     description = "Sebastian Rasor";
     extraGroups = [
       "minecraft"
+      "tss"
       "wheel"
     ];
     openssh.authorizedKeys.keys = lib.mkIf config.sebastianrasor.sshd.enable [
