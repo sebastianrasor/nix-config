@@ -37,12 +37,12 @@ in
     services.gpg-agent = {
       enable = true;
       enableScDaemon = true;
-      enableSshSupport = true;
+      enableSshSupport = false;
       pinentry.package = with pkgs; pinentry-qt;
     };
 
-    programs.ssh.matchBlocks.gpg-agent.match =
-      lib.mkIf config.programs.ssh.enable "Host * exec \"gpg-connect-agent UPDATESTARTUPTTY /bye\"";
+    #programs.ssh.matchBlocks.gpg-agent.match =
+      #lib.mkIf config.programs.ssh.enable "Host * exec \"gpg-connect-agent UPDATESTARTUPTTY /bye\"";
 
     home.activation.removeGpgSmartCardPrompt = lib.hm.dag.entryAfter [ "importGpgKeys" ] ''
          shopt -s nullglob

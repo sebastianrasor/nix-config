@@ -30,6 +30,7 @@ in
         nixpkgs.enable = true;
         pam.enable = true;
         secrets.enable = true;
+        ssh.enable = true;
         sshd.enable = true;
         sudo-rs.enable = true;
         systemd-networkd.enable = true;
