@@ -23,7 +23,6 @@ in
   config = lib.mkMerge [
     (lib.mkIf cfg.enable {
       sebastianrasor = {
-        deploy-client.enable = true;
         home-manager.enable = true;
         i18n.enable = true;
         nh.enable = true;
