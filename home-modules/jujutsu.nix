@@ -24,8 +24,8 @@ in
         };
         signing = {
           behavior = "drop";
-          backend = "gpg";
-          key = "9CBD407F060D20898ED1F280E346A2A083D90F7D";
+          backend = "ssh";
+          key = "~/.ssh/id_ed25519_sk.pub";
         };
         git.sign-on-push = true;
       };

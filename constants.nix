@@ -28,4 +28,11 @@
   nixConfig = {
     allowUnfree = true;
   };
+  sshPublicKeys = [
+    "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIG8oqQ258rpLMReApRLnijzRsLa5BcBxi/upR8YZzDnQAAAABHNzaDo= cardno:27_419_328"
+    "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIOpzH9Jdaj5MjBWn2J/9N1dRiKkadgwfAdkHqxNmFSb1AAAABHNzaDo= cardno:25_905_600"
+    "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAID7ln2zszWc43qSl+dXV9OggPGaGHrnFTIc1I5XApzNPAAAABHNzaDo= cardno:27_783_866"
+    "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIErDNREHB8l520qIQFeuHI0YXXJ59kXn8rYWX72zLXY+AAAABHNzaDo= cardno:27_783_800"
+    "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIPiuG0iczZTy3jO7MCI0ZXl7YehqJ2M46KKmyknRlFaSAAAABHNzaDo= cardno:35_203_939"
+  ];
 }

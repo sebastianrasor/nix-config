@@ -27,18 +27,10 @@ in
         };
       };
       signing = {
-        format = "openpgp";
+        format = "ssh";
         signByDefault = true;
-        key = "9CBD407F060D20898ED1F280E346A2A083D90F7D";
+        key = "~/.ssh/id_ed25519_sk.pub";
       };
-      includes = [
-        {
-          condition = "hasconfig:remote.*.url:git@github.com:*/**";
-          contents = {
-            user.email = "92653912+sebastianrasor@users.noreply.github.com";
-          };
-        }
-      ];
     };
   };
 }
