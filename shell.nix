@@ -1,10 +1,10 @@
-{ outputs, ... }:
+{ self, ... }:
 {
   pkgs ? import <nixpkgs> { },
 }:
 pkgs.mkShellNoCC {
   packages = with pkgs; [
-    outputs.formatter.${pkgs.stdenv.hostPlatform.system}
+    self.formatter.${pkgs.stdenv.hostPlatform.system}
 
     age
     age-plugin-yubikey
