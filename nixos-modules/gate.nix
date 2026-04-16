@@ -54,9 +54,9 @@ in
     users.groups.gate = { };
     sops = {
       secrets."minecraft/velocitySecret" = {
-          owner = lib.mkDefault config.users.users.gate.name;
-          group = lib.mkDefault config.users.users.gate.group;
-        };
+        owner = lib.mkDefault config.users.users.gate.name;
+        group = lib.mkDefault config.users.users.gate.group;
+      };
       templates."gate/config.yaml" = {
         inherit (config.users.users.gate) group;
         owner = config.users.users.gate.name;

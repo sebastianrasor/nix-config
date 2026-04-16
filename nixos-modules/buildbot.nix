@@ -28,7 +28,7 @@ in
         enable = true;
         domain = "buildbot.ts.${constants.domain}";
         workersFile = config.sops.templates."workers.json".path;
-        admins = ["sebastian"];
+        admins = [ "sebastian" ];
         github = {
           enable = true;
           appId = 3369053;
@@ -51,10 +51,12 @@ in
       };
     };
 
-    sebastianrasor.reverse-proxy.proxies."buildbot" = "http://127.0.0.1:${toString config.services.buildbot-master.port}";
-    services.nginx.virtualHosts."buildbot.${config.sebastianrasor.reverse-proxy.baseDomainName}".serverAliases = [
-      "buildbot.${constants.domain}"
-    ];
+    sebastianrasor.reverse-proxy.proxies."buildbot" =
+      "http://127.0.0.1:${toString config.services.buildbot-master.port}";
+    services.nginx.virtualHosts."buildbot.${config.sebastianrasor.reverse-proxy.baseDomainName}".serverAliases =
+      [
+        "buildbot.${constants.domain}"
+      ];
 
     sops = {
       secrets = {

@@ -28,8 +28,7 @@ in
     sebastianrasor = {
       persistence.directories = [ config.services.immich.mediaLocation ];
 
-      reverse-proxy.proxies."immich" =
-        "http://[::1]:${toString config.services.immich.port}";
+      reverse-proxy.proxies."immich" = "http://[::1]:${toString config.services.immich.port}";
 
       unas.mounts."Immich" = "/srv/immich";
     };

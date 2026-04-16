@@ -38,24 +38,26 @@ in
     sops = {
       secrets."oidc/clientSecrets/paperless" = { };
       templates."paperless.env".content = ''
-        PAPERLESS_SOCIALACCOUNT_PROVIDERS=${builtins.toJSON {
-          "openid_connect" = {
-            "APPS" = [
-              {
-                "provider_id" = "authentik";
-                "name" = "authentik";
-                "client_id" = "mEHjbCfj26egw2cZ1IJPQs9coBJbOCYw0j7hDPOd";
-                "secret" = config.sops.placeholder."oidc/clientSecrets/paperless";
-                "settings" = {
-                  "server_url" =
-                    "https://authentik.${constants.domain}/application/o/paperless/.well-known/openid-configuration";
-                  "claims"."username" = "email";
-                };
-              }
-            ];
-            "OAUTH_PKCE_ENABLED" = "True";
-          };
-        }}
+        PAPERLESS_SOCIALACCOUNT_PROVIDERS=${
+          builtins.toJSON {
+            "openid_connect" = {
+              "APPS" = [
+                {
+                  "provider_id" = "authentik";
+                  "name" = "authentik";
+                  "client_id" = "mEHjbCfj26egw2cZ1IJPQs9coBJbOCYw0j7hDPOd";
+                  "secret" = config.sops.placeholder."oidc/clientSecrets/paperless";
+                  "settings" = {
+                    "server_url" =
+                      "https://authentik.${constants.domain}/application/o/paperless/.well-known/openid-configuration";
+                    "claims"."username" = "email";
+                  };
+                }
+              ];
+              "OAUTH_PKCE_ENABLED" = "True";
+            };
+          }
+        }
       '';
     };
 
