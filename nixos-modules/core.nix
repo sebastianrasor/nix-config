@@ -77,7 +77,10 @@ in
       users.mutableUsers = false;
       users.users.root = {
         hashedPassword = "!";
-        shell = pkgs.shadow;
+        # deployment key
+        openssh.authorizedKeys.keys = [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIBkrE2bWnp2A0RmoNxwMMtEAwi9kplYp7kJ+YxAHnF9"
+        ];
       };
     })
     (lib.mkIf cfg.laptop {

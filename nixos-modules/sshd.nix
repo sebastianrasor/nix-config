@@ -42,7 +42,7 @@ in
       settings = {
         KbdInteractiveAuthentication = false;
         PasswordAuthentication = false;
-        PermitRootLogin = "no";
+        PermitRootLogin = "prohibit-password";
         UseDns = true;
       };
     };
