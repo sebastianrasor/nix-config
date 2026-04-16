@@ -24,6 +24,7 @@ in
         CanonicalDomains = "ts.${constants.domain}";
       };
       matchBlocks."*" = {
+        addKeysToAgent = "yes"; # required for rssh to work properly
         controlMaster = "auto";
         controlPath = "\${XDG_RUNTIME_DIR}/ssh/control/%C";
         controlPersist = "10m";
