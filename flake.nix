@@ -79,16 +79,15 @@
                 nixosConfiguration:
                 let
                   hostName = nixosConfiguration.config.networking.hostName;
-                  deploymentName = "deploy-${hostName}";
                 in
                 {
-                  name = deploymentName;
+                  name = "deploy-${hostName}";
                   value = hci-effects.runIf (herculesCI.config.repo.branch == "main") (
-                    hci-effects.runNixOS {
-                      name = deploymentName;
-                      configuration = nixosConfiguration;
-                      ssh.destination = "${hostName}.ts.${constants.domain}";
-                      userSetupScript = ''
+                    hci-effects.mkEffect {
+                      inputs = with pkgs; [
+                        openssh
+                      ];
+                      effectScript = ''
                         writeSSHKey ssh
                         # todo: move this into the configuration itself somehow
                         cat >~/.ssh/known_hosts <<EOF
@@ -97,6 +96,10 @@
                         nephele.ts.${constants.domain} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIISaqWRMez2mFczqhMmiYe0KzNeENKsqEQw/AsOC+Ay+
                         sunflower.ts.${constants.domain} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII85WkAO+BoPgHC8Vj7Y3ab3aOOLDx9e8jul4rBLAXiM
                         EOF
+
+                        ssh "${hostName}.ts.${constants.domain}" "systemctl start nixos-upgrade.service"
+                        status="''${?/255/0}"
+                        exit "$status"
                       '';
                     }
                   );
