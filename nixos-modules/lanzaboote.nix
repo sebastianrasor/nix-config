@@ -1,6 +1,6 @@
+{ lanzaboote, ... }:
 {
   config,
-  inputs,
   lib,
   pkgs,
   ...
@@ -15,10 +15,9 @@ in
       default = false;
     };
   };
-}
-// lib.optionalAttrs (inputs ? lanzaboote) {
+
   imports = [
-    inputs.lanzaboote.nixosModules.lanzaboote
+    lanzaboote.nixosModules.lanzaboote
   ];
 
   config = lib.mkIf cfg.enable {

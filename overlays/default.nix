@@ -1,6 +1,6 @@
-self:
+{ nixpkgs, ... }:
 let
-  inherit (self.inputs.nixpkgs) lib;
+  inherit (nixpkgs) lib;
 in
 lib.pipe ./. [
   builtins.readDir

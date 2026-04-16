@@ -1,7 +1,7 @@
+{ cosmic-manager, ... }:
 {
   config,
   cosmicLib,
-  inputs,
   lib,
   pkgs,
   ...
@@ -16,10 +16,9 @@ in
       default = false;
     };
   };
-}
-// lib.optionalAttrs (inputs ? cosmic-manager) {
+
   imports = [
-    inputs.cosmic-manager.homeManagerModules.cosmic-manager
+    cosmic-manager.homeManagerModules.cosmic-manager
   ];
 
   config = lib.mkIf cfg.enable {

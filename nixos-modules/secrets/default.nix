@@ -1,6 +1,6 @@
+{ sops-nix, ... }:
 {
   config,
-  inputs,
   lib,
   pkgs,
   ...
@@ -29,9 +29,8 @@ in
       };
     };
   };
-}
-// lib.optionalAttrs (inputs ? sops-nix) {
-  imports = [ inputs.sops-nix.nixosModules.sops ];
+
+  imports = [ sops-nix.nixosModules.sops ];
 
   config = lib.mkIf cfg.enable {
     sops = {

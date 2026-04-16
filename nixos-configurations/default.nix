@@ -1,6 +1,6 @@
-self:
+inputs@{ nixpkgs, self, ... }:
 let
-  inherit (self.inputs.nixpkgs) lib;
+  inherit (nixpkgs) lib;
 in
 lib.pipe ./. [
   builtins.readDir
@@ -8,13 +8,16 @@ lib.pipe ./. [
   (builtins.filter (name: name != "default.nix"))
   (map (name: {
     name = lib.removeSuffix ".nix" name;
-    value = lib.nixosSystem {
-      specialArgs = {
-        inherit (self) inputs outputs;
-        constants = import ../constants.nix;
+    value =
+      let
+        configurationModule = import ./${name} inputs;
+      in
+      lib.nixosSystem {
+        specialArgs = {
+          constants = import ../constants.nix;
+        };
+        modules = [ configurationModule ] ++ lib.attrsets.attrValues self.nixosModules;
       };
-      modules = [ ./${name} ] ++ lib.attrsets.attrValues self.outputs.nixosModules;
-    };
   }))
   builtins.listToAttrs
 ]

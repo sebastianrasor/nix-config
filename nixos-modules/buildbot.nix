@@ -1,7 +1,7 @@
+{ buildbot-nix, ... }:
 {
   config,
   constants,
-  inputs,
   lib,
   ...
 }:
@@ -15,11 +15,10 @@ in
       default = false;
     };
   };
-}
-// lib.optionalAttrs (inputs ? buildbot-nix) {
+
   imports = [
-    inputs.buildbot-nix.nixosModules.buildbot-master
-    inputs.buildbot-nix.nixosModules.buildbot-worker
+    buildbot-nix.nixosModules.buildbot-master
+    buildbot-nix.nixosModules.buildbot-worker
   ];
 
   config = lib.mkIf cfg.enable {

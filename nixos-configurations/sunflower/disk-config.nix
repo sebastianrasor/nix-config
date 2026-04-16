@@ -1,7 +1,7 @@
-{ inputs, ... }:
+{ disko, ... }:
 {
   imports = [
-    inputs.disko.nixosModules.disko
+    disko.nixosModules.disko
   ];
 
   disko.devices = {

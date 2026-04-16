@@ -1,4 +1,5 @@
-{ inputs, ... }:
+{ nixos-hardware, ... }:
+_:
 {
   networking.hostName = "azalea";
 
@@ -17,7 +18,7 @@
   };
 
   imports = [
-    inputs.nixos-hardware.nixosModules.framework-13-7040-amd
+    nixos-hardware.nixosModules.framework-13-7040-amd
     ./hardware-configuration.nix
   ]
   ++ map (moduleFile: ./users + ("/" + moduleFile)) (builtins.attrNames (builtins.readDir ./users));

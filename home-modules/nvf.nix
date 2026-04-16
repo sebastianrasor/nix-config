@@ -1,6 +1,6 @@
+{ nvf, ... }:
 {
   config,
-  inputs,
   lib,
   pkgs,
   ...
@@ -15,10 +15,9 @@ in
       default = false;
     };
   };
-}
-// lib.optionalAttrs (inputs ? nvf) {
+
   imports = [
-    inputs.nvf.homeManagerModules.default
+    nvf.homeManagerModules.default
   ];
 
   config = lib.mkIf cfg.enable {

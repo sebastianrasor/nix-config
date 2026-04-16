@@ -1,14 +1,12 @@
+{ yubikey-touch-detector, ... }:
 {
   config,
   lib,
   pkgs,
-  inputs,
   ...
 }:
 let
-  inherit (inputs.yubikey-touch-detector.packages.${pkgs.stdenv.hostPlatform.system})
-    yubikey-touch-detector
-    ;
+  ytdPackage = yubikey-touch-detector.packages.${pkgs.stdenv.hostPlatform.system}.yubikey-touch-detector;
   cfg = config.sebastianrasor.yubikey-touch-detector;
 in
 {
@@ -30,7 +28,7 @@ in
       };
       packages = [
         pkgs.libnotify
-        yubikey-touch-detector
+        ytdPackage
       ];
     };
     systemd.user.services = {
@@ -40,7 +38,7 @@ in
           Requires = "yubikey-touch-detector.socket";
         };
         Service = {
-          ExecStart = lib.getExe' yubikey-touch-detector "yubikey-touch-detector";
+          ExecStart = lib.getExe' ytdPackage "yubikey-touch-detector";
           EnvironmentFile = "-%E/yubikey-touch-detector/service.conf";
         };
         Install = {
