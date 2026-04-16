@@ -9,7 +9,7 @@
     }:
     let
       constants = import ./constants.nix;
-      domain = constants.domain;
+      domain = constants._module.args.constants.domain;
       supportedSystems = [
         "x86_64-linux"
       ];
