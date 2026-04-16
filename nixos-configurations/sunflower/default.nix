@@ -1,6 +1,5 @@
 inputs@{ nixos-hardware, ... }:
-_:
-{
+_: {
   networking.hostName = "sunflower";
 
   sebastianrasor = {

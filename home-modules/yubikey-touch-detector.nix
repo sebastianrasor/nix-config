@@ -6,7 +6,8 @@
   ...
 }:
 let
-  ytdPackage = yubikey-touch-detector.packages.${pkgs.stdenv.hostPlatform.system}.yubikey-touch-detector;
+  ytdPackage =
+    yubikey-touch-detector.packages.${pkgs.stdenv.hostPlatform.system}.yubikey-touch-detector;
   cfg = config.sebastianrasor.yubikey-touch-detector;
 in
 {

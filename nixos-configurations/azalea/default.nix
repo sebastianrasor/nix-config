@@ -1,6 +1,5 @@
 { nixos-hardware, ... }:
-_:
-{
+_: {
   networking.hostName = "azalea";
 
   sebastianrasor = {
