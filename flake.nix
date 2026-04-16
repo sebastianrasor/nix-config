@@ -9,6 +9,7 @@
     }:
     let
       constants = import ./constants.nix;
+      domain = constants.domain;
       supportedSystems = [
         "x86_64-linux"
       ];
@@ -20,7 +21,7 @@
           f (
             import nixpkgs {
               inherit system;
-              config = constants.nixConfig;
+              config = constants._module.args.constants.nixConfig;
               overlays = builtins.attrValues self.overlays;
             }
           )
@@ -83,7 +84,7 @@
                   sshCommand =
                     hci-effects.ssh
                       {
-                        destination = "${hostName}.ts.${constants.domain}";
+                        destination = "${hostName}.ts.${domain}";
                         sshOptions = "-o ConnectTimeout=10";
                       }
                       ''
@@ -117,10 +118,10 @@
                         writeSSHKey ssh
                         # todo: move this into the configuration itself somehow
                         cat >~/.ssh/known_hosts <<EOF
-                        azalea.ts.${constants.domain} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO5pVGXbupdNG/9acDwOd6loG8CBBaNsreyoYCY4at9J
-                        carbon.ts.${constants.domain} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAGdZ/fyPx7w2GsbE337H0kNst+GWL/gN4piJizkWj/9
-                        nephele.ts.${constants.domain} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIISaqWRMez2mFczqhMmiYe0KzNeENKsqEQw/AsOC+Ay+
-                        sunflower.ts.${constants.domain} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII85WkAO+BoPgHC8Vj7Y3ab3aOOLDx9e8jul4rBLAXiM
+                        azalea.ts.${domain} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO5pVGXbupdNG/9acDwOd6loG8CBBaNsreyoYCY4at9J
+                        carbon.ts.${domain} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAGdZ/fyPx7w2GsbE337H0kNst+GWL/gN4piJizkWj/9
+                        nephele.ts.${domain} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIISaqWRMez2mFczqhMmiYe0KzNeENKsqEQw/AsOC+Ay+
+                        sunflower.ts.${domain} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII85WkAO+BoPgHC8Vj7Y3ab3aOOLDx9e8jul4rBLAXiM
                         EOF
 
                         if ${sshCommand}; then
@@ -144,13 +145,17 @@
 
       formatter = forAllSystems (pkgs: pkgs.nixfmt-tree);
 
-      homeModules = import ./home-modules inputs;
+      homeModules = import ./home-modules inputs // {
+        inherit constants;
+      };
 
       legacyPackages = forAllSystems (pkgs: pkgs.callPackages ./legacy-packages { });
 
       nixosConfigurations = import ./nixos-configurations inputs;
 
-      nixosModules = import ./nixos-modules inputs;
+      nixosModules = import ./nixos-modules inputs // {
+        inherit constants;
+      };
 
       overlays = import ./overlays inputs;
 

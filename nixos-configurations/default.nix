@@ -13,9 +13,6 @@ lib.pipe ./. [
         configurationModule = import ./${name} inputs;
       in
       lib.nixosSystem {
-        specialArgs = {
-          constants = import ../constants.nix;
-        };
         modules = [ configurationModule ] ++ lib.attrsets.attrValues self.nixosModules;
       };
   }))
