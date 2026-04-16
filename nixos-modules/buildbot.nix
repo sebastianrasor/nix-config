@@ -27,7 +27,7 @@ in
       master = {
         enable = true;
         domain = "buildbot.ts.${constants.domain}";
-        workersFile = config.sops.templates."workers.json".path;
+        workersFile = config.sops.templates."buildbot/workers.json".path;
         admins = [ "sebastian" ];
         github = {
           enable = true;
@@ -43,6 +43,8 @@ in
           clientId = "l6g8dHF4VHNx7e58WJlBZZFlYPJvi9SukQZH0wvY";
           clientSecretFile = config.sops.secrets."oidc/clientSecrets/buildbot".path;
         };
+        effects.perRepoSecretFiles."github:sebastianrasor/nix-config" =
+          config.sops.templates."buildbot/secrets.json".path;
       };
 
       worker = {
@@ -67,16 +69,30 @@ in
           sopsFile = ./secrets/github-buildbot-private-key.pem;
         };
         "oidc/clientSecrets/buildbot" = { };
+        "ssh/privateKeys/deploy" = { };
       };
-      templates."workers.json".content = ''
-        [
+      templates = {
+        "buildbot/workers.json".content = ''
+          [
+            {
+              "name": "carbon",
+              "pass": "${config.sops.placeholder."buildbot/workerPassword"}",
+              "cores": 24
+            }
+          ]
+        '';
+        "buildbot/secrets.json".content = ''
           {
-            "name": "carbon",
-            "pass": "${config.sops.placeholder."buildbot/workerPassword"}",
-            "cores": 24
+            "ssh": {
+              "kind": "Secret",
+              "data": {
+                "privateKey": "${config.sops.placeholder."ssh/privateKeys/deploy"}",
+                "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIBkrE2bWnp2A0RmoNxwMMtEAwi9kplYp7kJ+YxAHnF9"
+              }
+            }
           }
-        ]
-      '';
+        '';
+      };
     };
   };
 }
