@@ -1,6 +1,6 @@
+{ comin, ... }:
 {
   config,
-  inputs,
   lib,
   ...
 }:
@@ -14,10 +14,9 @@ in
       default = false;
     };
   };
-}
-// lib.optionalAttrs (inputs ? comin) {
+
   imports = [
-    inputs.comin.nixosModules.comin
+    comin.nixosModules.comin
   ];
 
   config = lib.mkIf cfg.enable {

@@ -1,7 +1,7 @@
+{ self, ... }:
 {
   config,
   lib,
-  outputs,
   pkgs,
   ...
 }:
@@ -22,7 +22,7 @@ in
 
     hydraURL = lib.mkOption {
       type = lib.types.str;
-      default = outputs.nixosConfigurations.carbon.config.services.hydra.hydraURL;
+      default = self.nixosConfigurations.carbon.config.services.hydra.hydraURL;
     };
 
     hydraProjectId = lib.mkOption {

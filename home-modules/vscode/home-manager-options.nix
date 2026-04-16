@@ -4,7 +4,6 @@ let
 in
 (flake.inputs.home-manager.lib.homeManagerConfiguration {
   inherit pkgs;
-  extraSpecialArgs = { inherit (flake) inputs; };
   check = false;
   modules = [
     {

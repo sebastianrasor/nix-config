@@ -1,9 +1,8 @@
+{ home-manager, self, ... }:
 {
   config,
   constants,
-  inputs,
   lib,
-  outputs,
   pkgs,
   ...
 }:
@@ -17,22 +16,21 @@ in
       default = false;
     };
   };
-}
-// lib.optionalAttrs (inputs ? home-manager) {
+
   imports = [
-    inputs.home-manager.nixosModules.home-manager
+    home-manager.nixosModules.home-manager
   ];
 
   config = lib.mkIf cfg.enable {
-    environment.systemPackages = with pkgs; [
-      home-manager
+    environment.systemPackages = [
+      pkgs.home-manager
     ];
     home-manager = {
       backupFileExtension = "backup";
       extraSpecialArgs = {
-        inherit constants inputs outputs;
+        inherit constants;
       };
-      sharedModules = lib.attrsets.attrValues outputs.homeModules;
+      sharedModules = lib.attrsets.attrValues self.homeModules;
     };
   };
 }

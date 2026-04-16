@@ -1,15 +1,15 @@
+{ self, ... }:
 {
   config,
   constants,
   lib,
-  outputs,
   pkgs,
   ...
 }:
 let
   cfg = config.sebastianrasor.gate;
   carbonMinecraftServerPort =
-    outputs.nixosConfigurations.carbon.config.services.minecraft-server.serverProperties.server-port;
+    self.nixosConfigurations.carbon.config.services.minecraft-server.serverProperties.server-port;
 
   startScript = pkgs.writeShellApplication {
     name = "minecraft-world-backup";
@@ -69,7 +69,7 @@ in
             status:
               motd: A Minecraft Server
               showMaxPlayers: 20
-              favicon: ${outputs.packages.${pkgs.stdenv.hostPlatform.system}.server-icon}
+              favicon: ${self.packages.${pkgs.stdenv.hostPlatform.system}.server-icon}
             builtinCommands: false
             forceKeyAuthentication: true
             forwarding:

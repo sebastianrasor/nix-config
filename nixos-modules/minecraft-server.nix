@@ -1,8 +1,7 @@
+{ server-mods, self, ... }:
 {
   config,
-  inputs,
   lib,
-  outputs,
   pkgs,
   ...
 }:
@@ -23,11 +22,11 @@ let
     };
 
   minecraftServer =
-    outputs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.fabricmcServers.fabricmc-server-26_1_1.override
+    self.legacyPackages.${pkgs.stdenv.hostPlatform.system}.fabricmcServers.fabricmc-server-26_1_1.override
       {
         fabricMods = [
-          inputs.server-mods.packages.${pkgs.stdenv.hostPlatform.system}.default
-          outputs.packages.${pkgs.stdenv.hostPlatform.system}.secureseed-reborn
+          server-mods.packages.${pkgs.stdenv.hostPlatform.system}.default
+          self.packages.${pkgs.stdenv.hostPlatform.system}.secureseed-reborn
 
           (pkgs.fetchMavenArtifact {
             groupId = "net.fabricmc.fabric-api";

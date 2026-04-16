@@ -1,7 +1,7 @@
+{ tailscale-golink, ... }:
 {
   config,
   constants,
-  inputs,
   lib,
   ...
 }:
@@ -15,10 +15,9 @@ in
       default = false;
     };
   };
-}
-// lib.optionalAttrs (inputs ? tailscale-golink) {
+
   imports = [
-    inputs.tailscale-golink.nixosModules.default
+    tailscale-golink.nixosModules.default
   ];
 
   config = lib.mkIf cfg.enable {

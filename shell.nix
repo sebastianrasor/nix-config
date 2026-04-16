@@ -1,8 +1,11 @@
+{ outputs, ... }:
 {
   pkgs ? import <nixpkgs> { },
 }:
 pkgs.mkShellNoCC {
   packages = with pkgs; [
+    outputs.formatter.${pkgs.stdenv.hostPlatform.system}
+
     age
     age-plugin-yubikey
     age-plugin-tpm
@@ -11,7 +14,6 @@ pkgs.mkShellNoCC {
     nh
     nixd
     nixf
-    nixfmt
     sops
   ];
   shellHook = ''

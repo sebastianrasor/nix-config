@@ -1,6 +1,6 @@
+{ checkemail, ... }:
 {
   config,
-  inputs,
   lib,
   pkgs,
   ...
@@ -24,7 +24,7 @@ in
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
         EnvironmentFile = config.sops.templates."checkemail.env".path;
-        ExecStart = "${lib.getExe' inputs.checkemail.packages.${pkgs.stdenv.hostPlatform.system}.default
+        ExecStart = "${lib.getExe' checkemail.packages.${pkgs.stdenv.hostPlatform.system}.default
           "checkemail"
         }";
         Restart = "always";

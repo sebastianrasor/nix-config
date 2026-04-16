@@ -1,6 +1,6 @@
+inputs@{ ... }:
 {
   config,
-  inputs,
   lib,
   ...
 }:

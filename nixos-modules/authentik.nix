@@ -1,7 +1,7 @@
+{ authentik-nix, ... }:
 {
   config,
   constants,
-  inputs,
   lib,
   ...
 }:
@@ -17,10 +17,9 @@ in
       default = false;
     };
   };
-}
-// lib.optionalAttrs (inputs ? authentik-nix) {
+
   imports = [
-    inputs.authentik-nix.nixosModules.default
+    authentik-nix.nixosModules.default
   ];
 
   config = lib.mkIf cfg.enable {

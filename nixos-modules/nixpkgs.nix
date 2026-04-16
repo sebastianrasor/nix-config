@@ -1,8 +1,8 @@
+{ self, ... }:
 {
   config,
   constants,
   lib,
-  outputs,
   ...
 }:
 let
@@ -19,7 +19,7 @@ in
   config = lib.mkIf cfg.enable {
     nixpkgs = {
       config = constants.nixConfig;
-      overlays = builtins.attrValues outputs.overlays;
+      overlays = builtins.attrValues self.overlays;
     };
   };
 }

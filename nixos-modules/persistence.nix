@@ -1,6 +1,6 @@
+{ impermanence, ... }:
 {
   config,
-  inputs,
   lib,
   ...
 }:
@@ -29,10 +29,9 @@ in
       default = [ ];
     };
   };
-}
-// lib.optionalAttrs (inputs ? impermanence) {
+
   imports = [
-    inputs.impermanence.nixosModules.impermanence
+    impermanence.nixosModules.impermanence
   ];
 
   config = lib.mkIf cfg.enable {

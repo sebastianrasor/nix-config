@@ -139,20 +139,20 @@
       };
 
       devShells = forAllSystems (pkgs: {
-        default = import ./shell.nix { inherit pkgs; };
+        default = import ./shell.nix inputs { inherit pkgs; };
       });
 
       formatter = forAllSystems (pkgs: pkgs.nixfmt-tree);
 
-      homeModules = import ./home-modules self;
+      homeModules = import ./home-modules inputs;
 
       legacyPackages = forAllSystems (pkgs: pkgs.callPackages ./legacy-packages { });
 
-      nixosConfigurations = import ./nixos-configurations self;
+      nixosConfigurations = import ./nixos-configurations inputs;
 
-      nixosModules = import ./nixos-modules self;
+      nixosModules = import ./nixos-modules inputs;
 
-      overlays = import ./overlays self;
+      overlays = import ./overlays inputs;
 
       packages = forAllSystems (pkgs: import ./packages pkgs);
     };
