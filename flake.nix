@@ -97,7 +97,7 @@
                         sunflower.ts.${constants.domain} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII85WkAO+BoPgHC8Vj7Y3ab3aOOLDx9e8jul4rBLAXiM
                         EOF
 
-                        if ! ssh -o ConnectTimeout=30 "sunflower.ts.rasor.us" "systemctl start nixos-upgrade.service"; then
+                        if ! ssh -o ConnectTimeout=30 "${hostName}.ts.${constants.domain}" "systemctl start nixos-upgrade.service"; then
                           exit "''${?/255/0}"
                         fi
 
