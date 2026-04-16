@@ -4,6 +4,7 @@
   outputs =
     inputs@{
       self,
+      hercules-ci-effects,
       nixpkgs,
       ...
     }:
@@ -67,12 +68,12 @@
           packages
         ];
 
-      herculesCI = self.inputs.hercules-ci-effects.lib.mkHerculesCI { inherit inputs; } {
+      herculesCI = hercules-ci-effects.lib.mkHerculesCI { inherit inputs; } {
         herculesCI = herculesCI: {
           onPush.default.outputs.effects =
             let
               pkgs = import nixpkgs { system = "x86_64-linux"; };
-              hci-effects = self.inputs.hercules-ci-effects.lib.withPkgs pkgs;
+              hci-effects = hercules-ci-effects.lib.withPkgs pkgs;
             in
             nixpkgs.lib.pipe self.nixosConfigurations [
               builtins.attrValues
