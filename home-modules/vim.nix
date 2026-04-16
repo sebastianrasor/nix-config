@@ -17,6 +17,7 @@ in
   config = lib.mkIf cfg.enable {
     programs.vim = {
       enable = true;
+      defaultEditor = lib.mkDefault true;
       extraConfig = ''
         set viminfo+=n~/.local/state/viminfo
         syntax on
