@@ -62,6 +62,7 @@ in
         google-chrome.enable = true;
         gpg.enable = true;
         pass.enable = true;
+        passage.enable = true;
         posy-cursors.enable = true;
         tailscale-systray.enable = true;
         thunderbird.enable = true;
