@@ -79,14 +79,35 @@
                 nixosConfiguration:
                 let
                   hostName = nixosConfiguration.config.networking.hostName;
+                  outPath = nixosConfiguration.config.system.build.toplevel.outPath;
+                  sshCommand =
+                    hci-effects.ssh
+                      {
+                        destination = "${hostName}.ts.${constants.domain}";
+                        sshOptions = "-o ConnectTimeout=10";
+                      }
+                      ''
+                        cmd=(
+                          "systemd-run"
+                          "-E" "LOCALE_ARCHIVE"
+                          "--collect"
+                          "--no-ask-password"
+                          "--pty"
+                          "--quiet"
+                          "--same-dir"
+                          "--service-type=exec"
+                          "--unit=deploy-switch-to-configuration"
+                          "--wait"
+                          "${outPath}/bin/switch-to-configuration"
+                        )
+                        nix-env -p /nix/var/nix/profiles/system --set ${outPath}
+                        ${outPath}/bin/switch-to-configuration switch
+                      '';
                 in
                 {
                   name = "deploy-${hostName}";
                   value = hci-effects.runIf (herculesCI.config.repo.branch == "main") (
                     hci-effects.mkEffect {
-                      inputs = with pkgs; [
-                        openssh
-                      ];
                       effectScript = ''
                         writeSSHKey ssh
                         # todo: move this into the configuration itself somehow
@@ -97,7 +118,7 @@
                         sunflower.ts.${constants.domain} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII85WkAO+BoPgHC8Vj7Y3ab3aOOLDx9e8jul4rBLAXiM
                         EOF
 
-                        if ! ssh -o ConnectTimeout=30 "${hostName}.ts.${constants.domain}" "systemctl start nixos-upgrade.service"; then
+                        if ${sshCommand}; then
                           exit "''${?/255/0}"
                         fi
 
