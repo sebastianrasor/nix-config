@@ -23,10 +23,12 @@ in
         CanonicalizeHostname = "yes";
         CanonicalDomains = "ts.${constants.domain}";
       };
-      matchBlocks."*.ts.${constants.domain}" = {
+      matchBlocks."*" = {
         controlMaster = "auto";
         controlPath = "\${XDG_RUNTIME_DIR}/ssh/control/%C";
         controlPersist = "10m";
+      };
+      matchBlocks."*.ts.${constants.domain}" = {
         forwardAgent = true;
       };
     };
