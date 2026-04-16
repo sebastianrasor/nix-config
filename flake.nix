@@ -87,6 +87,10 @@
                         sshOptions = "-o ConnectTimeout=10";
                       }
                       ''
+                        if [ "$(readlink -f /run/current-system)" == "${outPath}" ]; then
+                          exit 0
+                        fi
+
                         cmd=(
                           "systemd-run"
                           "-E" "LOCALE_ARCHIVE"
@@ -100,8 +104,9 @@
                           "--wait"
                           "${outPath}/bin/switch-to-configuration"
                         )
+
                         nix-env -p /nix/var/nix/profiles/system --set ${outPath}
-                        ${outPath}/bin/switch-to-configuration switch
+                        "''${cmd[@]}" switch
                       '';
                 in
                 {
