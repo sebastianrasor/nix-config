@@ -68,24 +68,42 @@
 
       herculesCI = self.inputs.hercules-ci-effects.lib.mkHerculesCI { inherit inputs; } {
         herculesCI = herculesCI: {
-          onPush.default.outputs.effects.deploy =
+          onPush.default.outputs.effects =
             let
-              hci-effects = self.inputs.hercules-ci-effects.lib.withPkgs (
-                import nixpkgs { system = "x86_64-linux"; }
-              );
+              pkgs = import nixpkgs { system = "x86_64-linux"; };
+              hci-effects = self.inputs.hercules-ci-effects.lib.withPkgs pkgs;
             in
-            hci-effects.runIf (herculesCI.config.repo.branch == "main") (
-              hci-effects.mkEffect {
-                effectScript = ''
-                  if [ -p /run/deploy-server.stdin ]; then
-                    echo "Triggering client deployments"
-                    echo switch > /run/deploy-server.stdin
-                  else
-                    echo "No deploy socket" >&2
-                  fi
-                '';
-              }
-            );
+            nixpkgs.lib.pipe self.nixosConfigurations [
+              builtins.attrValues
+              (map (
+                nixosConfiguration:
+                let
+                  hostName = nixosConfiguration.config.networking.hostName;
+                  deploymentName = "deploy-${hostName}";
+                in
+                {
+                  name = deploymentName;
+                  value = hci-effects.runIf (herculesCI.config.repo.branch == "main") (
+                    hci-effects.runNixOS {
+                      name = deploymentName;
+                      configuration = nixosConfiguration;
+                      ssh.destination = "${hostName}.ts.${constants.domain}";
+                      userSetupScript = ''
+                        writeSSHKey ssh
+                        # todo: move this into the configuration itself somehow
+                        cat >~/.ssh/known_hosts <<EOF
+                        azalea.ts.${constants.domain} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO5pVGXbupdNG/9acDwOd6loG8CBBaNsreyoYCY4at9J
+                        carbon.ts.${constants.domain} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAGdZ/fyPx7w2GsbE337H0kNst+GWL/gN4piJizkWj/9
+                        nephele.ts.${constants.domain} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIISaqWRMez2mFczqhMmiYe0KzNeENKsqEQw/AsOC+Ay+
+                        sunflower.ts.${constants.domain} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII85WkAO+BoPgHC8Vj7Y3ab3aOOLDx9e8jul4rBLAXiM
+                        EOF
+                      '';
+                    }
+                  );
+                }
+              ))
+              builtins.listToAttrs
+            ];
         };
       };
 
