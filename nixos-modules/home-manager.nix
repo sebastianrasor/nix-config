@@ -1,7 +1,6 @@
 { home-manager, self, ... }:
 {
   config,
-  constants,
   lib,
   pkgs,
   ...
@@ -27,9 +26,6 @@ in
     ];
     home-manager = {
       backupFileExtension = "backup";
-      extraSpecialArgs = {
-        inherit constants;
-      };
       sharedModules = lib.attrsets.attrValues self.homeModules;
     };
   };
