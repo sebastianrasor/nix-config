@@ -8,7 +8,7 @@ lib.pipe ./. [
   (builtins.filter (name: name != "default.nix"))
   (map (name: {
     name = lib.removeSuffix ".nix" name;
-    value = import ./${name} inputs;
+    value = lib.modules.importApply ./${name} inputs;
   }))
   builtins.listToAttrs
 ]

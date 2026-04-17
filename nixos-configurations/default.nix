@@ -10,7 +10,7 @@ lib.pipe ./. [
     name = lib.removeSuffix ".nix" name;
     value =
       let
-        configurationModule = import ./${name} inputs;
+        configurationModule = lib.modules.importApply ./${name} inputs;
       in
       lib.nixosSystem {
         modules = [ configurationModule ] ++ lib.attrsets.attrValues self.nixosModules;
