@@ -178,6 +178,18 @@ in
       };
     };
 
+    wayland.desktopManager.cosmic.configFile."com.system76.CosmicTerm".entries.shortcuts_custom =
+      cosmicLib.cosmic.mkRON "map"
+        [
+          {
+            key = {
+              modifiers = [ (cosmicLib.cosmic.mkRON "enum" "Ctrl") ];
+              key = "c";
+            };
+            value = cosmicLib.cosmic.mkRON "enum" "Disable";
+          }
+        ];
+
     home.file.".config/cosmic-initial-setup-done".text = "";
   };
 }
