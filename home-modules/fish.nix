@@ -45,6 +45,7 @@ in
           command = "nix";
           setCursor = true;
         };
+        yssh = "ssh-keygen -K && rename _sk_rk _sk id_ed25519_sk_rk* && mv id_ed25519_sk* ~/.ssh";
       };
     };
 
