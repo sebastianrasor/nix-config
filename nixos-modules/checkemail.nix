@@ -1,4 +1,4 @@
-{ checkemail, ... }:
+{ self, ... }:
 {
   config,
   lib,
@@ -7,6 +7,7 @@
 }:
 let
   cfg = config.sebastianrasor.checkemail;
+  checkemail = self.packages.${pkgs.stdenv.hostPlatform.system}.checkemail;
 in
 {
   options.sebastianrasor.checkemail = {
@@ -24,9 +25,7 @@ in
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
         EnvironmentFile = config.sops.templates."checkemail.env".path;
-        ExecStart = "${lib.getExe' checkemail.packages.${pkgs.stdenv.hostPlatform.system}.default
-          "checkemail"
-        }";
+        ExecStart = "${lib.getExe' checkemail "checkemail" }";
         Restart = "always";
       };
     };

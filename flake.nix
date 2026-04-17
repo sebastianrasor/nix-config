@@ -195,11 +195,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    checkemail = {
-      url = "github:sebastianrasor/checkemail";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     cosmic-manager = {
       url = "github:HeitorAugustoLN/cosmic-manager";
       inputs = {
