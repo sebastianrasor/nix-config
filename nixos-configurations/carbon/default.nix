@@ -10,8 +10,6 @@ _:
     actual.enable = true;
     authentik.enable = true;
     buildbot.enable = true;
-    deploy-server.enable = true;
-    frigate.enable = false;
     gate.enable = true;
     homebox.enable = true;
     immich.enable = true;
