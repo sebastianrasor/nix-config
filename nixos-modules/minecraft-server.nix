@@ -170,9 +170,7 @@ in
       mkdir -p config/luckperms
       ln -sf ${config.sops.templates."minecraft/luckperms.conf".path} config/luckperms/luckperms.conf
 
-      cp --dereference --remove-destination ${
-        config.sops.templates."minecraft/FabricProxy-Lite.toml".path
-      } config/FabricProxy-Lite.toml
+      ln -sf ${config.sops.templates."minecraft/FabricProxy-Lite.toml".path} config/FabricProxy-Lite.toml
     '';
 
     sops = {
@@ -204,7 +202,7 @@ in
           inherit (config.users.users.minecraft) group;
           owner = config.users.users.minecraft.name;
           content = ''
-            disconnectMessage = "You did not connect using the proper IP address.";
+            disconnectMessage = "You did not connect using the proper IP address."
             hackEarlySend = true
             secret = "${config.sops.placeholder."minecraft/velocitySecret"}"
           '';
