@@ -5,10 +5,10 @@ _:
   ...
 }:
 let
-  cfg = config.sebastianrasor.nix-serve;
+  cfg = config.sebastianrasor.harmonia;
 in
 {
-  options.sebastianrasor.nix-serve = {
+  options.sebastianrasor.harmonia = {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
@@ -16,9 +16,9 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    services.nix-serve = {
+    services.harmonia = {
       enable = true;
-      secretKeyFile = config.sops.secrets."nix/binaryCacheSecretKey".path;
+      signKeyPath = config.sops.secrets."nix/binaryCacheSecretKey".path;
     };
 
     sebastianrasor.reverse-proxy.proxies."cache" =

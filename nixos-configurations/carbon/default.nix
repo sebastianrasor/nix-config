@@ -11,12 +11,12 @@ _:
     authentik.enable = true;
     buildbot.enable = true;
     gate.enable = true;
+    harmonia.enable = true;
     homebox.enable = true;
     immich.enable = true;
     intel-arc-a380.enable = true;
     jellyfin.enable = true;
     minecraft-server.enable = true;
-    nix-serve.enable = true;
     ollama.enable = true;
     open-webui.enable = true;
     paperless.enable = true;
