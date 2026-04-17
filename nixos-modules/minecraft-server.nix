@@ -193,7 +193,7 @@ in
             data: {
               address: "localhost"
               database: "minecraft_luckperms"
-              user: "minecraft_luckperms"
+              username: "minecraft_luckperms"
               password: ${config.sops.placeholder."postgres/databasePasswords/minecraft_luckperms"}
             }
           '';
