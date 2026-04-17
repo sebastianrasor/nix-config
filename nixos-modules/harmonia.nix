@@ -16,9 +16,9 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    services.harmonia = {
+    services.harmonia.cache = {
       enable = true;
-      signKeyPath = config.sops.secrets."nix/binaryCacheSecretKey".path;
+      signKeyPaths = [ config.sops.secrets."nix/binaryCacheSecretKey".path ];
     };
 
     sebastianrasor.reverse-proxy.proxies."cache" =
