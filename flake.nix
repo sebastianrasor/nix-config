@@ -10,7 +10,7 @@
     }:
     let
       constants = import ./constants.nix;
-      domain = constants._module.args.constants.domain;
+      inherit (constants._module.args.constants) domain;
       supportedSystems = [
         "x86_64-linux"
       ];
@@ -36,7 +36,7 @@
           );
           legacyPackages =
             let
-              lib = nixpkgs.lib;
+              inherit (nixpkgs) lib;
               nameValuePair = path: value: {
                 inherit value;
                 name = "legacyPackage-${lib.last path}";
@@ -80,8 +80,8 @@
               (map (
                 nixosConfiguration:
                 let
-                  hostName = nixosConfiguration.config.networking.hostName;
-                  outPath = nixosConfiguration.config.system.build.toplevel.outPath;
+                  inherit (nixosConfiguration.config.networking) hostName;
+                  inherit (nixosConfiguration.config.system.build.toplevel) outPath;
                   sshCommand =
                     hci-effects.ssh
                       {
