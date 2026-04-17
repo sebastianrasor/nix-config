@@ -1,5 +1,6 @@
 inputs@{ nixos-hardware, ... }:
-_: {
+{ lib, ... }:
+{
   networking.hostName = "sunflower";
 
   sebastianrasor = {
@@ -10,7 +11,7 @@ _: {
   imports = [
     nixos-hardware.nixosModules.framework-12-13th-gen-intel
     ./hardware-configuration.nix
-    (import ./disk-config.nix inputs)
+    (lib.modules.importApply ./disk-config.nix inputs)
   ]
   ++ map (moduleFile: ./users + ("/" + moduleFile)) (builtins.attrNames (builtins.readDir ./users));
 
