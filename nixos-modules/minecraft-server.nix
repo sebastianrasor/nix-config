@@ -192,11 +192,12 @@ in
           owner = config.users.users.minecraft.name;
           content = ''
             storage-method: postgresql
-            data:
-              address = "localhost"
-              database = "minecraft_luckperms"
-              user = "minecraft_luckperms"
-              password = ${config.sops.placeholder."postgres/databasePasswords/minecraft_luckperms"}
+            data: {
+              address: "localhost"
+              database: "minecraft_luckperms"
+              user: "minecraft_luckperms"
+              password: ${config.sops.placeholder."postgres/databasePasswords/minecraft_luckperms"}
+            }
           '';
         };
         "minecraft/FabricProxy-Lite.toml" = {
