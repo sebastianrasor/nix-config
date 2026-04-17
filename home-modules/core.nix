@@ -56,6 +56,7 @@ in
         browserpass.enable = true;
         cosmic.enable = true;
         discord.enable = true;
+        emoji.enable = true;
         google-chrome.enable = true;
         gpg.enable = true;
         pass.enable = true;
