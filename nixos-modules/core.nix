@@ -24,7 +24,6 @@ in
   config = lib.mkMerge [
     (lib.mkIf cfg.enable {
       sebastianrasor = {
-        auto-upgrade.enable = true;
         home-manager.enable = true;
         i18n.enable = true;
         nh.enable = true;

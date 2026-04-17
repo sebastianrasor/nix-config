@@ -24,7 +24,6 @@ in
     (lib.mkIf cfg.enable {
 
       sebastianrasor = {
-        bandwhich.enable = true;
         bash.enable = true;
         bat.enable = true;
         bottom.enable = true;
@@ -34,11 +33,8 @@ in
         eza.enable = true;
         fish.enable = true;
         git.enable = true;
-        gping.enable = true;
-        hyperfine.enable = true;
         jujutsu.enable = true;
         jq.enable = true;
-        monolith.enable = true;
         persistence.directories = [
           config.xdg.dataHome
           config.xdg.stateHome
