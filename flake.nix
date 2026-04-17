@@ -140,9 +140,27 @@
         };
       };
 
-      devShells = forAllSystems (pkgs: {
-        default = import ./shell.nix inputs { inherit pkgs; };
-      });
+      devShells = forAllSystems (
+        pkgs:
+        let
+          lib = pkgs.lib;
+          updateUpdatesPath = pathUpdater: updates: updates // { path = pathUpdater updates.path; };
+        in
+        (lib.pipe ./. [
+          lib.filesystem.listFilesRecursive
+          (lib.filter (file: baseNameOf file == "shell.nix"))
+          (map (shell: {
+            path = lib.path.removePrefix ./. shell;
+            update = _: import shell { inherit pkgs; };
+          }))
+          (map (updateUpdatesPath (lib.path.subpath.components)))
+          (map (updateUpdatesPath (lib.init)))
+          (lib.filter (updates: updates.path != [ ]))
+          lib.updateManyAttrsByPath
+        ]) {
+          default = import ./shell.nix { inherit pkgs; };
+        }
+      );
 
       formatter = forAllSystems (pkgs: pkgs.nixfmt-tree);
 
