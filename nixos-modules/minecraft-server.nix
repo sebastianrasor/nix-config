@@ -163,7 +163,9 @@ in
       cp --dereference --remove-destination ${opsFile} ops.json
       chmod 644 ops.json
 
-      ${lib.getExe pkgs.fd} . 'mods/' -e jar -X rm
+      if [ -d mods/ ]; then
+        ${lib.getExe pkgs.fd} . 'mods/' -e jar -X rm
+      fi
 
       mkdir -p config/luckperms
       ln -sf ${config.sops.templates."minecraft/luckperms.conf".path} config/luckperms/luckperms.conf
