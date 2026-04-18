@@ -1,4 +1,7 @@
 { stdenvNoCC, pkgs }:
+let
+  gradle = pkgs.gradle_9;
+in 
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "secureseed-reborn";
   version = "1.1.0";
@@ -9,9 +12,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     rev = "c4ebc165d974bb454d98b0cfdff643fb83fbb938";
   };
 
-  nativeBuildInputs = with pkgs; [
-    gradle_9
-  ];
+  nativeBuildInputs = [ gradle ];
 
   mitmCache = pkgs.gradle.fetchDeps {
     inherit (finalAttrs) pname;
@@ -34,9 +35,12 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     runHook postInstall
   '';
 
-  meta.sourceProvenance = with pkgs.lib.sourceTypes; [
-    fromSource
-    binaryBytecode # mitm cache
-  ];
+  meta = {
+    inherit (gradle.meta) platforms;
+    sourceProvenance = with pkgs.lib.sourceTypes; [
+      fromSource
+      binaryBytecode # mitm cache
+    ];
+  };
 
 })

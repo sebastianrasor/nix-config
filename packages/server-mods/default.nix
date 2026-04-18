@@ -1,5 +1,8 @@
 { pkgs, ... }:
 let
+  gradle = pkgs.gradle_9;
+in 
+let
   gradleProperties = pkgs.lib.pipe (builtins.readFile ./gradle.properties) [
     (pkgs.lib.strings.splitString "\n")
     (map (line: pkgs.lib.strings.trim line))
@@ -26,9 +29,7 @@ pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
 
   src = ./.;
 
-  nativeBuildInputs = with pkgs; [
-    gradle_9
-  ];
+  nativeBuildInputs = [ gradle ];
 
   mitmCache = pkgs.gradle.fetchDeps {
     inherit (finalAttrs) pname;
@@ -51,8 +52,11 @@ pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
     runHook postInstall
   '';
 
-  meta.sourceProvenance = with pkgs.lib.sourceTypes; [
-    fromSource
-    binaryBytecode # mitm cache
-  ];
+  meta = {
+    inherit (gradle.meta) platforms;
+    sourceProvenance = with pkgs.lib.sourceTypes; [
+      fromSource
+      binaryBytecode # mitm cache
+    ];
+  };
 })

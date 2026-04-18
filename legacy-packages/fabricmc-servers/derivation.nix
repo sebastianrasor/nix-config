@@ -103,5 +103,6 @@ stdenvNoCC.mkDerivation (finalAttrs: {
 
   meta = {
     description = "aoeu";
+    platforms = [ "x86_64-linux" ];
   };
 })

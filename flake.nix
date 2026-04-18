@@ -11,10 +11,7 @@
     let
       constants = import ./constants.nix;
       inherit (constants._module.args.constants) domain;
-      supportedSystems = [
-        "x86_64-linux"
-      ];
-      eachSupportedSystem = nixpkgs.lib.genAttrs supportedSystems;
+      eachSupportedSystem = nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed;
       forAllSystems =
         f:
         eachSupportedSystem (
