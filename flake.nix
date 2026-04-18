@@ -78,7 +78,7 @@
                 inherit (nixosConfiguration.config.networking) hostName;
                 inherit (nixosConfiguration.config.system.build.toplevel) outPath;
                 pkgs = import nixpkgs {
-                  inherit (nixosConfiguration.config.pkgs.stdenv.hostPlatform.system) system;
+                  inherit (nixosConfiguration.config.nixpkgs.hostPlatform) system;
                 };
                 hci-effects = hercules-ci-effects.lib.withPkgs pkgs;
                 sshCommand =
