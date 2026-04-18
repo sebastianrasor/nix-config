@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "package": "us.rasor.mc.difficulty.deathban.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "HardcoreRespawnMixin",
+    "StoredUserListContainsExpiredMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  },
+  "mixinextras": {
+    "minVersion": "0.5.0"
+  }
+}

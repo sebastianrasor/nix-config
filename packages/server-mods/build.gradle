@@ -1,0 +1,98 @@
+plugins {
+	id 'net.fabricmc.fabric-loom' version "${loom_version}" apply false
+}
+
+allprojects {
+    apply plugin: "net.fabricmc.fabric-loom"
+
+	version = project.mod_version
+    group = project.maven_group
+
+	repositories {
+		maven { url 'https://maven.nucleoid.xyz' }
+	}
+
+    loom {
+        serverOnlyMinecraftJar()
+    }
+
+    allprojects.each { p->
+        loom.mods.register(p.name) {
+            sourceSet p.sourceSets.main
+        }
+    }
+
+    dependencies {
+        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+        implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+        implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        it.options.release = 25
+    }
+
+    java {
+        withSourcesJar()
+
+		sourceCompatibility = JavaVersion.VERSION_25
+		targetCompatibility = JavaVersion.VERSION_25
+    }
+
+	jar {
+		inputs.property "projectName", project.name
+
+		from("LICENSE") {
+			rename { "${it}_${inputs.properties.projectName}"}
+		}
+	}
+
+}
+
+subprojects {
+	base {
+		archivesName = project.name
+	}
+
+    tasks.withType(ProcessResources).configureEach {
+        inputs.property "version", project.version
+
+        filesMatching("fabric.mod.json") {
+            expand "version": inputs.properties.version
+        }
+    }
+}
+
+def depends = [:]
+
+dependencies {
+    subprojects.each {
+        include implementation(project(path: "${it.path}"))
+
+        def subprojectFmjJson = new JsonSlurper().parseText(it.file("src/main/resources/fabric.mod.json").text)
+        String subprojectModId = subprojectFmjJson.id
+        depends[subprojectModId] = "*"
+    }
+}
+
+import groovy.json.JsonBuilder
+import groovy.json.JsonSlurper
+
+processResources {
+    doLast {
+        outputs.files
+        fileTree(dir: outputs.files.asPath, include: "fabric.mod.json").each {
+            File fmj -> {
+                def fmjJson = new JsonSlurper().parseText(fmj.text)
+                fmjJson.id = project.mod_id
+                fmjJson.version = project.version
+                if (!fmjJson.depends.find()) {
+                    fmjJson.depends = [:]
+                }
+                fmjJson.depends += depends
+                fmj.text = new JsonBuilder(fmjJson).toPrettyString()
+            }
+        }
+    }
+}
+

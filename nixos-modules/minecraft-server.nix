@@ -1,4 +1,4 @@
-{ server-mods, self, ... }:
+{ self, ... }:
 {
   config,
   lib,
@@ -25,7 +25,7 @@ let
     self.legacyPackages.${pkgs.stdenv.hostPlatform.system}.fabricmcServers.fabricmc-server-26_1_1.override
       {
         fabricMods = [
-          server-mods.packages.${pkgs.stdenv.hostPlatform.system}.default
+          self.packages.${pkgs.stdenv.hostPlatform.system}.server-mods
           self.packages.${pkgs.stdenv.hostPlatform.system}.secureseed-reborn
 
           (pkgs.fetchMavenArtifact {

@@ -1,0 +1,4 @@
+classTweaker v1 official
+
+accessible method net/minecraft/server/players/StoredUserEntry hasExpired ()Z
+accessible field net/minecraft/world/entity/monster/zombie/Zombie LEADER_ZOMBIE_BONUS_ID Lnet/minecraft/resources/Identifier;
