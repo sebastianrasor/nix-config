@@ -1,2 +1,0 @@
-update-deps:
-	$(nix build .#default.mitmCache.updateScript --print-out-paths --no-link)
