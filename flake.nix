@@ -143,23 +143,24 @@
         pkgs:
         let
           lib = pkgs.lib;
-          updateUpdatesPath = pathUpdater: updates: updates // { path = pathUpdater updates.path; };
+          updateName = nameUpdater: x: x // { name = nameUpdater x.name; };
         in
         (lib.pipe ./. [
           lib.filesystem.listFilesRecursive
           (lib.filter (file: baseNameOf file == "shell.nix"))
           (map (shell: {
-            path = lib.path.removePrefix ./. shell;
-            update = _: import shell { inherit pkgs; };
+            name = lib.path.removePrefix ./. shell;
+            value = import shell { inherit pkgs; };
           }))
-          (map (updateUpdatesPath (lib.path.subpath.components)))
-          (map (updateUpdatesPath (lib.init)))
-          (lib.filter (updates: updates.path != [ ]))
-          lib.updateManyAttrsByPath
+          (map (updateName (lib.path.subpath.components)))
+          (map (updateName (lib.init)))
+          (lib.filter (attrs: attrs.name != [ ]))
+          (map (updateName (lib.join "/")))
+          builtins.listToAttrs
         ])
-          {
-            default = import ./shell.nix { inherit pkgs; };
-          }
+        // {
+          default = import ./shell.nix { inherit pkgs; };
+        }
       );
 
       formatter = forAllSystems (pkgs: pkgs.nixfmt-tree);
