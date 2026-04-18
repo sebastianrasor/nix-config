@@ -9,13 +9,9 @@
     }:
     let
       constants = import ./constants.nix;
-      supportedSystems = [
-        "x86_64-linux"
-      ];
-      eachSupportedSystem = nixpkgs.lib.genAttrs supportedSystems;
       forAllSystems =
         f:
-        eachSupportedSystem (
+        nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed (
           system:
           f (
             import nixpkgs {
