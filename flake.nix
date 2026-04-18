@@ -55,12 +55,18 @@
                 builtins.listToAttrs
               ]
             );
-          checks = {
-            x86_64-linux = nixpkgs.lib.mapAttrs' (
-              name: value:
-              nixpkgs.lib.nameValuePair "nixosConfiguration-${name}" value.config.system.build.toplevel
-            ) self.nixosConfigurations;
-          };
+          checks = nixpkgs.lib.pipe self.nixosConfigurations [
+            (nixpkgs.lib.mapAttrsToList (
+              name: nixosConfiguration: {
+                path = [
+                  nixosConfiguration.config.nixpkgs.hostPlatform.system
+                  "nixosConfiguration-${name}"
+                ];
+                update = _: nixosConfiguration.config.system.build.toplevel;
+              }
+            ))
+            nixpkgs.lib.updateManyAttrsByPath
+          ] { };
         in
         builtins.foldl' nixpkgs.lib.recursiveUpdate { } [
           checks
