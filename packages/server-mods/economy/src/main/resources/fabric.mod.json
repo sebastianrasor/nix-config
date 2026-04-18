@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "economy",
+  "version": "${version}",
+  "environment": "server",
+  "entrypoints": {
+    "server": [
+      "us.rasor.mc.economy.bank.Bank::init",
+      "us.rasor.mc.economy.insurance.Insurance::init",
+      "us.rasor.mc.economy.teleportation.Teleportation::init"
+    ]
+  },
+  "mixins": [
+    "insurance.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.18.5",
+    "minecraft": "~26.1",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}

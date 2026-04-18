@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "difficulty",
+  "version": "${version}",
+  "environment": "server",
+  "entrypoints": {
+    "server": [
+      "us.rasor.mc.difficulty.amplifier.Amplifier::init",
+      "us.rasor.mc.difficulty.deathban.DeathBan::init"
+    ]
+  },
+  "mixins": [
+    "amplifier.mixins.json",
+    "deathban.mixins.json"
+  ],
+  "accessWidener": "difficulty.classtweaker",
+  "depends": {
+    "fabricloader": ">=0.18.5",
+    "minecraft": "~26.1",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}

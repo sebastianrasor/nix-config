@@ -570,22 +570,6 @@
         "type": "github"
       }
     },
-    "nixpkgs_5": {
-      "locked": {
-        "lastModified": 1773389992,
-        "narHash": "sha256-wvfdLLWJ2I9oEpDd9PfMA8osfIZicoQ5MT1jIwNs9Tk=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "c06b4ae3d6599a672a6210b7021d699c351eebda",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "nixos-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "pre-commit-hooks-nix": {
       "inputs": {
         "flake-compat": [
@@ -674,7 +658,6 @@
         "lanzaboote": "lanzaboote",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_4",
-        "server-mods": "server-mods",
         "sops-nix": "sops-nix",
         "tailscale-golink": "tailscale-golink",
         "yubikey-touch-detector": "yubikey-touch-detector"
@@ -699,26 +682,6 @@
         "owner": "oxalica",
         "repo": "rust-overlay",
         "type": "github"
-      }
-    },
-    "server-mods": {
-      "inputs": {
-        "nixpkgs": "nixpkgs_5"
-      },
-      "locked": {
-        "lastModified": 1775778288,
-        "narHash": "sha256-MVKC8rQhfT5bEs1QMMrFgnVsijpuLmKUfXkiEgHMEjk=",
-        "ref": "main",
-        "rev": "5c6954a8d81c3f73d797d20b0ccbfeeae0bcbe54",
-        "shallow": true,
-        "type": "git",
-        "url": "ssh://git@github.com/sebastianrasor/server-mods.git"
-      },
-      "original": {
-        "ref": "main",
-        "shallow": true,
-        "type": "git",
-        "url": "ssh://git@github.com/sebastianrasor/server-mods.git"
       }
     },
     "sops-nix": {
