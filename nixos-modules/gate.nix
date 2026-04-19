@@ -19,6 +19,37 @@ let
     ];
     text = "gate --no-auto-reload -c ${config.sops.templates."gate/config.yaml".path}";
   };
+
+  favicon = pkgs.stdenvNoCC.mkDerivation {
+    name = "server-icon.png";
+
+    src = pkgs.fetchzip {
+      url = "https://resources.download.minecraft.net/a9/a9945dba2bc4d4841c0dae23faaa8be9bd9e56f1";
+      extension = "zip";
+      sha256 = "07n36y9a2gb9kps29s8gf0aviq6ryx17nlbmzffjhpy73qsjv7ik";
+      stripRoot = false;
+    };
+
+    buildInputs = with pkgs; [
+      imagemagick
+    ];
+
+    buildPhase = ''
+      runHook preBuild
+
+      magick assets/minecraft/textures/item/diamond.png -sample 64x64 server-icon.png
+
+      runHook postBuild
+    '';
+
+    installPhase = ''
+      runHook preInstall
+
+      cp server-icon.png $out
+
+      runHook postInstall
+    '';
+  };
 in
 {
   options.sebastianrasor.gate = {
@@ -69,7 +100,7 @@ in
             status:
               motd: A Minecraft Server
               showMaxPlayers: 20
-              favicon: ${self.packages.${pkgs.stdenv.hostPlatform.system}.server-icon}
+              favicon: ${favicon}
             builtinCommands: false
             forceKeyAuthentication: true
             forwarding:
