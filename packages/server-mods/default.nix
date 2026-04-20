@@ -1,42 +1,45 @@
-{ pkgs, ... }:
+{
+  gradle_9,
+  lib,
+  stdenvNoCC,
+  temurin-bin-25,
+}:
 let
-  gradleProperties = pkgs.lib.pipe (builtins.readFile ./gradle.properties) [
-    (pkgs.lib.strings.splitString "\n")
-    (map (line: pkgs.lib.strings.trim line))
-    (builtins.filter (line: line != "" && !(pkgs.lib.strings.hasPrefix "#" line)))
+  gradleProperties = lib.pipe (builtins.readFile ./gradle.properties) [
+    (lib.strings.splitString "\n")
+    (map (line: lib.strings.trim line))
+    (builtins.filter (line: line != "" && !(lib.strings.hasPrefix "#" line)))
     (map (
       line:
       let
-        splitLine = pkgs.lib.strings.splitString "=" line;
-        key = pkgs.lib.strings.trim (builtins.elemAt splitLine 0);
-        value = pkgs.lib.strings.trim (builtins.elemAt splitLine 1);
+        splitLine = lib.strings.splitString "=" line;
+        key = lib.strings.trim (builtins.elemAt splitLine 0);
+        value = lib.strings.trim (builtins.elemAt splitLine 1);
       in
-      pkgs.lib.attrsets.nameValuePair key value
+      lib.attrsets.nameValuePair key value
     ))
     (map (nameValuePair: {
-      path = pkgs.lib.strings.splitString "." nameValuePair.name;
+      path = lib.strings.splitString "." nameValuePair.name;
       update = _: nameValuePair.value;
     }))
-    pkgs.lib.attrsets.updateManyAttrsByPath
+    lib.attrsets.updateManyAttrsByPath
   ] { };
 in
-pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
+stdenvNoCC.mkDerivation (finalAttrs: {
   pname = gradleProperties.mod_id;
   version = gradleProperties.mod_version;
 
   src = ./.;
 
-  nativeBuildInputs = with pkgs; [
-    gradle_9
-  ];
+  nativeBuildInputs = [ gradle_9 ];
 
-  mitmCache = pkgs.gradle.fetchDeps {
+  mitmCache = gradle_9.fetchDeps {
     inherit (finalAttrs) pname;
     pkg = finalAttrs.finalPackage;
     data = ./deps.json;
   };
 
-  gradleFlags = [ "-Dorg.gradle.java.home=${pkgs.temurin-bin-25}" ];
+  gradleFlags = [ "-Dorg.gradle.java.home=${temurin-bin-25}" ];
 
   gradleBuildTask = "build";
 
@@ -51,8 +54,11 @@ pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
     runHook postInstall
   '';
 
-  meta.sourceProvenance = with pkgs.lib.sourceTypes; [
-    fromSource
-    binaryBytecode # mitm cache
-  ];
+  meta = {
+    inherit (gradle_9.meta) platforms;
+    sourceProvenance = with lib.sourceTypes; [
+      fromSource
+      binaryBytecode # mitm cache
+    ];
+  };
 })
