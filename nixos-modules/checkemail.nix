@@ -25,7 +25,7 @@ in
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
         EnvironmentFile = config.sops.templates."checkemail.env".path;
-        ExecStart = "${lib.getExe' checkemail "checkemail" }";
+        ExecStart = "${lib.getExe' checkemail "checkemail"}";
         Restart = "always";
       };
     };
