@@ -38,7 +38,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
   '';
 
   meta = {
-    inherit (gradle_9.meta) platforms;
+    platforms = [ "x86_64-linux" ];
     sourceProvenance = with lib.sourceTypes; [
       fromSource
       binaryBytecode # mitm cache
