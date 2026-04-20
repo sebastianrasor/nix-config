@@ -39,7 +39,7 @@
         inherit constants;
       };
 
-      legacyPackages = forAllSystems (pkgs: pkgs.callPackages ./legacy-packages { });
+      legacyPackages = forAllSystems (pkgs: import ./legacy-packages pkgs);
 
       nixosConfigurations = import ./nixos-configurations inputs;
 
