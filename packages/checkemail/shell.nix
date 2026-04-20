@@ -1,9 +1,9 @@
-args@{
+{
   pkgs ? import <nixpkgs> { },
 }:
 let
-  pkg = import ./default.nix args;
-in 
+  pkg = pkgs.callPackage ./default.nix { };
+in
 pkgs.mkShell {
   inputsFrom = [
     pkg
