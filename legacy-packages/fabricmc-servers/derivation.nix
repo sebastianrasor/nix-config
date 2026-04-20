@@ -102,6 +102,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     });
 
   meta = {
+    inherit (jre_headless.meta) platforms;
     description = "aoeu";
   };
 })
