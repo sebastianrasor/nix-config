@@ -1,8 +1,8 @@
-args@{
+{
   pkgs ? import <nixpkgs> { },
 }:
 let
-  pkg = import ./default.nix args;
+  pkg = pkgs.callPackage ./default.nix { };
 in
 pkgs.mkShellNoCC {
   packages = with pkgs; [
