@@ -72,7 +72,6 @@
           packages
         ];
 
-
       devShells = forAllSystems (pkgs: import ./devshells.nix pkgs);
 
       formatter = forAllSystems (pkgs: pkgs.nixfmt-tree);
