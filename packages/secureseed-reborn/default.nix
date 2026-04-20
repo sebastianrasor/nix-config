@@ -1,4 +1,9 @@
-{ stdenvNoCC, pkgs }:
+{
+  gradle_9,
+  lib,
+  stdenvNoCC,
+  temurin-bin-25,
+}:
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "secureseed-reborn";
   version = "1.1.0";
@@ -9,17 +14,15 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     rev = "c4ebc165d974bb454d98b0cfdff643fb83fbb938";
   };
 
-  nativeBuildInputs = with pkgs; [
-    gradle_9
-  ];
+  nativeBuildInputs = [ gradle_9 ];
 
-  mitmCache = pkgs.gradle.fetchDeps {
+  mitmCache = gradle_9.fetchDeps {
     inherit (finalAttrs) pname;
     pkg = finalAttrs.finalPackage;
     data = ./deps.json;
   };
 
-  gradleFlags = [ "-Dorg.gradle.java.home=${pkgs.temurin-bin-25}" ];
+  gradleFlags = [ "-Dorg.gradle.java.home=${temurin-bin-25}" ];
 
   gradleBuildTask = "build";
 
@@ -34,9 +37,11 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     runHook postInstall
   '';
 
-  meta.sourceProvenance = with pkgs.lib.sourceTypes; [
-    fromSource
-    binaryBytecode # mitm cache
-  ];
-
+  meta = {
+    inherit (gradle_9.meta) platforms;
+    sourceProvenance = with lib.sourceTypes; [
+      fromSource
+      binaryBytecode # mitm cache
+    ];
+  };
 })
