@@ -19,8 +19,14 @@ in
     security.pam = {
       services = {
         login.unixAuth = false;
-        sudo.unixAuth = false;
-        sudo.rssh = true;
+        polkit-1 = {
+          rssh = true;
+          unixAuth = false;
+        };
+        sudo = {
+          rssh = true;
+          unixAuth = false;
+        };
       };
 
       u2f = lib.mkIf config.sebastianrasor.yubikey.enable {
