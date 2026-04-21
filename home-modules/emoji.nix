@@ -19,10 +19,12 @@ in
   config = lib.mkIf cfg.enable {
     fonts.fontconfig = {
       enable = true;
-      defaultFonts.emoji = [ "Noto Color Emoji" ];
-      defaultFonts.monospace = lib.mkAfter [ "Noto Color Emoji" ];
-      defaultFonts.sansSerif = lib.mkAfter [ "Noto Color Emoji" ];
-      defaultFonts.serif = lib.mkAfter [ "Noto Color Emoji" ];
+      defaultFonts = {
+        emoji = [ "Noto Color Emoji" ];
+        monospace = lib.mkAfter [ "Noto Color Emoji" ];
+        sansSerif = lib.mkAfter [ "Noto Color Emoji" ];
+        serif = lib.mkAfter [ "Noto Color Emoji" ];
+      };
     };
     home.packages = with pkgs; [
       noto-fonts-color-emoji
