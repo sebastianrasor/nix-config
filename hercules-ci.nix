@@ -6,18 +6,20 @@ inputs@{
 }:
 let
   inherit ((import ./constants.nix)._module.args.constants) domain;
+  inherit (nixpkgs) lib;
 in
 hercules-ci-effects.lib.mkHerculesCI { inherit inputs; } {
   herculesCI = herculesCI: {
-    onPush.default.outputs.effects = nixpkgs.lib.pipe self.nixosConfigurations [
+    onPush.default.outputs.effects = lib.pipe self.nixosConfigurations [
       builtins.attrValues
       (map (
         nixosConfiguration:
         let
-          inherit (nixosConfiguration.config.networking) hostName;
-          inherit (nixosConfiguration.config.system.build.toplevel) outPath;
+          inherit (nixosConfiguration) config;
+          inherit (config.networking) hostName;
+          inherit (config.system.build) toplevel;
           pkgs = import nixpkgs {
-            inherit (nixosConfiguration.config.nixpkgs.hostPlatform) system;
+            inherit (config.nixpkgs.hostPlatform) system;
           };
           hci-effects = hercules-ci-effects.lib.withPkgs pkgs;
           sshCommand =
@@ -27,26 +29,11 @@ hercules-ci-effects.lib.mkHerculesCI { inherit inputs; } {
                 sshOptions = "-o ConnectTimeout=10";
               }
               ''
-                if [ "$(readlink -f /run/current-system)" == "${outPath}" ]; then
+                if [ "$(readlink -f /run/current-system)" == "${toplevel}" ]; then
                   exit 0
                 fi
 
-                cmd=(
-                  "systemd-run"
-                  "-E" "LOCALE_ARCHIVE"
-                  "--collect"
-                  "--no-ask-password"
-                  "--pty"
-                  "--quiet"
-                  "--same-dir"
-                  "--service-type=exec"
-                  "--unit=deploy-switch-to-configuration"
-                  "--wait"
-                  "${outPath}/bin/switch-to-configuration"
-                )
-
-                nix-env -p /nix/var/nix/profiles/system --set ${outPath}
-                "''${cmd[@]}" switch
+                ${lib.getExe pkgs.nixos-rebuild-ng} --no-reexec switch --store-path ${toplevel}
               '';
         in
         {
@@ -69,6 +56,12 @@ hercules-ci-effects.lib.mkHerculesCI { inherit inputs; } {
 
                 exit 0
               '';
+              passthru = {
+                prebuilt = toplevel // {
+                  inherit config;
+                };
+                inherit config;
+              };
             }
           );
         }
