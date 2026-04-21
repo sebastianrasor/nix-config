@@ -6,8 +6,8 @@
   ...
 }:
 let
+  inherit (self.packages.${pkgs.stdenv.hostPlatform.system}) checkemail;
   cfg = config.sebastianrasor.checkemail;
-  checkemail = self.packages.${pkgs.stdenv.hostPlatform.system}.checkemail;
 in
 {
   options.sebastianrasor.checkemail = {

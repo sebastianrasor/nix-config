@@ -1,6 +1,6 @@
 pkgs:
 let
-  lib = pkgs.lib;
+  inherit (pkgs) lib;
   updateName = nameUpdater: x: x // { name = nameUpdater x.name; };
 in
 (lib.pipe ./. [
@@ -10,8 +10,8 @@ in
     name = lib.path.removePrefix ./. shell;
     value = import shell { inherit pkgs; };
   }))
-  (map (updateName (lib.path.subpath.components)))
-  (map (updateName (lib.init)))
+  (map (updateName lib.path.subpath.components))
+  (map (updateName lib.init))
   (lib.filter (attrs: attrs.name != [ ]))
   (map (updateName (lib.join "/")))
   builtins.listToAttrs
