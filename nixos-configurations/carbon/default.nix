@@ -10,6 +10,7 @@ _:
     actual.enable = true;
     authentik.enable = true;
     buildbot.enable = true;
+    cheaters-swear-jar.enable = true;
     gate.enable = true;
     harmonia.enable = true;
     homebox.enable = true;
