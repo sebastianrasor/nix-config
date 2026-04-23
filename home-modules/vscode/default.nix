@@ -25,6 +25,7 @@ in
           jjk.jjk
           jnoortheen.nix-ide
           mkhl.direnv
+          rust-lang.rust-analyzer
           vscodevim.vim
         ];
       };
