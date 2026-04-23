@@ -41,6 +41,10 @@ in
         "workbench.bottomPane.experimental.fontFamily" = "'Atkinson Hyperlegible Next'";
         "editor.lineNumbers" = "relative";
         "editor.wordBasedSuggestions" = "off";
+        "editor.rulers" = [
+          80
+          120
+        ];
         "nix.enableLanguageServer" = true;
         "nix.serverPath" = "nixd";
         "nix.serverSettings" = {
