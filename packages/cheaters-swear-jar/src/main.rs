@@ -194,6 +194,8 @@ impl EventHandler for Bot {
 
 #[tokio::main]
 async fn main() {
+    tracing_subscriber::fmt::init();
+
     let discord_token_path =
         env::var("DISCORD_TOKEN_PATH").expect("Expected a Discord token path in the environment");
     let discord_token =
