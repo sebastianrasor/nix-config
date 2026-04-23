@@ -6,7 +6,7 @@ use axum::{
     routing::get,
     Router,
 };
-use color_eyre::eyre::{eyre, Result};
+use color_eyre::eyre::{ContextCompat, Result};
 use lettre::{
     transport::smtp::{
         client::SmtpConnection,
@@ -16,21 +16,19 @@ use lettre::{
     },
     Address,
 };
-use trust_dns_resolver::TokioAsyncResolver;
-use trust_dns_resolver::{
-    config::{ResolverConfig, ResolverOpts},
-    IntoName,
-};
+use hickory_proto::rr::domain::IntoName;
+use hickory_proto::rr::RData;
+use hickory_resolver::Resolver;
 
 const TOKEN_ENV_KEY: &str = "CHECKEMAIL_TOKEN";
 
 async fn get_mx(domain: impl IntoName) -> Result<String> {
-    let resolver = TokioAsyncResolver::tokio(ResolverConfig::default(), ResolverOpts::default());
+    let resolver = Resolver::builder_tokio()?.build()?;
     let mx_response = resolver.mx_lookup(domain).await?;
-    mx_response.iter().next().map_or_else(
-        || Err(eyre!("No available MX")),
-        |mx| Ok(mx.exchange().to_ascii()),
-    )
+    mx_response.answers().iter().find_map(|record| match &record.data {
+        RData::MX(mx) => Some(mx.exchange.to_string()),
+        _ => None
+    }).context("No available MX")
 }
 
 async fn check_email(email: lettre::Address) -> Result<bool> {
