@@ -34,7 +34,7 @@ impl EventHandler for Bot {
     #[instrument(skip_all, fields(author_username = msg.author.name, author_discriminator = msg.author.discriminator, msg_content = msg.content))]
     async fn message(&self, ctx: Context, msg: Message) {
         let Some(guild_id) = msg.guild_id else {
-            event!(Level::INFO, ?msg.guild_id, "Message not from guild.");
+            event!(Level::DEBUG, ?msg.guild_id, "Message not from guild.");
             return;
         };
         if guild_id == 316738004335067139
@@ -47,7 +47,7 @@ impl EventHandler for Bot {
             let react_result = msg.react(&ctx, EmojiId::new(1171493411270967447)).await;
 
             event!(
-                Level::INFO,
+                Level::DEBUG,
                 react_okay = react_result.is_ok(),
                 "Reacted to message with anti SGA propaganda gif."
             );
@@ -77,7 +77,7 @@ impl EventHandler for Bot {
                 Some(score) => score,
                 None => {
                     event!(
-                        Level::ERROR,
+                        Level::DEBUG,
                         ?analyze_comment_response,
                         "Perspective response did not contain profanity score"
                     );
@@ -98,7 +98,7 @@ impl EventHandler for Bot {
                 let react_result = msg.react(&ctx, '‼').await;
 
                 event!(
-                    Level::INFO,
+                    Level::DEBUG,
                     react_okay = react_result.is_ok(),
                     profanity_score = score,
                     "Reacted to message with profanity."
@@ -139,7 +139,7 @@ impl EventHandler for Bot {
                         .await;
 
                     event!(
-                        Level::INFO,
+                        Level::DEBUG,
                         reply_okay = reply_result.is_ok(),
                         "Replied to 3rd message with swear."
                     );
@@ -178,7 +178,7 @@ impl EventHandler for Bot {
                         .await;
 
                     event!(
-                        Level::INFO,
+                        Level::DEBUG,
                         react_okay = timeout_result.is_ok(),
                         "Timed out member for swearing too many times."
                     );
