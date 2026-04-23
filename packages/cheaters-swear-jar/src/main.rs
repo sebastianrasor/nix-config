@@ -194,11 +194,15 @@ impl EventHandler for Bot {
 
 #[tokio::main]
 async fn main() {
-    let discord_token_path = env::var("DISCORD_TOKEN_PATH").expect("Expected a Discord token path in the environment");
-    let discord_token = fs::read_to_string(discord_token_path).expect("Should be able to read Discord token");
+    let discord_token_path =
+        env::var("DISCORD_TOKEN_PATH").expect("Expected a Discord token path in the environment");
+    let discord_token =
+        fs::read_to_string(discord_token_path).expect("Should be able to read Discord token");
 
-    let google_api_key_path = env::var("GOOGLE_API_KEY_PATH").expect("Expected a Google API key in the environment");
-    let google_api_key = fs::read_to_string(google_api_key_path).expect("Should be able to read Google API key");
+    let google_api_key_path =
+        env::var("GOOGLE_API_KEY_PATH").expect("Expected a Google API key in the environment");
+    let google_api_key =
+        fs::read_to_string(google_api_key_path).expect("Should be able to read Google API key");
 
     let intents = serenity::model::gateway::GatewayIntents::non_privileged()
         | serenity::model::gateway::GatewayIntents::MESSAGE_CONTENT;
