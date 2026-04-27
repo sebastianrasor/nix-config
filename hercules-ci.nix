@@ -50,11 +50,7 @@ hercules-ci-effects.lib.mkHerculesCI { inherit inputs; } {
                 sunflower.ts.${domain} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII85WkAO+BoPgHC8Vj7Y3ab3aOOLDx9e8jul4rBLAXiM
                 EOF
 
-                if ! ${sshCommand}; then
-                  exit "''${?/255/0}"
-                fi
-
-                exit 0
+                ${sshCommand} || exit "''${?/255/0}"
               '';
               passthru = {
                 prebuilt = toplevel // {
