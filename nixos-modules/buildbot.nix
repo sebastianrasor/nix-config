@@ -28,10 +28,11 @@ in
         domain = "buildbot.ts.${constants.domain}";
         workersFile = config.sops.templates."buildbot/workers.json".path;
         admins = [ "sebastian" ];
-        github = {
+        gitea = {
           enable = true;
-          appId = 3369053;
-          appSecretKeyFile = config.sops.secrets."github/privateKeys/buildbot".path;
+          instanceUrl = "https://forgejo.ts.${constants.domain}";
+
+          tokenFile = config.sops.secrets."forgejo/accessTokens/buildbotNix".path;
           webhookSecretFile = config.sops.secrets."buildbot/webhookSecret".path;
         };
         webhookBaseUrl = "https://buildbot.${constants.domain}/";
@@ -42,7 +43,7 @@ in
           clientId = "l6g8dHF4VHNx7e58WJlBZZFlYPJvi9SukQZH0wvY";
           clientSecretFile = config.sops.secrets."oidc/clientSecrets/buildbot".path;
         };
-        effects.perRepoSecretFiles."github:sebastianrasor/nix-config" =
+        effects.perRepoSecretFiles."gitea:sebastian/nix-config" =
           config.sops.templates."buildbot/secrets.json".path;
       };
 
@@ -65,6 +66,7 @@ in
       secrets = {
         "buildbot/webhookSecret" = { };
         "buildbot/workerPassword" = { };
+        "forgejo/accessTokens/buildbotNix" = { };
         "github/privateKeys/buildbot" = {
           format = "binary";
           sopsFile = ./secrets/github-buildbot-private-key.pem;
