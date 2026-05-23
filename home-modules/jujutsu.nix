@@ -20,7 +20,7 @@ in
       enable = true;
       settings = {
         user = {
-          email = "https://www.sebastianrasor.com/contact";
+          email = "git@rasor.us";
           name = "Sebastian Rasor";
         };
         signing = {
