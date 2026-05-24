@@ -21,17 +21,17 @@ in
       enable = true;
       enableDefaultConfig = false;
       extraOptionOverrides = {
+        AddKeysToAgent = "yes";
         CanonicalizeHostname = "yes";
         CanonicalDomains = "ts.${constants.domain}";
+        ControlMaster = "auto";
+        ControlPath = "\${XDG_RUNTIME_DIR}/ssh/control/%C";
+        ControlPersist = "10m";
       };
-      matchBlocks."*" = {
-        addKeysToAgent = "yes"; # required for rssh to work properly
-        controlMaster = "auto";
-        controlPath = "\${XDG_RUNTIME_DIR}/ssh/control/%C";
-        controlPersist = "10m";
-      };
-      matchBlocks."*.ts.${constants.domain}" = {
-        forwardAgent = true;
+      settings = {
+        "Host *.ts.rasor.us" = {
+          ForwardAgent = "yes";
+        };
       };
     };
 
