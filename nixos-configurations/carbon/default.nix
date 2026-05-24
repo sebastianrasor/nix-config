@@ -19,8 +19,6 @@ _:
     intel-arc-a380.enable = true;
     jellyfin.enable = true;
     minecraft-server.enable = true;
-    ollama.enable = true;
-    open-webui.enable = true;
     paperless.enable = true;
     persistence.enable = true;
     postgresql.enable = true;
