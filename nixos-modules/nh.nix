@@ -1,6 +1,7 @@
 _:
 {
   config,
+  constants,
   lib,
   ...
 }:
@@ -18,7 +19,7 @@ in
   config = lib.mkIf cfg.enable {
     programs.nh = {
       enable = true;
-      flake = "git+https://github.com/sebastianrasor/nix-config";
+      flake = "git+https://forgejo.ts.${constants.domain}/sebastian/nix-config";
       clean = {
         enable = true;
         extraArgs = "--keep 10 --keep-since 7d";
