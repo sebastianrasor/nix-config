@@ -6,10 +6,10 @@ _:
   ...
 }:
 let
-  cfg = config.sebastianrasor.vscode;
+  cfg = config.sebastianrasor.vscodium;
 in
 {
-  options.sebastianrasor.vscode = {
+  options.sebastianrasor.vscodium = {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
@@ -17,7 +17,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    programs.vscode = {
+    programs.vscodium = {
       enable = true;
       package = pkgs.vscode-with-extensions.override {
         vscode = pkgs.vscodium;

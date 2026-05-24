@@ -64,7 +64,7 @@ in
         posy-cursors.enable = true;
         tailscale-systray.enable = true;
         thunderbird.enable = true;
-        vscode.enable = true;
+        vscodium.enable = true;
         yubikey-touch-detector.enable = true;
       };
     })
