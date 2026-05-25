@@ -28,14 +28,31 @@ in
       "render"
     ];
 
+    fileSystems = {
+      "/srv/immich/backups" = {
+        device = "/media/immich/backups";
+        fsType = "none";
+        options = [ "bind" ];
+      };
+      "/srv/immich/upload" = {
+        device = "/media/immich/upload";
+        fsType = "none";
+        options = [ "bind" ];
+      };
+    };
+
     sebastianrasor = {
       reverse-proxy.proxies."immich" = "http://[::1]:${toString config.services.immich.port}";
 
-      unas.mounts."Immich" = "/srv/immich";
+      unas.mounts."Immich" = "/media/immich";
     };
+
+    sebastianrasor.persistence.directories = [ "/srv/immich" ];
 
     systemd.services.immich.unitConfig.RequiresMountsFor = [
       "/srv/immich"
+      "/srv/immich/backups"
+      "/srv/immich/upload"
     ];
   };
 }
