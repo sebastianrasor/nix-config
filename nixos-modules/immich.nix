@@ -49,14 +49,18 @@ in
 
     sebastianrasor.persistence.directories = [
       "/srv/immich/encoded-video"
+      "/srv/immich/library"
+      "/srv/immich/profile"
       "/srv/immich/thumbs"
     ];
 
     systemd.services.immich.unitConfig.RequiresMountsFor = [
       "/srv/immich/backups"
       "/srv/immich/encoded-video"
-      "/srv/immich/upload"
+      "/srv/immich/library"
+      "/srv/immich/profile"
       "/srv/immich/thumbs"
+      "/srv/immich/upload"
     ];
   };
 }
