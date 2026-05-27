@@ -47,12 +47,16 @@ in
       unas.mounts."Immich" = "/media/immich";
     };
 
-    sebastianrasor.persistence.directories = [ "/srv/immich" ];
+    sebastianrasor.persistence.directories = [
+      "/srv/immich/encoded-video"
+      "/srv/immich/thumbs"
+    ];
 
     systemd.services.immich.unitConfig.RequiresMountsFor = [
-      "/srv/immich"
       "/srv/immich/backups"
+      "/srv/immich/encoded-video"
       "/srv/immich/upload"
+      "/srv/immich/thumbs"
     ];
   };
 }
