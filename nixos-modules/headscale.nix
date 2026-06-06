@@ -1,7 +1,6 @@
-_:
+{ constants, ... }:
 {
   config,
-  constants,
   lib,
   pkgs,
   ...

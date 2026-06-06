@@ -1,6 +1,5 @@
-_:
 { constants, ... }:
-{
+_: {
   networking.hostName = "carbon";
 
   sebastianrasor = {

@@ -1,7 +1,6 @@
-{ self, ... }:
+{ constants, self, ... }:
 {
   config,
-  constants,
   lib,
   ...
 }:

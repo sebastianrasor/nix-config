@@ -1,11 +1,12 @@
 inputs@{
+  constants,
   hercules-ci-effects,
   nixpkgs,
   self,
   ...
 }:
 let
-  inherit ((import ./constants.nix)._module.args.constants) domain;
+  inherit (constants) domain;
   inherit (nixpkgs) lib;
 in
 hercules-ci-effects.lib.mkHerculesCI { inherit inputs; } {

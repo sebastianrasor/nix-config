@@ -1,7 +1,6 @@
-{ buildbot-nix, ... }:
+{ buildbot-nix, constants, ... }:
 {
   config,
-  constants,
   lib,
   ...
 }:

@@ -1,7 +1,6 @@
-{ tailscale-golink, ... }:
+{ constants, tailscale-golink, ... }:
 {
   config,
-  constants,
   lib,
   ...
 }:

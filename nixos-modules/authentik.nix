@@ -1,7 +1,6 @@
-{ authentik-nix, ... }:
+{ authentik-nix, constants, ... }:
 {
   config,
-  constants,
   lib,
   ...
 }:

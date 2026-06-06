@@ -9,6 +9,9 @@
     }:
     let
       constants = import ./constants.nix;
+      inputsWithConstants = inputs // {
+        inherit constants;
+      };
       forAllSystems =
         f:
         nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed (
@@ -16,32 +19,28 @@
           f (
             import nixpkgs {
               inherit system;
-              config = constants._module.args.constants.nixConfig;
+              config = constants.nixConfig;
               overlays = builtins.attrValues self.overlays;
             }
           )
         );
     in
     {
-      buildbotJobs = import ./buildbot-jobs.nix inputs;
+      buildbotJobs = import ./buildbot-jobs.nix inputsWithConstants;
 
       devShells = forAllSystems (pkgs: import ./devshells.nix pkgs);
 
       formatter = forAllSystems (pkgs: pkgs.nixfmt-tree);
 
-      herculesCI = import ./hercules-ci.nix inputs;
+      herculesCI = import ./hercules-ci.nix inputsWithConstants;
 
-      homeModules = import ./home-modules inputs // {
-        inherit constants;
-      };
+      homeModules = import ./home-modules inputsWithConstants;
 
       legacyPackages = forAllSystems (pkgs: import ./legacy-packages pkgs);
 
-      nixosConfigurations = import ./nixos-configurations inputs;
+      nixosConfigurations = import ./nixos-configurations inputsWithConstants;
 
-      nixosModules = import ./nixos-modules inputs // {
-        inherit constants;
-      };
+      nixosModules = import ./nixos-modules inputsWithConstants;
 
       overlays = import ./overlays inputs;
 
