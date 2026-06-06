@@ -38,8 +38,8 @@ in
     };
 
     sops.secrets = {
-      "discord/tokens/cheatersSwearJar" = {};
-      "google/apiKeys/cheatersSwearJar" = {};
+      "discord/tokens/cheatersSwearJar" = { };
+      "google/apiKeys/cheatersSwearJar" = { };
     };
   };
 }
