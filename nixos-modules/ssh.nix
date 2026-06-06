@@ -1,6 +1,7 @@
 _:
 {
   config,
+  constants,
   lib,
   pkgs,
   ...
@@ -14,6 +15,11 @@ in
       type = lib.types.bool;
       default = false;
     };
+
+    addSshKeysToUsers = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -22,5 +28,14 @@ in
       askPassword = "${pkgs.openssh-askpass}/libexec/gtk-ssh-askpass";
       startAgent = true;
     };
+
+    users.users = builtins.listToAttrs (
+      map (user: {
+        name = user;
+        value = {
+          openssh.authorizedKeys.keys = constants.sshPublicKeys;
+        };
+      }) cfg.addSshKeysToUsers
+    );
   };
 }

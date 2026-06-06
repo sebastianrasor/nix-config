@@ -1,6 +1,5 @@
 {
   config,
-  constants,
   lib,
   ...
 }:
@@ -13,10 +12,11 @@
       "tss"
       "wheel"
     ];
-    openssh.authorizedKeys.keys = constants.sshPublicKeys;
   };
 
   home-manager.users.sebastian = lib.mkIf config.sebastianrasor.home-manager.enable (
     import ./home.nix
   );
+
+  sebastianrasor.ssh.addSshKeysToUsers = [ "sebastian" ];
 }
