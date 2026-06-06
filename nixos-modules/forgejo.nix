@@ -36,6 +36,8 @@ in
       };
     };
 
+    systemd.services.forgejo.after = [ "authentik.service" ];
+
     sebastianrasor = {
       persistence.directories = [ config.services.forgejo.stateDir ];
 
