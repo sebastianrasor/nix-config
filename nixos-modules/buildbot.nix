@@ -53,7 +53,10 @@ in
       };
     };
 
-    systemd.services.buildbot-master.restartIfChanged = false;
+    systemd.services.buildbot-master = {
+      after = [ "authentik.service" ];
+      restartIfChanged = false;
+    };
 
     sebastianrasor.reverse-proxy.proxies."buildbot" =
       "http://127.0.0.1:${toString config.services.buildbot-master.port}";
