@@ -59,11 +59,6 @@ let
             sha256 = "sha256-A9hd3Zt+cY5F4oOZjMmm/4zlimof0AKTJ+QHBYO0Gpw=";
           })
           (modrinthMod {
-            project = "c2me-fabric";
-            version = "0.3.7+alpha.0.63+26.1.1";
-            sha256 = "sha256-A9hd3Zt+cY5F4oOZjMmm/4zlimof0AKTJ+QHBYO0Gpw=";
-          })
-          (modrinthMod {
             project = "fabricproxy-lite";
             version = "v2.12.0";
             sha256 = "sha256-3KDQVoWvqiXVVDcq0RjZC2sn+F3tk+bbC4XYIqopNCo=";
