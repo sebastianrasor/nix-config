@@ -18,7 +18,7 @@ in
   config = lib.mkIf cfg.enable {
     services.jellyfin.enable = true;
 
-    systemd.services.immich.unitConfig.RequiresMountsFor = [
+    systemd.services.jellyfin.unitConfig.RequiresMountsFor = [
       "/media/movies"
       "/media/shows"
     ];
