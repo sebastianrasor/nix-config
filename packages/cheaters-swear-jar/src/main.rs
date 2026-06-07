@@ -8,6 +8,7 @@ use serenity::model::channel::Message;
 use serenity::model::gateway::Ready;
 use serenity::prelude::*;
 use std::collections::HashMap;
+use std::env;
 use std::fs;
 use std::sync::Arc;
 use tracing::{event, instrument, Level};

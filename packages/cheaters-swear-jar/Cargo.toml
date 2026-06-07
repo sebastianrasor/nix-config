@@ -5,7 +5,6 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.102"
-env = "1.0.1"
 reqwest = { version = "0.13.4", features = ["json"] }
 serde = "1.0.228"
 serde_with = "3.21.0"

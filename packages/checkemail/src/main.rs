@@ -19,6 +19,7 @@ use lettre::{
 use hickory_proto::rr::domain::IntoName;
 use hickory_proto::rr::RData;
 use hickory_resolver::Resolver;
+use std::env;
 
 const TOKEN_ENV_KEY: &str = "CHECKEMAIL_TOKEN";
 
