@@ -32,7 +32,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     runHook preInstall
 
     mkdir -p $out/share/secureseed-reborn
-    install -Dm644 build/libs/secure-seed-reborn-1.1.0.jar $out/share/secureseed-reborn
+    install -Dm644 build/libs/secure-seed-reborn-${finalAttrs.version}.jar $out/share/secureseed-reborn
 
     runHook postInstall
   '';
