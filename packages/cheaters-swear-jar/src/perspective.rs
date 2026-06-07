@@ -6,7 +6,6 @@ use serde_with::skip_serializing_none;
 
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize, Default)]
-#[skip_serializing_none]
 struct PerspectiveComment {
     text: String,
     #[serde(rename = "type")]
