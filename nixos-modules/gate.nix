@@ -107,7 +107,7 @@ in
               velocitySecret: ${config.sops.placeholder."minecraft/velocitySecret"}
             forcedHosts:
               "mine.diamonds": ["carbon"]
-              "mc.ts.rasor.us": ["carbon"]
+              "mc.ts.${constants.domain}": ["carbon"]
         '';
       };
     };

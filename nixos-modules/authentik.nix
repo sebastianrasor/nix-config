@@ -35,7 +35,7 @@ in
       };
     };
 
-    networking.hosts."127.0.0.1" = [ "authentik.rasor.us" ];
+    networking.hosts."127.0.0.1" = [ "authentik.${constants.domain}" ];
 
     # special circumstances for proxy from external to tailnet
     services.nginx.virtualHosts.${config.services.authentik.nginx.host} = {

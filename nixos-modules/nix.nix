@@ -1,4 +1,4 @@
-inputs:
+inputs@{ constants, ... }:
 {
   config,
   lib,
@@ -37,10 +37,10 @@ in
           "flakes"
         ];
         substituters = [
-          "https://cache.ts.rasor.us"
+          "https://cache.ts.${constants.domain}"
         ];
         trusted-public-keys = [
-          "cache.ts.rasor.us-1:f2inISwhx2bWqv3HkEjsZw6VXJpKGxKqzTAqRl6rJWc="
+          "cache.ts.${constants.domain}-1:f2inISwhx2bWqv3HkEjsZw6VXJpKGxKqzTAqRl6rJWc="
         ];
         trusted-users = [
           "@wheel"

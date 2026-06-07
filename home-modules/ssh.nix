@@ -28,7 +28,7 @@ in
         ControlPersist = "10m";
       };
       settings = {
-        "Host *.ts.rasor.us" = {
+        "Host *.ts.${constants.domain}" = {
           ForwardAgent = "yes";
         };
       };
