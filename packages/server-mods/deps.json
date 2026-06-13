@@ -472,10 +472,10 @@
  },
  "https://piston-meta.mojang.com": {
   "mc/game/version_manifest_v2": {
-   "json": "sha256-xoP5JcD5Nd0pXBrqHt0elaFw/1qBZE8b+DQ8mdPiY8k="
+   "json": "sha256-WwC+UDO7Rcb2R8GKP4edARi3/soXgPN6SLm8Lc8WGrY="
   },
-  "v1/packages/d664e0d1068e94c3d8137c41e67cad6633789018/26.1.2": {
-   "json": "sha256-LNldsbT+5dVb3eSdtgL63VGlVUPRb5r103U0AwPoK+4="
+  "v1/packages/978e6c0dd077d0f8d5d53887454928f1d3687ba8/26.1.2": {
+   "json": "sha256-Gu5D9Ehsm24OA/fgsNBPeZTifeQL0fdJarYgE2Otewk="
   }
  },
  "https://repo.maven.apache.org/maven2": {
