@@ -69,10 +69,6 @@ in
         "buildbot/webhookSecret" = { };
         "buildbot/workerPassword" = { };
         "forgejo/accessTokens/buildbotNix" = { };
-        "github/privateKeys/buildbot" = {
-          format = "binary";
-          sopsFile = ./secrets/github-buildbot-private-key.pem;
-        };
         "oidc/clientSecrets/buildbot" = { };
         "ssh/privateKeys/deploy" = { };
       };
