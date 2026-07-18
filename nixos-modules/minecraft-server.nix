@@ -207,7 +207,7 @@ in
 
     sebastianrasor.persistence.directories = [
       {
-        directory = config.services.minecraft-server.dataDir + "/world";
+        directory = config.services.minecraft-server.dataDir;
         user = config.users.users.minecraft.name;
         group = config.users.groups.minecraft.name;
         mode = "0700";
