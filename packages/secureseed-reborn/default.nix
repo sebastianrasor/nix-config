@@ -11,7 +11,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
   src = fetchGit {
     url = "https://github.com/HaHaWTH/SecureSeed-Reborn";
     ref = "refs/pull/2/head";
-    rev = "c4ebc165d974bb454d98b0cfdff643fb83fbb938";
+    rev = "cca1629629709ef23bfb6a2af143cbd2e5660917";
   };
 
   nativeBuildInputs = [ gradle_9 ];
