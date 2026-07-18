@@ -22,7 +22,7 @@ let
     };
 
   minecraftServer =
-    self.legacyPackages.${pkgs.stdenv.hostPlatform.system}.fabricmcServers.fabricmc-server-26_1_1.override
+    self.legacyPackages.${pkgs.stdenv.hostPlatform.system}.fabricmcServers.fabricmc-server-26_2.override
       {
         fabricMods = [
           self.packages.${pkgs.stdenv.hostPlatform.system}.server-mods
@@ -31,16 +31,16 @@ let
           (pkgs.fetchMavenArtifact {
             groupId = "net.fabricmc.fabric-api";
             artifactId = "fabric-api";
-            version = "0.145.4+26.1.1";
+            version = "0.155.2+26.2";
             repos = [ "https://maven.fabricmc.net/" ];
-            sha256 = "sha256-5PLLHYnvthiW60B8PAKkbUkx5arWQ1Di2LopgeP5Wnk=";
+            sha256 = "sha256-1lGMdwAky+ilViSPFvzbuRxqYvUCJ6bDuugZBRHiwbg=";
           })
           (pkgs.fetchMavenArtifact {
             groupId = "net.fabricmc";
             artifactId = "fabric-language-kotlin";
-            version = "1.13.10+kotlin.2.3.20";
+            version = "1.13.13+kotlin.2.4.10";
             repos = [ "https://maven.fabricmc.net/" ];
-            sha256 = "sha256-8ojwJz+p1ZKweGn6K7173KJ0mYo4uH64SFwQlCCSHio=";
+            sha256 = "sha256-NMzazxO7k1H+Q85hkSwuCbcjZOQ+eH02uj0tBN7HWlI=";
           })
 
           (modrinthMod {
@@ -50,13 +50,13 @@ let
           })
           (modrinthMod {
             project = "appleskin";
-            version = "3.0.9+mc26.1";
-            sha256 = "sha256-Mr/h7T3qBoQllWjb8rb+Auk5vzmOVK84Mji7O4ysTaY=";
+            version = "3.0.10+mc26.2";
+            sha256 = "sha256-A9B9tH0h/BSNLDNIqcLyzzhdIW7zQnb3erv87ToY418=";
           })
           (modrinthMod {
             project = "c2me-fabric";
-            version = "0.3.7+alpha.0.63+26.1.1";
-            sha256 = "sha256-A9hd3Zt+cY5F4oOZjMmm/4zlimof0AKTJ+QHBYO0Gpw=";
+            version = "0.4.1-beta.1.0+26.2";
+            sha256 = "sha256-qqLRxUEm3gc99UE+j/4ynQzV1nw8T+FkcDLClNDkb7A=";
           })
           (modrinthMod {
             project = "fabricproxy-lite";
@@ -70,33 +70,33 @@ let
           })
           (modrinthMod {
             project = "jade";
-            version = "26.0.8+fabric";
-            sha256 = "sha256-Pc3R5eO4Jf+94mNMPtY/vvpbomp+S+qnAUAVbQk1r2Y=";
+            version = "26.2.8+fabric";
+            sha256 = "sha256-nWqT6b62c5kll/A5sVOllkYH13gSUES3GwVf8gJOq/g=";
           })
           (modrinthMod {
             project = "ledger";
-            version = "1.3.20";
-            sha256 = "sha256-uAqoL1bpLTkNvF6qnhuwYqsenpcmA1AGhEPYNDSx9/8=";
+            version = "1.3.23";
+            sha256 = "sha256-vQ4e7ew8HKZapriYtupJKbaNnGn/VbtVlwRZ/vVUL8s=";
           })
           (modrinthMod {
             project = "lithium";
-            version = "mc26.1.1-0.23.0-fabric";
-            sha256 = "sha256-xdvvGh9TNS0ifaYxesgYiiZY+4uByRZbOoRegQmMuvc=";
+            version = "mc26.2-0.25.2-fabric";
+            sha256 = "sha256-dYjUp2mJSY9W4R5jorEXD/9Hbo2cSqyU4xCz59tGng8=";
           })
           (modrinthMod {
             project = "luckperms";
-            version = "v5.5.42-fabric";
-            sha256 = "sha256-d1G9hD4UOwgeYHRNiGvVv0EczTvo3t8XgnaPvKIRXOw=";
+            version = "v5.5.57-fabric";
+            sha256 = "sha256-uiUkirieleg6rIRaleQvPodD1YvVt33O1Q0elEpaZYw=";
           })
           (modrinthMod {
             project = "scalablelux";
-            version = "0.2.0+fabric.2b63825";
-            sha256 = "sha256-bamBsryRWGU1zjuw+kGXWonMRgO5w6EG0kMaIUF7HfA=";
+            version = "0.2.1+fabric.2b08348";
+            sha256 = "sha256-uMKAfsGsPn6H/z3Cws/YOru10oOzWooctxo02W8WILo=";
           })
           (modrinthMod {
             project = "spark";
-            version = "1.10.172-fabric";
-            sha256 = "sha256-m++Dstsza1EwD2nfcw7ejGTEEHp5aKDAGylNLu8HWQw=";
+            version = "1.10.173-fabric";
+            sha256 = "sha256-B27SKI2yoFym6AYWFeGjHRkSzxsQZl5PCaF5TV25lDM=";
           })
         ];
       };

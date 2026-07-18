@@ -2,7 +2,7 @@ package us.rasor.mc.economy.teleportation;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.vehicle.DismountHelper;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.level.storage.LevelData.RespawnData;
@@ -96,7 +96,7 @@ public final class Teleportation {
       return null;
     }
     return DismountHelper.findSafeDismountLocation(
-            EntityType.PLAYER,
+            EntityTypes.PLAYER,
             level,
             destination.pos(),
             true
