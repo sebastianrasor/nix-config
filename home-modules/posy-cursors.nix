@@ -18,6 +18,7 @@ in
 
   config = lib.mkIf cfg.enable {
     home.pointerCursor = {
+      enable = true;
       package = with pkgs; posy-cursors;
       name = "Posy_Cursor_125_175";
       size = 32;
