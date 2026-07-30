@@ -23,7 +23,7 @@ in
         ROCKET_PORT = 8222;
         SSO_ENABLED = true;
         SSO_ONLY = true;
-        SSO_AUTHORITY = "https://authentik.rasor.us/application/o/vaultwarden";
+        SSO_AUTHORITY = "https://authentik.rasor.us/application/o/vaultwarden/";
         SSO_CLIENT_ID = "6CajPGwvVDreu3HQZvepITXdxFGGAxJK3ltaHuNJ";
       };
       configurePostgres = true;
