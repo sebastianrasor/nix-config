@@ -33,6 +33,7 @@ _: {
       enable = true;
       host = "10.0.0.103";
     };
+    vaultwarden.enable = true;
   };
 
   imports = [
