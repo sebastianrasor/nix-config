@@ -21,6 +21,10 @@ in
       dbBackend = "postgresql";
       config = {
         ROCKET_PORT = 8222;
+        SSO_ENABLED = true;
+        SSO_ONLY = true;
+        SSO_AUTHORITY = "https://authentik.rasor.us/application/o/vaultwarden";
+        SSO_CLIENT_ID = "6CajPGwvVDreu3HQZvepITXdxFGGAxJK3ltaHuNJ";
       };
       configurePostgres = true;
       domain = "vaultwarden.ts.${constants.domain}";
@@ -28,9 +32,13 @@ in
     };
 
     sops = {
-      secrets."vaultwarden/adminToken" = { };
+      secrets = {
+        "oidc/clientSecrets/vaultwarden" = { };
+        "vaultwarden/adminToken" = { };
+      };
       templates."vaultwarden.env".content = ''
         ADMIN_TOKEN=${config.sops.placeholder."vaultwarden/adminToken"}
+        SSO_CLIENT_SECRET=${config.sops.placeholder."oidc/clientSecrets/vaultwarden"}
       '';
     };
 
