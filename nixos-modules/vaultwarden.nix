@@ -24,6 +24,7 @@ in
         SSO_ENABLED = true;
         SSO_ONLY = true;
         SSO_AUTHORITY = "https://authentik.rasor.us/application/o/vaultwarden/";
+        SSO_SCOPES = "profile email offline_access";
         SSO_CLIENT_ID = "6CajPGwvVDreu3HQZvepITXdxFGGAxJK3ltaHuNJ";
       };
       configurePostgres = true;
