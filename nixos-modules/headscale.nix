@@ -152,6 +152,11 @@ in
               type = "A";
               value = "100.64.0.3";
             }
+            {
+              name = "vaultwarden.ts.${constants.domain}";
+              type = "A";
+              value = "100.64.0.3";
+            }
           ];
         };
       };
