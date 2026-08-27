@@ -99,6 +99,7 @@ in
         plymouth.enable = true;
         printing.enable = true;
         sane.enable = true;
+        solaar.enable = true;
         yubikey.enable = true;
       };
       boot.initrd.systemd.enable = true;

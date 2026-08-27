@@ -5,10 +5,10 @@ _:
   ...
 }:
 let
-  cfg = config.sebastianrasor.logitech;
+  cfg = config.sebastianrasor.solaar;
 in
 {
-  options.sebastianrasor.logitech = {
+  options.sebastianrasor.solaar = {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
@@ -16,8 +16,6 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    hardware.logitech.wireless = {
-      enable = true;
-    };
+    programs.solaar.enable = true;
   };
 }

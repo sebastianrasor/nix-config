@@ -6,7 +6,8 @@ _: {
     core.enable = true;
     core.laptop = true;
 
-    makemkv.enable = true;
+    # https://forum.makemkv.com/forum/viewtopic.php?p=203406
+    # makemkv.enable = true;
     steam.enable = true;
 
     unas = {
