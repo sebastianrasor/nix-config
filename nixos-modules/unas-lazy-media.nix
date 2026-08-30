@@ -50,7 +50,13 @@ in
             where = "/media/movies";
           }
         )
-
+        (
+          commonMountOptions
+          // {
+            what = "${config.sebastianrasor.unas-lazy-media.host}:${config.sebastianrasor.unas-lazy-media.basePath}/Music";
+            where = "/media/music";
+          }
+        )
         (
           commonMountOptions
           // {
@@ -71,6 +77,7 @@ in
       in
       [
         (commonAutoMountOptions // { where = "/media/movies"; })
+        (commonAutoMountOptions // { where = "/media/music"; })
         (commonAutoMountOptions // { where = "/media/shows"; })
       ];
   };

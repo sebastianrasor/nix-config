@@ -20,6 +20,7 @@ in
 
     systemd.services.jellyfin.unitConfig.RequiresMountsFor = [
       "/media/movies"
+      "/media/music"
       "/media/shows"
     ];
 
@@ -35,6 +36,7 @@ in
       unas.mounts = {
         "Jellyfin" = "${config.services.jellyfin.dataDir}/data/backups";
         "Movies" = "/media/movies";
+        "Music" = "/media/music";
         "Shows" = "/media/shows";
       };
     };
