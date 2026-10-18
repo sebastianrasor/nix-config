@@ -1,0 +1,14 @@
+[package]
+name = "www-sebastianrasor-com"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+axum = "0.8.9"
+axum-turnstile = "0.1.2"
+check-if-email-exists = "0.11.10"
+envy = "0.4.2"
+lettre = { version = "0.11.23", features = ["tokio1", "tokio1-native-tls"] }
+serde = { version = "1.0.229", features = ["derive"] }
+tokio = { version = "1.53.3", features = ["macros", "rt-multi-thread"] }
+tower-http = { version = "0.7.1", features = ["fs"] }

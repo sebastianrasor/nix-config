@@ -21,6 +21,7 @@ _: {
     systemd-boot.enable = true;
     tailscale.exitNode = true;
     systemd-networkd.interfacesRequiredForOnline."enp1s0" = "routable";
+    www-sebastianrasor-com.enable = true;
   };
 
   imports = [
