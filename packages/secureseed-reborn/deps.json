@@ -307,10 +307,10 @@
    "jar": "sha256-WQ+JZtMTbZKsvc9tEQfax4nl1q8hnXZt/cOxwP487oE=",
    "pom": "sha256-g3CFPcpZE4XZNKVgqsCZPxIShod4k62lBVPTJgtGoF0="
   },
-  "net/fabricmc#fabric-loom/1.17.20": {
-   "jar": "sha256-Oqbw9xB/j2N2KwoBQhTpNBt+SjPAV2nz6Hg+dQ1esWc=",
-   "module": "sha256-YTCtJadzxl/agcAT2ciVkw4litMfDpYx3GdI45JlJLE=",
-   "pom": "sha256-jxvXU9YzEeN7YxQ4zKyWwwUXfksrm3/kUdZciatfzNs="
+  "net/fabricmc#fabric-loom/1.17.21": {
+   "jar": "sha256-icCJONhlYhFy4/sxA2CBOZsnMaSXH1mbQnJLJQn/W2Q=",
+   "module": "sha256-tLV8NBKf4rETydt1TX3sqJxSfu/7sIYSrzxkdg6QBrM=",
+   "pom": "sha256-B66bSlgi6qtzBdJDDQlmx8m2Oa+K47zC2j6/noW16BU="
   },
   "net/fabricmc#lorenz-tiny/4.0.2": {
    "jar": "sha256-nqK0n2FJzymRdXavUCRImzkn4uxnOs7SdoehTzqpnn4=",
@@ -536,13 +536,13 @@
    "jar": "sha256-jRqh4wrr9qyyVb2T8fysiXMxBothzhyhHzSkECmWIQo=",
    "pom": "sha256-C6Y2GD4Xg1BXNWxLj29sXq2Chi0s6YiT14cm8cTuWSY="
   },
-  "net/fabricmc/fabric-loom#net.fabricmc.fabric-loom.gradle.plugin/1.17-20260825.194323-20/SNAPSHOT": {
-   "pom": "sha256-FkF+68IoVZgH8sCxmD6MrauefyIClnP2xSH++QCuLyU="
+  "net/fabricmc/fabric-loom#net.fabricmc.fabric-loom.gradle.plugin/1.17-20260915.110101-21/SNAPSHOT": {
+   "pom": "sha256-cbwOHhK03ly7GDKG/P/NUvx05eJR+i7R5rNmYZR5ZEI="
   },
   "net/fabricmc/fabric-loom/net.fabricmc.fabric-loom.gradle.plugin/1.17-SNAPSHOT/maven-metadata": {
    "xml": {
     "groupId": "net.fabricmc.fabric-loom",
-    "lastUpdated": "20260825194323"
+    "lastUpdated": "20260915110101"
    }
   },
   "net/fabricmc/unpick#unpick-format-utils/3.0.0-beta.13": {
@@ -586,10 +586,10 @@
  },
  "https://piston-meta.mojang.com": {
   "mc/game/version_manifest_v2": {
-   "json": "sha256-305ZZ55+8AV7VYeG4CfsHML+1Uws7BIx4YK+dcaOQtU="
+   "json": "sha256-rDf5JzffGp12YARxNv7dPt69kL1uVS9T3cPyIgebyPo="
   },
-  "v1/packages/f9e9e12c8b96ea9e04b7f87e36583a6ba0e2e9e6/26.2": {
-   "json": "sha256-xzSFLcJmIQtPEvOTivxhnz1dokm0gXUyaAvWmsV3Qkw="
+  "v1/packages/91ef51b7d36ca092c5c02aba42f0f40c7cc1db84/26.2": {
+   "json": "sha256-jQCcbtC3uMZb//UVof+LEsyN9yYnuw41XsvOn3vDT5w="
   }
  },
  "https://repo.maven.apache.org/maven2": {

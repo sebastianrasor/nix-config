@@ -40,7 +40,7 @@ in
     nixpkgs.overlays = [
       (final: prev: {
         jellyfin-ffmpeg = prev.jellyfin-ffmpeg.override {
-          ffmpeg_7-full = prev.ffmpeg_7-full.override {
+          ffmpeg_8-full = prev.ffmpeg_8-full.override {
             withMfx = false;
             withVpl = true;
             withUnfree = true;
