@@ -1,4 +1,4 @@
-use std::{env, path::PathBuf, sync::Arc};
+use std::sync::Arc;
 
 use axum::{
     Router,
@@ -13,14 +13,22 @@ use check_if_email_exists::{
     Reachable::{Invalid, Unknown},
     check_email,
 };
+use figment::{Figment, providers::Env};
+use figment_file_provider_adapter::FileAdapter;
+use include_dir::{include_dir, Dir};
 use lettre::{
     Address, AsyncSmtpTransport, AsyncTransport, Message, Tokio1Executor,
     message::{Mailbox, header::ContentType},
     transport::smtp::authentication::Credentials,
 };
 use serde::Deserialize;
-use tower_http::services::{ServeDir, ServeFile};
+use tower_http::services::ServeDir;
 
+use crate::include_dir_backend::IncludeDirBackend;
+
+mod include_dir_backend;
+
+const ASSETS_DIR: Dir<'static> = include_dir!("$CARGO_MANIFEST_DIR/assets");
 const FROM_DOMAIN: &str = "sebastianrasor.com";
 const FROM_USER: &str = "noreply";
 const SUBJECT: &str = "Contact Form Submission";
@@ -125,19 +133,22 @@ impl IntoResponse for ContactError {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let config = envy::from_env::<EnvConfig>()?;
+    let config: EnvConfig = Figment::new()
+        .merge(FileAdapter::wrap(Env::raw()))
+        .extract()?;
     let app_state = Arc::new(AppState::from_config(&config)?);
     let turnstile = TurnstileLayer::from_secret(config.turnstile_secret_key);
-    let assets_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("assets");
+
+    let backend = IncludeDirBackend::new(&ASSETS_DIR);
+
+    let static_files = ServeDir::with_backend("", backend)
+        .append_index_html_on_directories(true)
+        .html_as_default_extension(true);
 
     let contact_route = post(contact_submission)
         .with_state(app_state)
         .layer(turnstile)
-        .get_service(ServeFile::new(assets_dir.join("contact.html")));
-
-    let static_files = ServeDir::new(&assets_dir)
-        .append_index_html_on_directories(true)
-        .html_as_default_extension(true);
+        .fallback_service(static_files.clone());
 
     let app = Router::new()
         .route("/contact", contact_route)

@@ -7,7 +7,9 @@ edition = "2024"
 axum = "0.8.9"
 axum-turnstile = "0.1.2"
 check-if-email-exists = "0.11.10"
-envy = "0.4.2"
+figment = { version = "0.10.19", features = ["env"] }
+figment_file_provider_adapter = "0.1.1"
+include_dir = { version = "0.7.4", features = ["metadata"] }
 lettre = { version = "0.11.23", features = ["tokio1", "tokio1-native-tls"] }
 serde = { version = "1.0.229", features = ["derive"] }
 tokio = { version = "1.53.3", features = ["macros", "rt-multi-thread"] }

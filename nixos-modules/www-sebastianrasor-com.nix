@@ -26,12 +26,12 @@ in
       serviceConfig = {
         DynamicUser = true;
         Environment = [
-          "SMTP_PASSWORD=%d/smtpPassword"
-          "SMTP_RELAY=%d/smtpRelay"
-          "SMTP_USERNAME=%d/smtpUsername"
-          "TO_DOMAIN=%d/toDomain"
-          "TO_USER=%d/toUser"
-          "TURNSTILE_SECRET_KEY=%d/turnstileSecretKey"
+          "SMTP_PASSWORD_FILE=%d/smtpPassword"
+          "SMTP_RELAY_FILE=%d/smtpRelay"
+          "SMTP_USERNAME_FILE=%d/smtpUsername"
+          "TO_DOMAIN_FILE=%d/toDomain"
+          "TO_USER_FILE=%d/toUser"
+          "TURNSTILE_SECRET_KEY_FILE=%d/turnstileSecretKey"
         ];
         ExecStart = "${lib.getExe www-sebastianrasor-com}";
         LoadCredential = [
