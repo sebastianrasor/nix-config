@@ -51,7 +51,7 @@ in
       forceSSL = lib.mkForce acmeEnabled;
       useACMEHost = lib.mkIf acmeEnabled acmeBaseDomain;
       locations."/" = {
-        proxyPass = lib.mkForce "127.0.0.1:2002";
+        proxyPass = lib.mkForce "http://127.0.0.1:2002";
       };
     };
 
