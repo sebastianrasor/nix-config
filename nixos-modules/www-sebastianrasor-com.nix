@@ -26,20 +26,14 @@ in
       serviceConfig = {
         DynamicUser = true;
         Environment = [
-          "SMTP_PASSWORD_FILE=%d/smtpPassword"
-          "SMTP_RELAY_FILE=%d/smtpRelay"
-          "SMTP_USERNAME_FILE=%d/smtpUsername"
-          "TO_DOMAIN_FILE=%d/toDomain"
-          "TO_USER_FILE=%d/toUser"
+          "SMTP_CONNECTION_URL_FILE=%d/smtpConnectionUrl"
+          "TO_ADDRESS_FILE=%d/toAddress"
           "TURNSTILE_SECRET_KEY_FILE=%d/turnstileSecretKey"
         ];
         ExecStart = "${lib.getExe www-sebastianrasor-com}";
         LoadCredential = [
-          "smtpPassword:${config.sops.secrets."mxroute/password".path}"
-          "smtpRelay:${config.sops.secrets."mxroute/relay".path}"
-          "smtpUsername:${config.sops.secrets."mxroute/username".path}"
-          "toDomain:${config.sops.secrets."www-sebastianrasor-com/toDomain".path}"
-          "toUser:${config.sops.secrets."www-sebastianrasor-com/toUser".path}"
+          "smtpConnectionUrl:${config.sops.secrets."mxroute/smtpConnectionUrl".path}"
+          "toAddress:${config.sops.secrets."www-sebastianrasor-com/toAddress".path}"
           "turnstileSecretKey:${config.sops.secrets."cloudflare/turnstileSecretKey".path}"
         ];
         Restart = "on-failure";
@@ -60,11 +54,8 @@ in
     ];
 
     sops.secrets = {
-      "mxroute/password" = { };
-      "mxroute/relay" = { };
-      "mxroute/username" = { };
-      "www-sebastianrasor-com/toDomain" = { };
-      "www-sebastianrasor-com/toUser" = { };
+      "mxroute/smtpConnectionUrl" = { };
+      "www-sebastianrasor-com/toAddress" = { };
       "cloudflare/turnstileSecretKey" = { };
     };
   };

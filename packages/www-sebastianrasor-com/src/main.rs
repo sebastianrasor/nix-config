@@ -1,201 +1,65 @@
-use std::sync::Arc;
-
+use crate::app_state::AppState;
+use crate::env_config::EnvConfig;
+use crate::include_dir_backend::IncludeDirBackend;
 use axum::{
     Router,
-    extract::{Form, State},
-    http::StatusCode,
-    response::{IntoResponse, NoContent, Response},
+    response::NoContent,
     routing::{get, post},
 };
 use axum_turnstile::TurnstileLayer;
-use check_if_email_exists::{
-    CheckEmailInputBuilder,
-    Reachable::{Invalid, Unknown},
-    check_email,
-};
-use figment::{Figment, providers::Env};
-use figment_file_provider_adapter::FileAdapter;
-use include_dir::{include_dir, Dir};
-use lettre::{
-    Address, AsyncSmtpTransport, AsyncTransport, Message, Tokio1Executor,
-    message::{Mailbox, header::ContentType},
-    transport::smtp::authentication::Credentials,
-};
-use serde::Deserialize;
-use tower_http::services::ServeDir;
+use include_dir::{Dir, include_dir};
+use tower_http::{services::ServeDir, trace::TraceLayer};
+use tracing_subscriber::EnvFilter;
 
-use crate::include_dir_backend::IncludeDirBackend;
-
+mod app_state;
+mod contact_submission;
+mod env_config;
 mod include_dir_backend;
 
-const ASSETS_DIR: Dir<'static> = include_dir!("$CARGO_MANIFEST_DIR/assets");
-const FROM_DOMAIN: &str = "sebastianrasor.com";
-const FROM_USER: &str = "noreply";
-const SUBJECT: &str = "Contact Form Submission";
-const TO_NAME: &str = "Sebastian Rasor";
-
-#[derive(Deserialize)]
-struct EnvConfig {
-    smtp_relay: String,
-    smtp_username: String,
-    smtp_password: String,
-    to_user: String,
-    to_domain: String,
-    turnstile_secret_key: String,
-}
-
-struct AppState {
-    from_address: Address,
-    to_mailbox: Mailbox,
-    mailer: AsyncSmtpTransport<Tokio1Executor>,
-}
-
-impl AppState {
-    fn from_config(config: &EnvConfig) -> Result<Self, Box<dyn std::error::Error>> {
-        let credentials =
-            Credentials::new(config.smtp_username.clone(), config.smtp_password.clone());
-
-        let mailer = AsyncSmtpTransport::<Tokio1Executor>::relay(&config.smtp_relay)?
-            .credentials(credentials)
-            .build();
-
-        let to_address = Address::new(config.to_user.clone(), config.to_domain.clone())?;
-
-        Ok(Self {
-            from_address: Address::new_dangerous(FROM_USER, FROM_DOMAIN),
-            to_mailbox: Mailbox::new(Some(TO_NAME.to_owned()), to_address),
-            mailer,
-        })
-    }
-}
-
-#[derive(Deserialize)]
-struct ContactSubmission {
-    name: String,
-    email: String,
-    message: String,
-}
-
-impl ContactSubmission {
-    fn into_message(
-        self,
-        reply_to: Address,
-        from_address: Address,
-        to_mailbox: Mailbox,
-    ) -> Result<Message, ContactError> {
-        Message::builder()
-            .from(Mailbox::new(Some(self.name.clone()), from_address))
-            .reply_to(Mailbox::new(Some(self.name), reply_to))
-            .to(to_mailbox)
-            .subject(SUBJECT)
-            .header(ContentType::TEXT_PLAIN)
-            .body(self.message)
-            .map_err(|_| ContactError::BuildEmail)
-    }
-}
-
-enum ContactError {
-    InvalidEmailAddress,
-    BuildVerifierInput,
-    UndeliverableEmail,
-    BuildEmail,
-    SendEmail,
-}
-
-impl IntoResponse for ContactError {
-    fn into_response(self) -> Response {
-        let (status, message) = match self {
-            Self::InvalidEmailAddress => (
-                StatusCode::UNPROCESSABLE_ENTITY,
-                "Could not construct reply-to address.",
-            ),
-            Self::UndeliverableEmail => (
-                StatusCode::UNPROCESSABLE_ENTITY,
-                "Email address is not deliverable.",
-            ),
-            Self::BuildVerifierInput => (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                "Could not construct CheckEmailInputBuilder.",
-            ),
-            Self::BuildEmail => (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                "Could not construct email.",
-            ),
-            Self::SendEmail => (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                "Failed to deliver email.",
-            ),
-        };
-
-        (status, message).into_response()
-    }
-}
+const ASSETS_DIR: Dir<'static> = include_dir!("$OUT_DIR/assets");
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let config: EnvConfig = Figment::new()
-        .merge(FileAdapter::wrap(Env::raw()))
-        .extract()?;
-    let app_state = Arc::new(AppState::from_config(&config)?);
-    let turnstile = TurnstileLayer::from_secret(config.turnstile_secret_key);
+    tracing_subscriber::fmt()
+        .with_env_filter(
+            EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| EnvFilter::new("info,tower_http=debug")),
+        )
+        .init();
 
-    let backend = IncludeDirBackend::new(&ASSETS_DIR);
+    let config = EnvConfig::from_env()?;
+    let app_state = AppState::try_from(&config)?;
+    let turnstile = TurnstileLayer::from_secret(&config.turnstile_secret_key);
+    let app = build_router(app_state, turnstile);
 
-    let static_files = ServeDir::with_backend("", backend)
-        .append_index_html_on_directories(true)
-        .html_as_default_extension(true);
-
-    let contact_route = post(contact_submission)
-        .with_state(app_state)
-        .layer(turnstile)
-        .fallback_service(static_files.clone());
-
-    let app = Router::new()
-        .route("/contact", contact_route)
-        .route("/favicon.ico", get(|| async { NoContent }))
-        .fallback_service(static_files);
-
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:2002").await?;
+    let listener = tokio::net::TcpListener::bind(config.bind_addr).await?;
+    tracing::info!("listening on {}", config.bind_addr);
     axum::serve(listener, app).await?;
 
     Ok(())
 }
 
-async fn contact_submission(
-    State(state): State<Arc<AppState>>,
-    Form(submission): Form<ContactSubmission>,
-) -> Result<NoContent, ContactError> {
-    let reply_to = submission
-        .email
-        .parse::<Address>()
-        .map_err(|_| ContactError::InvalidEmailAddress)?;
+fn build_router(app_state: AppState, turnstile: TurnstileLayer) -> Router {
+    let static_files = ServeDir::with_backend("", IncludeDirBackend::new(&ASSETS_DIR))
+        .append_index_html_on_directories(true)
+        .html_as_default_extension(true)
+        .precompressed_br()
+        .precompressed_deflate()
+        .precompressed_gzip()
+        .precompressed_zstd();
 
-    verify_deliverable(&submission.email).await?;
+    // Apply Turnstile before attaching the static-file fallback so that only
+    // `POST /contact` requires Turnstile verification, while `GET /contact`
+    // falls through to `ServeDir` (serving `assets/contact.html`) instead of
+    // returning `405 Method Not Allowed`.
+    let contact_route = post(contact_submission::handle)
+        .with_state(app_state)
+        .layer(turnstile)
+        .fallback_service(static_files.clone());
 
-    let email = submission.into_message(
-        reply_to,
-        state.from_address.clone(),
-        state.to_mailbox.clone(),
-    )?;
-
-    state
-        .mailer
-        .send(email)
-        .await
-        .map_err(|_| ContactError::SendEmail)?;
-
-    Ok(NoContent)
-}
-
-async fn verify_deliverable(email: &str) -> Result<(), ContactError> {
-    let input = CheckEmailInputBuilder::default()
-        .to_email(email.to_owned())
-        .build()
-        .map_err(|_| ContactError::BuildVerifierInput)?;
-
-    if matches!(check_email(&input).await.is_reachable, Invalid | Unknown) {
-        return Err(ContactError::UndeliverableEmail);
-    }
-
-    Ok(())
+    Router::new()
+        .route("/contact", contact_route)
+        .route("/favicon.ico", get(|| async { NoContent }))
+        .fallback_service(static_files)
+        .layer(TraceLayer::new_for_http())
 }

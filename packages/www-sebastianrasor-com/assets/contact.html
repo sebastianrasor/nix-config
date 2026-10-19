@@ -6,8 +6,9 @@
     content="You can securely contact Sebastian Rasor through this page. Messages are end-to-end encrypted.">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="canonical" href="https://www.sebastianrasor.com/contact">
-<link rel="prefetch" href="/" as="document" />
 <link rel="preload" href="/stylesheet.css" as="style" />
+<link rel="prefetch" href="/" as="document" />
+<link rel="prefetch" href="/targets" as="document" />
 <link rel="stylesheet" type="text/css" href="/stylesheet.css">
 <link rel="preconnect" href="https://challenges.cloudflare.com" />
 <title>Contact Sebastian Rasor</title>
@@ -34,7 +35,7 @@
             </div>
         </div>
         <div class="input-container">
-            <textarea id="message" name="message" autocomplete="no" placeholder=" " rows="4" autocomplete="false"
+            <textarea id="message" name="message" autocomplete="off" placeholder=" " rows="4" autocomplete="false"
                 required></textarea>
             <label for="message">Your Message</label>
         </div>
@@ -48,5 +49,5 @@
 <nav role="navigation">
     <a class="button" href="/">Home</a>
     <div class="button button-disabled">Contact</div>
-  <a class="button" href="/targets">Targets</a>
+    <a class="button" href="/targets">Targets</a>
 </nav>

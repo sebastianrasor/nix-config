@@ -1,27 +1,44 @@
-//! Vibe coded with Gemini 4
-
 use std::{
-    future::{ready, Ready},
+    collections::HashMap,
+    future::{Ready, ready},
+    hash::{DefaultHasher, Hasher},
     io::{self, Cursor, SeekFrom},
-    path::{Component, Path, PathBuf},
+    path::{Path, PathBuf},
     pin::Pin,
+    sync::Arc,
     task::{Context, Poll},
-    time::SystemTime,
+    time::{Duration, SystemTime},
 };
 
-use include_dir::{Dir, DirEntry};
+use include_dir::Dir;
 use tokio::io::{AsyncRead, AsyncSeek, ReadBuf};
 use tower_http::services::fs::{Backend, File, Metadata};
 
+/// Maximum nanosecond offset (~36.5 years) for synthetic modification times,
+/// keeping `Last-Modified` between 1970 and 2006 (never in the future per
+/// RFC 9110 §8.8.2) while preserving 60 bits of the content hash for `ETag`s.
+const MAX_SYNTHETIC_MODIFIED_NANOS: u64 = (1 << 60) - 1;
+
+#[derive(Debug, Clone)]
+enum EmbeddedEntry {
+    Dir,
+    File(EmbeddedFile),
+}
+
 /// A `tower_http::services::fs::Backend` backed by an `include_dir::Dir`.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 pub struct IncludeDirBackend {
-    dir: &'static Dir<'static>,
+    entries: Arc<HashMap<&'static Path, EmbeddedEntry>>,
 }
 
 impl IncludeDirBackend {
-    pub const fn new(dir: &'static Dir<'static>) -> Self {
-        Self { dir }
+    pub fn new(dir: &'static Dir<'static>) -> Self {
+        let mut entries = HashMap::from([(Path::new(""), EmbeddedEntry::Dir)]);
+        collect_entries(dir, &mut entries);
+
+        Self {
+            entries: Arc::new(entries),
+        }
     }
 }
 
@@ -32,33 +49,19 @@ impl Backend for IncludeDirBackend {
     type MetadataFuture = Ready<io::Result<Self::Metadata>>;
 
     fn open(&self, path: PathBuf) -> Self::OpenFuture {
-        let normalized = normalize_path(&path);
-
-        let result = if normalized.as_os_str().is_empty() {
-            // Root directory cannot be opened as a file.
-            // ServeDir maps ErrorKind::NotFound to 404 (or triggers fallback).
-            Err(io::Error::from(io::ErrorKind::NotFound))
-        } else {
-            self.dir
-                .get_file(&normalized)
-                .map(EmbeddedFile::new)
-                .ok_or_else(|| io::Error::from(io::ErrorKind::NotFound))
+        let result = match self.entries.get(normalize_path(&path)) {
+            Some(EmbeddedEntry::File(file)) => Ok(file.clone()),
+            Some(EmbeddedEntry::Dir) | None => Err(io::Error::from(io::ErrorKind::NotFound)),
         };
 
         ready(result)
     }
 
     fn metadata(&self, path: PathBuf) -> Self::MetadataFuture {
-        let normalized = normalize_path(&path);
-
-        let result = if normalized.as_os_str().is_empty() {
-            Ok(EmbeddedMetadata::dir())
-        } else {
-            match self.dir.get_entry(&normalized) {
-                Some(DirEntry::Dir(_)) => Ok(EmbeddedMetadata::dir()),
-                Some(DirEntry::File(file)) => Ok(EmbeddedMetadata::from_file(file)),
-                None => Err(io::Error::from(io::ErrorKind::NotFound)),
-            }
+        let result = match self.entries.get(normalize_path(&path)) {
+            Some(EmbeddedEntry::Dir) => Ok(EmbeddedMetadata::Dir),
+            Some(EmbeddedEntry::File(file)) => Ok(file.metadata),
+            None => Err(io::Error::from(io::ErrorKind::NotFound)),
         };
 
         ready(result)
@@ -74,9 +77,13 @@ pub struct EmbeddedFile {
 
 impl EmbeddedFile {
     fn new(file: &'static include_dir::File<'static>) -> Self {
+        let contents = file.contents();
         Self {
-            cursor: Cursor::new(file.contents()),
-            metadata: EmbeddedMetadata::from_file(file),
+            cursor: Cursor::new(contents),
+            metadata: EmbeddedMetadata::File {
+                len: contents.len() as u64,
+                modified: content_modified_time(contents),
+            },
         }
     }
 }
@@ -112,54 +119,63 @@ impl File for EmbeddedFile {
 
 /// Metadata for an embedded file or directory.
 #[derive(Debug, Clone, Copy)]
-pub struct EmbeddedMetadata {
-    is_dir: bool,
-    len: u64,
-    modified: Option<SystemTime>,
-}
-
-impl EmbeddedMetadata {
-    const fn dir() -> Self {
-        Self {
-            is_dir: true,
-            len: 0,
-            modified: None,
-        }
-    }
-
-    fn from_file(file: &'static include_dir::File<'static>) -> Self {
-        Self {
-            is_dir: false,
-            len: file.contents().len() as u64,
-            // Requires `include_dir = { version = "0.7", features = ["metadata"] }`.
-            // If you don't enable `metadata` on `include_dir`, set this to `None`.
-            modified: file.metadata().map(|m| m.modified()),
-        }
-    }
+pub enum EmbeddedMetadata {
+    Dir,
+    File { len: u64, modified: SystemTime },
 }
 
 impl Metadata for EmbeddedMetadata {
     fn is_dir(&self) -> bool {
-        self.is_dir
+        matches!(self, Self::Dir)
     }
 
     fn modified(&self) -> io::Result<SystemTime> {
-        self.modified
-            .ok_or_else(|| io::Error::from(io::ErrorKind::Unsupported))
+        match *self {
+            Self::Dir => Err(io::Error::from(io::ErrorKind::Unsupported)),
+            Self::File { modified, .. } => Ok(modified),
+        }
     }
 
     fn len(&self) -> u64 {
-        self.len
+        match *self {
+            Self::Dir => 0,
+            Self::File { len, .. } => len,
+        }
     }
+}
+
+fn collect_entries(
+    dir: &'static Dir<'static>,
+    entries: &mut HashMap<&'static Path, EmbeddedEntry>,
+) {
+    for file in dir.files() {
+        entries.insert(file.path(), EmbeddedEntry::File(EmbeddedFile::new(file)));
+    }
+    for subdir in dir.dirs() {
+        entries.insert(subdir.path(), EmbeddedEntry::Dir);
+        collect_entries(subdir, entries);
+    }
+}
+
+/// Derives a deterministic, synthetic modification timestamp from a file's contents.
+///
+/// `include_dir` does not embed filesystem timestamps by default (and Nix builds
+/// normalize source mtimes to the Unix epoch), while `tower_http::services::ServeDir`
+/// derives `ETag` headers from `(modified(), len())`. Hashing the file contents into a
+/// bounded `SystemTime` allows `ServeDir` to generate content-based `ETag`s without
+/// emitting future `Last-Modified` dates.
+fn content_modified_time(contents: &[u8]) -> SystemTime {
+    let mut hasher = DefaultHasher::new();
+    hasher.write(contents);
+    let nanos = hasher.finish() & MAX_SYNTHETIC_MODIFIED_NANOS;
+    SystemTime::UNIX_EPOCH + Duration::from_nanos(nanos)
 }
 
 /// Strips leading `.` or `/` components so paths joined by `ServeDir`
 /// match the relative paths stored in `include_dir::Dir`.
-fn normalize_path(path: &Path) -> PathBuf {
-    path.components()
-        .filter_map(|component| match component {
-            Component::Normal(part) => Some(part),
-            _ => None,
-        })
-        .collect()
+fn normalize_path(mut path: &Path) -> &Path {
+    while let Ok(stripped) = path.strip_prefix(".").or_else(|_| path.strip_prefix("/")) {
+        path = stripped;
+    }
+    path
 }

@@ -3,14 +3,29 @@ name = "www-sebastianrasor-com"
 version = "0.1.0"
 edition = "2024"
 
+[lints.clippy]
+pedantic = "warn"
+nursery = "warn"
+
 [dependencies]
 axum = "0.8.9"
 axum-turnstile = "0.1.2"
 check-if-email-exists = "0.11.10"
 figment = { version = "0.10.19", features = ["env"] }
 figment_file_provider_adapter = "0.1.1"
-include_dir = { version = "0.7.4", features = ["metadata"] }
-lettre = { version = "0.11.23", features = ["tokio1", "tokio1-native-tls"] }
+include_dir = "0.7.4"
+lettre = { version = "0.11.23", features = ["serde", "tokio1", "tokio1-native-tls"] }
 serde = { version = "1.0.229", features = ["derive"] }
+thiserror = "2.0.21"
 tokio = { version = "1.53.3", features = ["macros", "rt-multi-thread"] }
-tower-http = { version = "0.7.1", features = ["fs"] }
+tower-http = { version = "0.7.1", features = ["fs", "trace"] }
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
+url = { version = "2.5.8", features = ["serde"] }
+
+[build-dependencies]
+brotli = "9.0.0"
+flate2 = "1.1.10"
+walkdir = "2.5.0"
+zstd = "0.14.3"
+

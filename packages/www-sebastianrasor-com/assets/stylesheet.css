@@ -27,7 +27,8 @@ body {
   font-family: 'Atkinson Hyperlegible', sans-serif;
   font-size: calc(14pt + 0.5vw);
   user-select: none;
-  -webkit-user-select: none; /* Safari */
+  -webkit-user-select: none;
+  /* Safari */
 }
 
 a {
@@ -50,25 +51,25 @@ main {
 }
 
 /* This monstrosity selects the last visible element of main */
-main > *:nth-last-child(1 of :not([hidden])) {
+main>*:nth-last-child(1 of :not([hidden])) {
   padding-bottom: calc(var(--gap) + 3ch + 0.667em)
 }
 
 .target-gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: var(--gap);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--gap);
 }
 
 .target {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
 }
 
-.target > iframe {
-    aspect-ratio: 8.5 / 11;
+.target>iframe {
+  aspect-ratio: 8.5 / 11;
 }
 
 form {
@@ -153,23 +154,22 @@ textarea:read-only {
   width: 100%;
 }
 
-.horizontal-container
-.input-container {
+.horizontal-container .input-container {
   flex: 16ch;
 }
 
-input + label,
-textarea + label {
+input+label,
+textarea+label {
   color: #757575;
   pointer-events: none;
   transform-origin: bottom left;
   transition: color 0.25s, transform 0.25s, width 0.25s;
 }
 
-input:focus + label,
-input:not(:placeholder-shown) + label,
-textarea:focus + label,
-textarea:not(:read-only, :placeholder-shown) + label {
+input:focus+label,
+input:not(:placeholder-shown)+label,
+textarea:focus+label,
+textarea:not(:read-only, :placeholder-shown)+label {
   color: var(--primary);
   cursor: default;
   transform: scale(75%) translate(0, 100%);
