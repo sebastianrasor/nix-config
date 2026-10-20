@@ -1,0 +1,64 @@
+<svg fill="none" height="11in" viewBox="0 0 816 1056" width="8.5in" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @page {
+      size: 8.5in 11in;
+      margin: 0;
+    }
+    svg {
+      display: block;
+      width: 8.5in;
+      height: 11in;
+      --packingradius: calc((79 - sqrt(5831)) / 2);
+      --columnspacing: calc(8.5 - (2 * var(--packingradius)));
+      --horizontalstagger: calc((8.5 / 2) - (2 * var(--packingradius)));
+      --verticalstagger: calc((11 - (2 * var(--packingradius))) / 4);
+    }
+    #row > use {
+      x: calc((var(--packingradius) + var(--c) * var(--columnspacing) + (1 - 2 * var(--c)) * var(--s) * var(--horizontalstagger)) * 96px);
+      y: calc(var(--packingradius) * 96px);
+    }
+    svg > use {
+      --s: 0;
+      y: calc(var(--r) * var(--verticalstagger) * 96px);
+    }
+    svg > use:nth-of-type(even) {
+      --s: 1;
+    }
+  </style>
+  <defs>
+    <g id="rings">
+      <!-- 2 Ring -->
+      <circle fill="black" r="1.125in" />
+      <!-- 3 Ring -->
+      <circle fill="black" r="0.995in" stroke="white" stroke-width="0.01in" />
+      <!-- 4 Ring -->
+      <circle fill="black" r="0.87in" stroke="white" stroke-width="0.01in" />
+      <!-- 5 Ring -->
+      <circle fill="white" r="0.75in" />
+      <!-- 6 Ring -->
+      <circle fill="white" r="0.62in" stroke="black" stroke-width="0.01in" />
+      <!-- 7 Ring -->
+      <circle fill="white" r="0.495in" stroke="black" stroke-width="0.01in" />
+      <!-- 8 Ring -->
+      <circle fill="white" r="0.37in" stroke="black" stroke-width="0.01in" />
+      <!-- 9 Ring -->
+      <circle fill="white" r="0.245in" stroke="black" stroke-width="0.01in" />
+      <!-- 10 Ring -->
+      <circle fill="white" r="0.12in" stroke="black" stroke-width="0.01in" />
+      <!-- X Dot -->
+      <circle fill="black" r="0.031in" />
+    </g>
+
+    <g id="row">
+      <use href="#rings" style="--c: 0;" />
+      <use href="#rings" style="--c: 1;" />
+    </g>
+  </defs>
+
+  <use href="#row" style="--r: 0;" />
+  <use href="#row" style="--r: 1;" />
+  <use href="#row" style="--r: 2;" />
+  <use href="#row" style="--r: 3;" />
+  <use href="#row" style="--r: 4;" />
+</svg>
+

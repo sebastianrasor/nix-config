@@ -1,0 +1,58 @@
+<svg fill="none" height="11in" viewBox="0 0 816 1056" width="8.5in" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @page {
+      size: 8.5in 11in;
+      margin: 0;
+    }
+    svg {
+      display: block;
+      width: 8.5in;
+      height: 11in;
+    }
+    text {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+      pointer-events: none;
+    }
+  </style>
+
+  <!-- 5 ring -->
+  <circle fill="white" cx="4.25in" cy="6.75in" r="9.835in" stroke="black" stroke-width="0.01in" />
+  <text x="-4.365in" y="6.75in" font-family="Atkinson Hyperlegible" font-size="12pt" text-anchor="middle" dominant-baseline="middle" fill="black">
+    5
+  </text>
+  <!-- 6 ring -->
+  <circle fill="white" cx="4.25in" cy="6.75in" r="7.395in" stroke="black" stroke-width="0.01in" />
+  <text x="-2.195in" y="6.75in" font-family="Atkinson Hyperlegible" font-size="12pt" text-anchor="middle" dominant-baseline="middle" fill="black">
+    6
+  </text>
+  <!-- 7 ring -->
+  <circle fill="white" cx="4.25in" cy="6.75in" r="5.495in" stroke="black" stroke-width="0.01in" />
+  <text x="-0.495in" y="6.75in" font-family="Atkinson Hyperlegible" font-size="12pt" text-anchor="middle" dominant-baseline="middle" fill="black">
+    7
+  </text>
+  <!-- 8 ring -->
+  <circle fill="white" cx="4.25in" cy="6.75in" r="3.995in" stroke="black" stroke-width="0.01in" />
+  <text x="0.87in" y="6.75in" font-family="Atkinson Hyperlegible" font-size="12pt" text-anchor="middle" dominant-baseline="middle" fill="black">
+    8
+  </text>
+  <!-- 9 ring -->
+  <circle fill="black" cx="4.25in" cy="6.75in" r="2.77in" />
+  <text x="2.03in" y="6.75in" font-family="Atkinson Hyperlegible" font-size="12pt" text-anchor="middle" dominant-baseline="middle" fill="white">
+    9
+  </text>
+  <!-- 10 ring -->
+  <circle fill="black" cx="4.25in" cy="6.75in" r="1.675in" stroke="white" stroke-width="0.01in" />
+  <text x="2.99125in" y="6.75in" font-family="Atkinson Hyperlegible" font-size="12pt" text-anchor="middle" dominant-baseline="middle" fill="white">
+    10
+  </text>
+  <!-- X ring -->
+  <circle fill="black" cx="4.25in" cy="6.75in" r="0.8425in" stroke="white" stroke-width="0.01in" />
+  <text x="4.25in" y="6.8in" font-family="Atkinson Hyperlegible" font-size="36pt" text-anchor="middle" dominant-baseline="middle" fill="white">
+    X
+  </text>
+</svg>
+

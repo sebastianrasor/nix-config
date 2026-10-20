@@ -1,0 +1,56 @@
+<svg fill="none" height="11in" viewBox="0 0 816 1056" width="8.5in" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @page {
+      size: 8.5in 11in;
+      margin: 0;
+    }
+    svg {
+      display: block;
+      width: 8.5in;
+      height: 11in;
+
+      --packingradius: calc((-1729 + 24 * sqrt(70038)) / 4796);
+      --columnspacing: calc((8.5 - (2 * var(--packingradius))) / 4);
+      --verticalstagger: calc((11 - (2 * var(--packingradius))) / 9);
+    }
+    #row > use {
+      --s: 0;
+      x: calc((var(--packingradius) + var(--c) * var(--columnspacing)) * 96px);
+      y: calc((var(--packingradius) + var(--s) * var(--verticalstagger)) * 96px);
+    }
+    #row > use:nth-child(even) {
+      --s: 1;
+    }
+    svg > use {
+      y: calc(2 * var(--r) * var(--verticalstagger) * 96px);
+    }
+  </style>
+
+  <defs>
+    <g id="rings">
+      <!-- Outer Ring -->
+      <circle fill="white" r="34pt" stroke="black" stroke-width="4pt" />
+      <!-- 50 Ring -->
+      <circle fill="white" r="26.5pt" stroke="black" stroke-width="1pt" />
+      <!-- 100 Ring -->
+      <circle fill="white" r="16pt" stroke="black" stroke-width="4pt" />
+      <!-- Dot -->
+      <circle fill="black" r="1pt" />
+    </g>
+
+    <g id="row">
+      <use href="#rings" style="--c: 0;" />
+      <use href="#rings" style="--c: 1;" />
+      <use href="#rings" style="--c: 2;" />
+      <use href="#rings" style="--c: 3;" />
+      <use href="#rings" style="--c: 4;" />
+    </g>
+  </defs>
+
+  <use href="#row" style="--r: 0;" />
+  <use href="#row" style="--r: 1;" />
+  <use href="#row" style="--r: 2;" />
+  <use href="#row" style="--r: 3;" />
+  <use href="#row" style="--r: 4;" />
+</svg>
+
