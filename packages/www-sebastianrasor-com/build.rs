@@ -15,18 +15,29 @@ const ZSTD_MAX_LEVEL: i32 = 19;
 fn main() -> Result<(), Box<dyn Error>> {
     println!("cargo::rerun-if-changed=build.rs");
     println!("cargo::rerun-if-changed=assets");
+    println!("cargo::rerun-if-env-changed=TARGETS_DIR");
 
     let out_dir = PathBuf::from(env::var("OUT_DIR")?);
+    let targets_dir = PathBuf::from(env::var("TARGETS_DIR")?);
+    println!("cargo::rerun-if-changed={}", targets_dir.display());
+
     let assets_dir = Path::new("assets");
     let dest_dir = out_dir.join("assets");
 
     reset_directory(&dest_dir)?;
+    process_directory(assets_dir, &dest_dir)?;
+    process_directory(&targets_dir, &dest_dir.join("targets"))?;
 
-    for entry in WalkDir::new(assets_dir) {
+    Ok(())
+}
+
+/// Recursively copies all files in `src_dir` to `dest_dir` and generates compressed variants.
+fn process_directory(src_dir: &Path, dest_dir: &Path) -> Result<(), Box<dyn Error>> {
+    for entry in WalkDir::new(src_dir) {
         let entry = entry?;
         if entry.file_type().is_file() {
             let path = entry.path();
-            process_asset(path, assets_dir, &dest_dir)
+            process_asset(path, src_dir, dest_dir)
                 .map_err(|err| format!("failed to process asset {}: {err}", path.display()))?;
         }
     }

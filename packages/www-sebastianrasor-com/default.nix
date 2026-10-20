@@ -1,13 +1,24 @@
-{ pkgs, ... }:
+{
+  lib,
+  callPackage,
+  openssl,
+  pkg-config,
+  rustPlatform,
+  targets ? callPackage ../targets { },
+}:
 let
   cargoToml = fromTOML (builtins.readFile ./Cargo.toml);
 in
-pkgs.rustPlatform.buildRustPackage {
+rustPlatform.buildRustPackage {
   inherit (cargoToml.package) version;
   pname = cargoToml.package.name;
-  meta.mainProgram = cargoToml.package.name;
-  buildInputs = [ pkgs.openssl ];
-  nativeBuildInputs = [ pkgs.pkg-config ];
-  src = pkgs.lib.cleanSource ./.;
+  buildInputs = [ openssl ];
+  nativeBuildInputs = [ pkg-config ];
+  src = lib.cleanSource ./.;
   cargoLock.lockFile = ./Cargo.lock;
+  env.TARGETS_DIR = "${targets}";
+  meta = {
+    inherit (targets.meta) platforms;
+    mainProgram = cargoToml.package.name;
+  };
 }
