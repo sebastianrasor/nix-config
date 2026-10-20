@@ -1,5 +1,7 @@
 use std::{
+    cell::Cell,
     collections::HashMap,
+    fmt::Write as _,
     future::{Ready, ready},
     io::{self, Cursor, SeekFrom},
     path::{Path, PathBuf},
@@ -9,9 +11,24 @@ use std::{
     time::SystemTime,
 };
 
+use axum::{
+    extract::Request,
+    http::{HeaderValue, StatusCode, header},
+    middleware::Next,
+    response::{IntoResponse, Response},
+};
 use include_dir::Dir;
+use sha2::{Digest, Sha256};
 use tokio::io::{AsyncRead, AsyncSeek, ReadBuf};
 use tower_http::services::fs::{Backend, File, Metadata};
+
+tokio::task_local! {
+    static SERVED_ETAG: Cell<Option<HeaderValue>>;
+}
+
+fn record_served_etag(etag: &HeaderValue) {
+    let _ = SERVED_ETAG.try_with(|slot| slot.set(Some(etag.clone())));
+}
 
 #[derive(Debug, Clone)]
 enum EmbeddedEntry {
@@ -44,7 +61,10 @@ impl Backend for IncludeDirBackend {
 
     fn open(&self, path: PathBuf) -> Self::OpenFuture {
         let result = match self.entries.get(normalize_path(&path)) {
-            Some(EmbeddedEntry::File(file)) => Ok(file.clone()),
+            Some(EmbeddedEntry::File(file)) => {
+                record_served_etag(&file.etag);
+                Ok(file.clone())
+            }
             Some(EmbeddedEntry::Dir) | None => Err(io::Error::from(io::ErrorKind::NotFound)),
         };
 
@@ -54,7 +74,10 @@ impl Backend for IncludeDirBackend {
     fn metadata(&self, path: PathBuf) -> Self::MetadataFuture {
         let result = match self.entries.get(normalize_path(&path)) {
             Some(EmbeddedEntry::Dir) => Ok(EmbeddedMetadata::Dir),
-            Some(EmbeddedEntry::File(file)) => Ok(file.metadata),
+            Some(EmbeddedEntry::File(file)) => {
+                record_served_etag(&file.etag);
+                Ok(file.metadata)
+            }
             None => Err(io::Error::from(io::ErrorKind::NotFound)),
         };
 
@@ -67,6 +90,7 @@ impl Backend for IncludeDirBackend {
 pub struct EmbeddedFile {
     cursor: Cursor<&'static [u8]>,
     metadata: EmbeddedMetadata,
+    etag: HeaderValue,
 }
 
 impl EmbeddedFile {
@@ -77,6 +101,7 @@ impl EmbeddedFile {
             metadata: EmbeddedMetadata::File {
                 len: contents.len() as u64,
             },
+            etag: compute_etag(contents),
         }
     }
 }
@@ -154,4 +179,115 @@ fn normalize_path(mut path: &Path) -> &Path {
         path = stripped;
     }
     path
+}
+
+fn compute_etag(contents: &[u8]) -> HeaderValue {
+    let digest = Sha256::digest(contents);
+    let mut etag = String::with_capacity(2 + digest.len() * 2);
+    etag.push('"');
+    for byte in digest {
+        let _ = write!(etag, "{byte:02x}");
+    }
+    etag.push('"');
+    HeaderValue::from_str(&etag).expect("SHA-256 hex ETag is valid ASCII")
+}
+
+/// Middleware that attaches the precomputed SHA-256 `ETag` from [`IncludeDirBackend`]
+/// and evaluates `If-Match` and `If-None-Match` preconditions.
+pub async fn etag_middleware(request: Request, next: Next) -> Response {
+    let if_match = request.headers().get(header::IF_MATCH).cloned();
+    let if_none_match = request.headers().get(header::IF_NONE_MATCH).cloned();
+
+    SERVED_ETAG
+        .scope(Cell::new(None), async move {
+            let mut response = next.run(request).await;
+
+            if !matches!(
+                response.status(),
+                StatusCode::OK | StatusCode::PARTIAL_CONTENT | StatusCode::RANGE_NOT_SATISFIABLE
+            ) {
+                return response;
+            }
+
+            let Some(etag) = SERVED_ETAG.with(Cell::take) else {
+                return response;
+            };
+
+            if let Some(ref value) = if_match
+                && !value.is_empty()
+                && !if_match_passes(value.as_bytes(), etag.as_bytes())
+            {
+                let mut res = StatusCode::PRECONDITION_FAILED.into_response();
+                if let Some(vary) = response.headers().get(header::VARY).cloned() {
+                    res.headers_mut().insert(header::VARY, vary);
+                }
+                return res;
+            }
+
+            if let Some(ref value) = if_none_match
+                && !value.is_empty()
+                && !if_none_match_passes(value.as_bytes(), etag.as_bytes())
+            {
+                let mut res = StatusCode::NOT_MODIFIED.into_response();
+                if let Some(vary) = response.headers().get(header::VARY).cloned() {
+                    res.headers_mut().insert(header::VARY, vary);
+                }
+                res.headers_mut().insert(header::ETAG, etag);
+                return res;
+            }
+
+            response.headers_mut().insert(header::ETAG, etag);
+            response
+        })
+        .await
+}
+
+fn if_match_passes(header: &[u8], etag: &[u8]) -> bool {
+    let trimmed = trim_ows(header);
+    if trimmed == b"*" {
+        return true;
+    }
+    for_each_etag(trimmed, |tag| !tag.starts_with(b"W/") && tag == etag)
+}
+
+fn if_none_match_passes(header: &[u8], etag: &[u8]) -> bool {
+    let trimmed = trim_ows(header);
+    if trimmed == b"*" {
+        return false;
+    }
+    !for_each_etag(trimmed, |tag| {
+        let tag = tag.strip_prefix(b"W/").unwrap_or(tag);
+        tag == etag
+    })
+}
+
+fn for_each_etag(header: &[u8], mut predicate: impl FnMut(&[u8]) -> bool) -> bool {
+    let mut start = 0;
+    let mut in_quotes = false;
+    for (i, &byte) in header.iter().enumerate() {
+        match byte {
+            b'"' => in_quotes = !in_quotes,
+            b',' if !in_quotes => {
+                let trimmed = trim_ows(&header[start..i]);
+                if !trimmed.is_empty() && predicate(trimmed) {
+                    return true;
+                }
+                start = i + 1;
+            }
+            _ => {}
+        }
+    }
+    let trimmed = trim_ows(&header[start..]);
+    !trimmed.is_empty() && predicate(trimmed)
+}
+
+fn trim_ows(bytes: &[u8]) -> &[u8] {
+    let Some(start) = bytes.iter().position(|&b| b != b' ' && b != b'\t') else {
+        return &[];
+    };
+    let end = bytes
+        .iter()
+        .rposition(|&b| b != b' ' && b != b'\t')
+        .map_or(0, |i| i + 1);
+    &bytes[start..end]
 }

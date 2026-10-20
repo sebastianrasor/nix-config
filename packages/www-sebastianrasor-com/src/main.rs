@@ -2,9 +2,9 @@ use crate::app_state::AppState;
 use crate::env_config::EnvConfig;
 use crate::include_dir_backend::IncludeDirBackend;
 use axum::{
-    Router,
+    Router, middleware,
     response::NoContent,
-    routing::{get, post},
+    routing::{any_service, get, post},
 };
 use axum_turnstile::TurnstileLayer;
 use include_dir::{Dir, include_dir};
@@ -21,10 +21,9 @@ const ASSETS_DIR: Dir<'static> = include_dir!("$OUT_DIR/assets");
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing_subscriber::fmt()
-        .with_env_filter(
-            EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| EnvFilter::new("info")),
-        )
+        .with_env_filter(EnvFilter::try_from_default_env().unwrap_or_else(|_| {
+            EnvFilter::new("info,tower_http::services::fs::serve_dir::open_file=error")
+        }))
         .init();
 
     let config = EnvConfig::from_env()?;
@@ -40,13 +39,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 fn build_router(app_state: AppState, turnstile: TurnstileLayer) -> Router {
-    let static_files = ServeDir::with_backend("", IncludeDirBackend::new(&ASSETS_DIR))
-        .append_index_html_on_directories(true)
-        .html_as_default_extension(true)
-        .precompressed_br()
-        .precompressed_deflate()
-        .precompressed_gzip()
-        .precompressed_zstd();
+    let static_files = any_service(
+        ServeDir::with_backend("", IncludeDirBackend::new(&ASSETS_DIR))
+            .append_index_html_on_directories(true)
+            .html_as_default_extension(true)
+            .precompressed_br()
+            .precompressed_deflate()
+            .precompressed_gzip()
+            .precompressed_zstd(),
+    )
+    .layer(middleware::from_fn(include_dir_backend::etag_middleware));
 
     // Apply Turnstile before attaching the static-file fallback so that only
     // `POST /contact` requires Turnstile verification, while `GET /contact`

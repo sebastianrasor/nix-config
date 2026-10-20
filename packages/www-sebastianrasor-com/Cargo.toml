@@ -16,6 +16,7 @@ figment_file_provider_adapter = "0.1.1"
 include_dir = "0.7.4"
 lettre = { version = "0.11.23", features = ["serde", "tokio1", "tokio1-native-tls"] }
 serde = { version = "1.0.229", features = ["derive"] }
+sha2 = "0.11.1"
 thiserror = "2.0.21"
 tokio = { version = "1.53.3", features = ["macros", "rt-multi-thread"] }
 tower-http = { version = "0.7.1", features = ["fs", "trace"] }
