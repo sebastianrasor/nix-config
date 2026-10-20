@@ -1,0 +1,62 @@
+<svg fill="none" height="6in" viewBox="0 0 384 576" width="4in" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @page {
+      size: 4in 6in;
+      margin: 0;
+    }
+    svg {
+      display: block;
+      width: 4in;
+      height: 6in;
+
+      --w: calc((88 * (pow(3 * sqrt(851565) + 2764, 1 / 3) - pow(3 * sqrt(851565) - 2764, 1 / 3)) - 1352) / 3);
+      --u: calc((2 - sqrt(var(--w)) + sqrt(-1352 - var(--w) + (7552 / sqrt(var(--w))))) / 22);
+      --packingradius: calc((pow(var(--u), 2) + 1) / 2);
+      --columnspacing: calc(4 - (2 * var(--packingradius)));
+      --horizontalstagger: calc((4 / 2) - (2 * var(--packingradius)));
+      --verticalstagger: calc(sqrt((3 * pow(var(--packingradius), 2)) + (4 * var(--packingradius)) - 4));
+      --topstagger: calc(2 * sqrt((2 * var(--packingradius)) - 1));
+    }
+    #row > use,
+    #center > use {
+      x: calc((var(--packingradius) + var(--c) * var(--columnspacing) + (1 - 2 * var(--c)) * var(--s) * var(--horizontalstagger)) * 96px);
+      y: calc(var(--packingradius) * 96px);
+    }
+    svg > use {
+      --s: 0;
+      y: calc(((var(--r) - var(--s)) * var(--verticalstagger) + var(--s) * var(--topstagger)) * 96px);
+    }
+    svg > use:last-of-type {
+      --s: 1;
+    }
+  </style>
+
+  <defs>
+    <g id="rings">
+      <!-- Outer Ring -->
+      <circle fill="white" r="50.2pt" stroke="black" stroke-width="4pt" />
+      <!-- 50 Ring -->
+      <circle fill="white" r="40.9pt" stroke="black" stroke-width="1pt" />
+      <!-- 100 Ring -->
+      <circle fill="white" r="28.6pt" stroke="black" stroke-width="4pt" />
+      <!-- Dot -->
+      <circle fill="black" r="5pt" />
+    </g>
+
+    <g id="row">
+      <use href="#rings" style="--c: 0;" />
+      <use href="#rings" style="--c: 1;" />
+    </g>
+
+    <g id="center">
+      <use href="#rings" style="--c: 0.5;" />
+    </g>
+  </defs>
+
+  <use href="#row" style="--r: 0;" />
+  <use href="#center" style="--r: 1;" />
+  <use href="#row" style="--r: 2;" />
+  <use href="#center" style="--r: 3;" />
+  <use href="#row" style="--r: 4;" />
+  <use href="#row" style="--r: 5;" />
+</svg>

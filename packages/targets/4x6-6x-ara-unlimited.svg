@@ -1,0 +1,40 @@
+<svg fill="none" height="6in" viewBox="0 0 384 576" width="4in" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @page {
+      size: 4in 6in;
+      margin: 0;
+    }
+    svg {
+      display: block;
+      width: 4in;
+      height: 6in;
+    }
+    use {
+      --s: 0;
+      x: calc((2 * var(--c) + 1) * 1in);
+      y: calc((var(--r) + 0.5) * 1in);
+    }
+  </style>
+
+  <defs>
+    <g id="rings">
+      <!-- Outer Ring -->
+      <circle fill="white" r="34pt" stroke="black" stroke-width="4pt" />
+      <!-- 50 Ring -->
+      <circle fill="white" r="26.5pt" stroke="black" stroke-width="1pt" />
+      <!-- 100 Ring -->
+      <circle fill="white" r="16pt" stroke="black" stroke-width="4pt" />
+      <!-- Dot -->
+      <circle fill="black" r="1pt" />
+    </g>
+
+    <g id="row">
+      <use href="#rings" style="--c: 0;" />
+      <use href="#rings" style="--c: 1;" />
+    </g>
+  </defs>
+
+  <use href="#row" style="--r: 0;" />
+  <use href="#row" style="--r: 1;" />
+  <use href="#row" style="--r: 2;" />
+</svg>

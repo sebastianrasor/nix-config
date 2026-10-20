@@ -1,0 +1,63 @@
+<svg fill="none" height="6in" viewBox="0 0 384 576" width="4in" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @page {
+      size: 4in 6in;
+      margin: 0;
+    }
+    svg {
+      display: block;
+      width: 4in;
+      height: 6in;
+    }
+    use {
+      x: calc((2 * var(--c) + 1) * 1in);
+      y: calc((var(--r) + 0.5) * 1in);
+    }
+  </style>
+
+  <defs>
+    <g id="rings">
+      <!-- 4 Ring -->
+      <circle fill="black" r="1in"/>
+      <text x="-0.9in" font-family="Atkinson Hyperlegible" font-size="6pt" text-anchor="middle" dominant-baseline="middle" fill="white">
+        4
+      </text>
+      <!-- 5 Ring -->
+      <circle fill="white" r="0.8in" />
+      <text x="-0.7in" font-family="Atkinson Hyperlegible" font-size="6pt" text-anchor="middle" dominant-baseline="middle" fill="black">
+        5
+      </text>
+      <!-- 6 Ring -->
+      <circle fill="white" r="0.595in" stroke="black" stroke-width="0.01in" />
+      <text x="-0.5125in" font-family="Atkinson Hyperlegible" font-size="6pt" text-anchor="middle" dominant-baseline="middle" fill="black">
+        6
+      </text>
+      <!-- 7 Ring -->
+      <circle fill="white" r="0.42in" stroke="black" stroke-width="0.01in" />
+      <text x="-0.35in" font-family="Atkinson Hyperlegible" font-size="6pt" text-anchor="middle" dominant-baseline="middle" fill="black">
+        7
+      </text>
+      <!-- 8 Ring -->
+      <circle fill="black" r="0.275in" />
+      <text x="-0.2125in" font-family="Atkinson Hyperlegible" font-size="6pt" text-anchor="middle" dominant-baseline="middle" fill="white">
+        8
+      </text>
+      <!-- 9 Ring -->
+      <circle fill="white" r="0.15in" />
+      <text x="-0.1in" font-family="Atkinson Hyperlegible" font-size="6pt" text-anchor="middle" dominant-baseline="middle" fill="black">
+        9
+      </text>
+      <!-- 10 Ring -->
+      <circle fill="white" r="0.045in" stroke="black" stroke-width="0.01in" />
+    </g>
+
+    <g id="row">
+      <use href="#rings" style="--c: 0;" />
+      <use href="#rings" style="--c: 1;" />
+    </g>
+  </defs>
+
+  <use href="#row" style="--r: 0;" />
+  <use href="#row" style="--r: 1;" />
+  <use href="#row" style="--r: 2;" />
+</svg>
