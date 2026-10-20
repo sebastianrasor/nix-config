@@ -26,7 +26,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     reset_directory(&dest_dir)?;
     process_directory(assets_dir, &dest_dir)?;
-    process_directory(&targets_dir, &dest_dir.join("targets"))?;
+    process_directory(&targets_dir, &dest_dir)?;
 
     Ok(())
 }
