@@ -1,23 +1,17 @@
 use std::{
     collections::HashMap,
     future::{Ready, ready},
-    hash::{DefaultHasher, Hasher},
     io::{self, Cursor, SeekFrom},
     path::{Path, PathBuf},
     pin::Pin,
     sync::Arc,
     task::{Context, Poll},
-    time::{Duration, SystemTime},
+    time::SystemTime,
 };
 
 use include_dir::Dir;
 use tokio::io::{AsyncRead, AsyncSeek, ReadBuf};
 use tower_http::services::fs::{Backend, File, Metadata};
-
-/// Maximum nanosecond offset (~36.5 years) for synthetic modification times,
-/// keeping `Last-Modified` between 1970 and 2006 (never in the future per
-/// RFC 9110 §8.8.2) while preserving 60 bits of the content hash for `ETag`s.
-const MAX_SYNTHETIC_MODIFIED_NANOS: u64 = (1 << 60) - 1;
 
 #[derive(Debug, Clone)]
 enum EmbeddedEntry {
@@ -82,7 +76,6 @@ impl EmbeddedFile {
             cursor: Cursor::new(contents),
             metadata: EmbeddedMetadata::File {
                 len: contents.len() as u64,
-                modified: content_modified_time(contents),
             },
         }
     }
@@ -121,7 +114,7 @@ impl File for EmbeddedFile {
 #[derive(Debug, Clone, Copy)]
 pub enum EmbeddedMetadata {
     Dir,
-    File { len: u64, modified: SystemTime },
+    File { len: u64 },
 }
 
 impl Metadata for EmbeddedMetadata {
@@ -130,16 +123,13 @@ impl Metadata for EmbeddedMetadata {
     }
 
     fn modified(&self) -> io::Result<SystemTime> {
-        match *self {
-            Self::Dir => Err(io::Error::from(io::ErrorKind::Unsupported)),
-            Self::File { modified, .. } => Ok(modified),
-        }
+        Err(io::Error::from(io::ErrorKind::Unsupported))
     }
 
     fn len(&self) -> u64 {
         match *self {
             Self::Dir => 0,
-            Self::File { len, .. } => len,
+            Self::File { len } => len,
         }
     }
 }
@@ -155,20 +145,6 @@ fn collect_entries(
         entries.insert(subdir.path(), EmbeddedEntry::Dir);
         collect_entries(subdir, entries);
     }
-}
-
-/// Derives a deterministic, synthetic modification timestamp from a file's contents.
-///
-/// `include_dir` does not embed filesystem timestamps by default (and Nix builds
-/// normalize source mtimes to the Unix epoch), while `tower_http::services::ServeDir`
-/// derives `ETag` headers from `(modified(), len())`. Hashing the file contents into a
-/// bounded `SystemTime` allows `ServeDir` to generate content-based `ETag`s without
-/// emitting future `Last-Modified` dates.
-fn content_modified_time(contents: &[u8]) -> SystemTime {
-    let mut hasher = DefaultHasher::new();
-    hasher.write(contents);
-    let nanos = hasher.finish() & MAX_SYNTHETIC_MODIFIED_NANOS;
-    SystemTime::UNIX_EPOCH + Duration::from_nanos(nanos)
 }
 
 /// Strips leading `.` or `/` components so paths joined by `ServeDir`
