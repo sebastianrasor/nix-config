@@ -57,7 +57,7 @@ main>*:nth-last-child(1 of :not([hidden])) {
 
 .target-gallery {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
   gap: var(--gap);
 }
 
@@ -68,8 +68,14 @@ main>*:nth-last-child(1 of :not([hidden])) {
   position: relative;
 }
 
+.target>p {
+  margin-top: auto;
+}
+
 .target>iframe {
   aspect-ratio: 8.5 / 11;
+  border: 0;
+  width: 100%;
 }
 
 form {
