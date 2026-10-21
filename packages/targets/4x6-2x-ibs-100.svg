@@ -1,0 +1,37 @@
+<svg fill="none" height="6in" viewBox="0 0 384 576" width="4in" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @page {
+      size: 4in 6in;
+      margin: 0;
+    }
+    svg {
+      display: block;
+      width: 4in;
+      height: 6in;
+
+      --r: calc((5 - (2 * sqrt(3))) * 1in);
+    }
+  </style>
+
+  <defs>
+    <g id="rings">
+      <!-- 5 Ring -->
+      <circle fill="black" r="1.5in" />
+      <!-- 6 Ring -->
+      <circle fill="black" r="1.245in" stroke="white" stroke-width="0.01in" />
+      <!-- 7 Ring -->
+      <circle fill="white" r="1in" />
+      <!-- 8 Ring -->
+      <circle fill="white" r="0.745in" stroke="black" stroke-width="0.01in" />
+      <!-- 9 Ring -->
+      <circle fill="white" r="0.495in" stroke="black" stroke-width="0.01in" />
+      <!-- 10 Ring -->
+      <circle fill="white" r="0.245in" stroke="black" stroke-width="0.01in" />
+      <!-- X Dot -->
+      <circle fill="black" r="0.035in" />
+    </g>
+  </defs>
+
+  <use href="#rings" style="x: var(--r); y: var(--r);" />
+  <use href="#rings" style="x: calc(4in - var(--r)); y: calc(6in - var(--r));" />
+</svg>
