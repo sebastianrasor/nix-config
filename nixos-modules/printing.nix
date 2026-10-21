@@ -22,6 +22,7 @@ in
       drivers = with pkgs; [
         cups-filters
         cups-browsed
+        cups-idprt-tspl
       ];
     };
   };
