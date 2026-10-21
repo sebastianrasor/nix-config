@@ -63,7 +63,7 @@ window.addEventListener('submit', async (event) => {
 
     const token = document.querySelector('[name="cf-turnstile-response"]').value;
 
-    const response = await fetch('/contact', {
+    const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
             'CF-Turnstile-Token': token,
