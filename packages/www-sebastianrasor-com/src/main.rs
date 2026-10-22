@@ -1,7 +1,7 @@
 use std::net::{Ipv4Addr, SocketAddr};
 
 use crate::include_dir_backend::IncludeDirBackend;
-use axum::{Router, response::NoContent, routing::get};
+use axum::{Router, middleware, response::NoContent, routing::get};
 use figment::{Figment, providers::Env};
 use figment_file_provider_adapter::FileAdapter;
 use include_dir::{Dir, include_dir};
@@ -10,6 +10,7 @@ use tower_http::{services::ServeDir, trace::TraceLayer};
 use tracing::info;
 
 mod contact;
+mod etag;
 mod include_dir_backend;
 
 const DEFAULT_PORT: u16 = 2002;
@@ -36,6 +37,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .nest("/api", api_routes)
         .route("/favicon.ico", get(|| async { NoContent }))
         .fallback_service(assets_service)
+        .layer(middleware::from_fn_with_state(
+            &ASSETS_DIR,
+            etag::middleware,
+        ))
         .layer(TraceLayer::new_for_http());
 
     let listener = tokio::net::TcpListener::bind(config.bind_addr).await?;

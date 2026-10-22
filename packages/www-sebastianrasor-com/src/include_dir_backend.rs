@@ -1,14 +1,19 @@
 use include_dir::{Dir, DirEntry, File};
 use std::{
+    cell::Cell,
     future::{Ready, ready},
     io::{self, Cursor},
-    path::PathBuf,
+    path::{Path, PathBuf},
     pin::Pin,
     task::{Context, Poll},
     time::SystemTime,
 };
 use tokio::io::{AsyncRead, AsyncSeek, ReadBuf};
 use tower_http::services::fs::{Backend, File as FileTrait, Metadata};
+
+tokio::task_local! {
+    pub static SERVED_PATH: Cell<Option<&'static Path>>;
+}
 
 #[derive(Debug, Clone)]
 pub struct IncludeDirBackend {
@@ -34,6 +39,8 @@ impl Backend for IncludeDirBackend {
             return ready(Err(io::Error::from(io::ErrorKind::NotFound)));
         };
 
+        let _ = SERVED_PATH.try_with(|cell| cell.set(Some(file.path())));
+
         ready(Ok(file.into()))
     }
 
@@ -46,6 +53,10 @@ impl Backend for IncludeDirBackend {
         let Some(entry) = self.dir.get_entry(path) else {
             return ready(Err(io::Error::from(io::ErrorKind::NotFound)));
         };
+
+        if let DirEntry::File(file) = entry {
+            let _ = SERVED_PATH.try_with(|cell| cell.set(Some(file.path())));
+        }
 
         ready(Ok(entry.into()))
     }
