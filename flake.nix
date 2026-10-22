@@ -50,7 +50,8 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    # TODO(sebastianrasor): Go back to main when this PR is merged
+    nixos-hardware.url = "github:NixOS/nixos-hardware/pull/1994/head";
 
     authentik-nix = {
       url = "github:nix-community/authentik-nix";

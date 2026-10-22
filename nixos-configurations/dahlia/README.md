@@ -14,3 +14,5 @@ since impermanence isn't really respected during nixos-anywhere install. To
 install sunflower I had to first do the nixos-anywhere install, then do another
 nixos-rebuild switch after updating my secrets repo & this repo to take into
 account the new host keys. probably a better way to do all this but it worked
+
+new 10/22/26: got a new mainboard for this. now this is dahlia

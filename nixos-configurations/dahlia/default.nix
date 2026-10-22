@@ -1,7 +1,7 @@
 inputs@{ nixos-hardware, ... }:
 { lib, ... }:
 {
-  networking.hostName = "sunflower";
+  networking.hostName = "dahlia";
 
   sebastianrasor = {
     core.enable = true;
@@ -9,7 +9,7 @@ inputs@{ nixos-hardware, ... }:
   };
 
   imports = [
-    nixos-hardware.nixosModules.framework-12-13th-gen-intel
+    nixos-hardware.nixosModules.framework-12-intel-core-series3
     ./hardware-configuration.nix
     (lib.modules.importApply ./disk-config.nix inputs)
   ]
