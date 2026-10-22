@@ -2,17 +2,24 @@ use std::cell::Cell;
 
 use axum::{
     body::Body,
-    extract::{Request, State},
+    extract::{Query, Request, State},
     http::{HeaderMap, HeaderValue, Method, StatusCode, header},
     middleware::Next,
-    response::Response,
+    response::{IntoResponse, Response},
 };
 use include_dir::{Dir, File};
+use serde::Deserialize;
 
 use crate::include_dir_backend::SERVED_PATH;
 
+#[derive(Deserialize)]
+pub struct QueryParams {
+    v: Option<String>,
+}
+
 pub async fn middleware(
     State(dir): State<&'static Dir<'static>>,
+    Query(QueryParams { v }): Query<QueryParams>,
     request: Request,
     next: Next,
 ) -> Response {
@@ -33,10 +40,42 @@ pub async fn middleware(
         return response;
     }
 
-    let Some(sha256_path) = served_path.map(|path| path.with_added_extension("sha256")) else {
+    let Some(served_path) = served_path else {
         return response;
     };
 
+    let asset_sha256_path = if response.headers().contains_key(header::CONTENT_ENCODING) {
+        served_path.with_extension("sha256")
+    } else {
+        served_path.with_added_extension("sha256")
+    };
+
+    let Some(asset_hash) = dir
+        .get_file(asset_sha256_path)
+        .and_then(File::contents_utf8)
+    else {
+        return response;
+    };
+
+    let cache_control = match v.as_deref() {
+        None => HeaderValue::from_static("public, no-cache"),
+        Some(version) if version == asset_hash => {
+            HeaderValue::from_static("public, max-age=31536000, immutable")
+        }
+        Some(_) => {
+            return (
+                StatusCode::NOT_FOUND,
+                [(header::CACHE_CONTROL, HeaderValue::from_static("no-store"))],
+            )
+                .into_response();
+        }
+    };
+
+    response
+        .headers_mut()
+        .insert(header::CACHE_CONTROL, cache_control);
+
+    let sha256_path = served_path.with_added_extension("sha256");
     let Some(hash) = dir.get_file(sha256_path).and_then(File::contents_utf8) else {
         return response;
     };

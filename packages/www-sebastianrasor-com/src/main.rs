@@ -10,8 +10,8 @@ use serde_inline_default::serde_inline_default;
 use tower_http::{services::ServeDir, trace::TraceLayer};
 use tracing::info;
 
+mod caching;
 mod contact;
-mod etag;
 mod include_dir_backend;
 
 const DEFAULT_PORT: u16 = 2002;
@@ -41,7 +41,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .fallback_service(assets_service)
         .layer(middleware::from_fn_with_state(
             &ASSETS_DIR,
-            etag::middleware,
+            caching::middleware,
         ))
         .layer(TraceLayer::new_for_http());
 
