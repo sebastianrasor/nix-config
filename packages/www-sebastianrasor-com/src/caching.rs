@@ -1,5 +1,3 @@
-use std::cell::Cell;
-
 use axum::{
     body::Body,
     extract::{Query, Request, State},
@@ -10,7 +8,7 @@ use axum::{
 use include_dir::{Dir, File};
 use serde::Deserialize;
 
-use crate::include_dir_backend::SERVED_PATH;
+use crate::include_dir_backend::with_served_path;
 
 #[derive(Deserialize)]
 pub struct QueryParams {
@@ -26,12 +24,7 @@ pub async fn middleware(
     let method = request.method().clone();
     let request_headers = request.headers().clone();
 
-    let (mut response, served_path) = SERVED_PATH
-        .scope(Cell::new(None), async move {
-            let response = next.run(request).await;
-            (response, SERVED_PATH.with(Cell::get))
-        })
-        .await;
+    let (mut response, served_path) = with_served_path(next.run(request)).await;
 
     if !matches!(
         response.status(),

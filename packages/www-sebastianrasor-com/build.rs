@@ -62,7 +62,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 fn process_directory(src_dir: &Path, out_dir: &Path) -> Result<(), Box<dyn Error>> {
     for entry in WalkDir::new(src_dir)
         .follow_links(true)
-        .sort_by_key(|entry| entry.path().extension().is_some_and(|ext| ext == "html"))
+        .sort_by_key(|entry| is_template(entry.path()))
     {
         let entry = entry?;
         let path = entry.path();
@@ -85,11 +85,17 @@ fn process_asset(src_path: &Path, base_dir: &Path, out_dir: &Path) -> Result<(),
         fs::create_dir_all(parent)?;
     }
 
-    let data = if src_path.extension().is_some_and(|ext| ext == "html") {
+    let data = if is_template(src_path) {
         render_template(src_path, out_dir)?.into_bytes()
     } else {
         fs::read(src_path)?
     };
+
+    if src_path.extension().is_some_and(|ext| ext == "headers") {
+        fs::write(&target_path, &data)?;
+        return Ok(());
+    }
+
     write_with_digest(&target_path, &data)?;
 
     let mut compressed = Vec::new();
@@ -102,6 +108,11 @@ fn process_asset(src_path: &Path, base_dir: &Path, out_dir: &Path) -> Result<(),
     }
 
     Ok(())
+}
+
+fn is_template(path: &Path) -> bool {
+    path.extension()
+        .is_some_and(|ext| ext == "html" || ext == "headers")
 }
 
 fn render_template(src_path: &Path, out_dir: &Path) -> Result<String, Box<dyn Error>> {

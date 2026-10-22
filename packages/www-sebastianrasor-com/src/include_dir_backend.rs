@@ -12,7 +12,23 @@ use tokio::io::{AsyncRead, AsyncSeek, ReadBuf};
 use tower_http::services::fs::{Backend, File as FileTrait, Metadata};
 
 tokio::task_local! {
-    pub static SERVED_PATH: Cell<Option<&'static Path>>;
+    static SERVED_PATH: Cell<Option<&'static Path>>;
+}
+
+pub async fn with_served_path<F, R>(f: F) -> (R, Option<&'static Path>)
+where
+    F: Future<Output = R>,
+{
+    let (result, served_path) = SERVED_PATH
+        .scope(Cell::new(None), async move {
+            let result = f.await;
+            (result, SERVED_PATH.with(Cell::get))
+        })
+        .await;
+
+    let _ = SERVED_PATH.try_with(|cell| cell.set(served_path));
+
+    (result, served_path)
 }
 
 #[derive(Debug, Clone)]

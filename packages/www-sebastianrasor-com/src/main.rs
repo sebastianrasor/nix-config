@@ -12,6 +12,7 @@ use tracing::info;
 
 mod caching;
 mod contact;
+mod headers;
 mod include_dir_backend;
 
 const DEFAULT_PORT: u16 = 2002;
@@ -39,6 +40,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .nest("/api", api_routes)
         .route("/favicon.ico", get(|| async { NoContent }))
         .fallback_service(assets_service)
+        .layer(middleware::from_fn_with_state(
+            &ASSETS_DIR,
+            headers::middleware,
+        ))
         .layer(middleware::from_fn_with_state(
             &ASSETS_DIR,
             caching::middleware,
