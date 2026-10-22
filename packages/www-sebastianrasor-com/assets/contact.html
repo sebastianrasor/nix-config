@@ -12,7 +12,7 @@
 <link rel="stylesheet" type="text/css" href="/stylesheet.css">
 <link rel="preconnect" href="https://challenges.cloudflare.com" />
 <title>Contact Sebastian Rasor</title>
-<script async defer src="/contact.js"></script>
+<script type="module" src="/contact.js"></script>
 <script async defer src="https://challenges.cloudflare.com/turnstile/v0/api.js"></script>
 <main role="main">
     <article id="success" hidden>
@@ -39,11 +39,12 @@
                 required></textarea>
             <label for="message">Your Message</label>
         </div>
-        <input class="button button-disabled" type="submit" id="btnSubmit" name="btnSubmit" value="Please wait..."
-            disabled>
-        <div class="cf-turnstile" data-sitekey="0x4AAAAAAACsmQqydNII05ly" data-callback="enableSubmit"
-            data-error-callback="disableSubmit" data-timeout-callback="disableSubmit"
-            data-expired-callback="disableSubmit"></div>
+        <input class="button button-disabled" type="submit" id="submit-button" name="submit-button"
+            value="Please wait..." disabled>
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAAACsmQqydNII05ly" data-callback="onSuccess"
+            data-error-callback="onError" data-timeout-callback="onTimeout" data-expired-callback="onExpired"
+            data-unsupported-callback="onUnsupported" data-before-interactive-callback="onBeforeInteractive"
+            data-after-interactive-callback="onAfterInteractive"></div>
     </form>
 </main>
 <nav role="navigation">

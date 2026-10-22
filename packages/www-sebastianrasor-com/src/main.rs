@@ -6,6 +6,7 @@ use figment::{Figment, providers::Env};
 use figment_file_provider_adapter::FileAdapter;
 use include_dir::{Dir, include_dir};
 use serde::Deserialize;
+use serde_inline_default::serde_inline_default;
 use tower_http::{services::ServeDir, trace::TraceLayer};
 use tracing::info;
 
@@ -14,6 +15,7 @@ mod etag;
 mod include_dir_backend;
 
 const DEFAULT_PORT: u16 = 2002;
+const DEFAULT_BIND_ADDR: SocketAddr = SocketAddr::new(std::net::IpAddr::V4(Ipv4Addr::UNSPECIFIED), DEFAULT_PORT);
 
 static ASSETS_DIR: Dir<'_> = include_dir!("$OUT_DIR/assets");
 
@@ -50,13 +52,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-const fn default_bind_addr() -> SocketAddr {
-    SocketAddr::new(std::net::IpAddr::V4(Ipv4Addr::UNSPECIFIED), DEFAULT_PORT)
-}
-
+#[serde_inline_default]
 #[derive(Clone, Deserialize)]
 struct Config {
-    #[serde(default = "default_bind_addr")]
+    #[serde_inline_default(DEFAULT_BIND_ADDR)]
     bind_addr: SocketAddr,
     #[serde(flatten)]
     contact: contact::Config,

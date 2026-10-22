@@ -2348,6 +2348,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde-inline-default"
+version = "1.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8189189bb726d2735dbd8a872dfb6c5e6c67c07dc2ece1facb452ff995a270a0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 3.0.9",
+]
+
+[[package]]
 name = "serde_core"
 version = "1.0.229"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3374,9 +3385,11 @@ dependencies = [
  "figment_file_provider_adapter",
  "flate2",
  "hex",
+ "hostname 0.4.2",
  "include_dir",
  "lettre",
  "serde",
+ "serde-inline-default",
  "sha2",
  "thiserror 2.0.21",
  "tokio",
