@@ -1612,6 +1612,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "minijinja"
+version = "3.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0032a2738ba16d9a8822e4eb2833faeed5c41d767633ea753f33b6becd58cbfc"
+
+[[package]]
 name = "minimal-lexical"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3388,6 +3394,7 @@ dependencies = [
  "hostname 0.4.2",
  "include_dir",
  "lettre",
+ "minijinja",
  "serde",
  "serde-inline-default",
  "sha2",

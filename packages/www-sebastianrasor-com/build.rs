@@ -2,6 +2,7 @@ use flate2::{
     Compression,
     write::{DeflateEncoder, GzEncoder},
 };
+use minijinja::Environment;
 use sha2::{Digest, Sha256};
 use std::{
     env,
@@ -16,6 +17,12 @@ const BROTLI_BUFFER_SIZE: usize = 131_072;
 const BROTLI_QUALITY: u32 = 11;
 const BROTLI_WINDOW_SIZE: u32 = 24;
 const ZSTD_MAX_LEVEL: i32 = 19;
+
+const TURNSTILE_SITE_KEY: &str = if cfg!(debug_assertions) {
+    "1x00000000000000000000BB"
+} else {
+    "0x4AAAAAAACsmQqydNII05ly"
+};
 
 type Compressor = fn(&[u8], &mut Vec<u8>) -> io::Result<()>;
 
@@ -39,13 +46,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
     fs::create_dir_all(&out_dir)?;
 
-    process_directory(Path::new("assets"), &out_dir)?;
-
     if let Ok(targets_dir) = env::var("TARGETS_DIR") {
         process_directory(Path::new(&targets_dir), &out_dir)?;
     } else {
         println!("cargo::warning=TARGETS_DIR is not set; skipping targets assets");
     }
+
+    process_directory(Path::new("assets"), &out_dir)?;
 
     Ok(())
 }
@@ -53,7 +60,10 @@ fn main() -> Result<(), Box<dyn Error>> {
 /// Recursively copies all files in `src_dir` to `out_dir` and generates
 /// compressed variants.
 fn process_directory(src_dir: &Path, out_dir: &Path) -> Result<(), Box<dyn Error>> {
-    for entry in WalkDir::new(src_dir).follow_links(true) {
+    for entry in WalkDir::new(src_dir)
+        .follow_links(true)
+        .sort_by_key(|entry| entry.path().extension().is_some_and(|ext| ext == "html"))
+    {
         let entry = entry?;
         let path = entry.path();
         println!("cargo::rerun-if-changed={}", path.display());
@@ -75,7 +85,11 @@ fn process_asset(src_path: &Path, base_dir: &Path, out_dir: &Path) -> Result<(),
         fs::create_dir_all(parent)?;
     }
 
-    let data = fs::read(src_path)?;
+    let data = if src_path.extension().is_some_and(|ext| ext == "html") {
+        render_template(src_path, out_dir)?.into_bytes()
+    } else {
+        fs::read(src_path)?
+    };
     write_with_digest(&target_path, &data)?;
 
     let mut compressed = Vec::new();
@@ -88,6 +102,31 @@ fn process_asset(src_path: &Path, base_dir: &Path, out_dir: &Path) -> Result<(),
     }
 
     Ok(())
+}
+
+fn render_template(src_path: &Path, out_dir: &Path) -> Result<String, Box<dyn Error>> {
+    let out_dir = out_dir.to_path_buf();
+    let mut env = Environment::new();
+    env.add_global("turnstile_site_key", TURNSTILE_SITE_KEY);
+    env.add_function("asset", move |path: &str| {
+        let relative_path = path.strip_prefix('/').unwrap_or(path);
+        let sha256_path = out_dir.join(relative_path).with_added_extension("sha256");
+
+        fs::read_to_string(&sha256_path).map_or_else(
+            |err| {
+                println!(
+                    "cargo::warning=failed to read SHA-256 digest at {}: {err}",
+                    sha256_path.display()
+                );
+                path.to_owned()
+            },
+            |digest| format!("{path}?v={digest}"),
+        )
+    });
+
+    let template = fs::read_to_string(src_path)?;
+
+    Ok(env.render_str(&template, ())?)
 }
 
 fn write_with_digest(path: &Path, data: &[u8]) -> io::Result<()> {

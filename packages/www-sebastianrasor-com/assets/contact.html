@@ -6,13 +6,13 @@
     content="You can securely contact Sebastian Rasor through this page. Messages are end-to-end encrypted.">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="canonical" href="https://www.sebastianrasor.com/contact">
-<link rel="preload" href="/stylesheet.css" as="style" />
+<link rel="preload" href="{{ asset("/stylesheet.css") }}" as="style" />
 <link rel="prefetch" href="/" as="document" />
 <link rel="prefetch" href="/targets" as="document" />
-<link rel="stylesheet" type="text/css" href="/stylesheet.css">
+<link rel="stylesheet" type="text/css" href="{{ asset("/stylesheet.css") }}">
 <link rel="preconnect" href="https://challenges.cloudflare.com" />
 <title>Contact Sebastian Rasor</title>
-<script type="module" src="/contact.js"></script>
+<script type="module" src="{{ asset("/contact.js") }}"></script>
 <script async defer src="https://challenges.cloudflare.com/turnstile/v0/api.js"></script>
 <main role="main">
     <article id="success" hidden>
@@ -41,7 +41,7 @@
         </div>
         <input class="button button-disabled" type="submit" id="submit-button" name="submit-button"
             value="Please wait..." disabled>
-        <div class="cf-turnstile" data-sitekey="0x4AAAAAAACsmQqydNII05ly" data-callback="onSuccess"
+        <div class="cf-turnstile" data-sitekey="{{ turnstile_site_key }}" data-callback="onSuccess"
             data-error-callback="onError" data-timeout-callback="onTimeout" data-expired-callback="onExpired"
             data-unsupported-callback="onUnsupported" data-before-interactive-callback="onBeforeInteractive"
             data-after-interactive-callback="onAfterInteractive"></div>

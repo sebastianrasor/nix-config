@@ -28,6 +28,7 @@ tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 brotli = "9.0.0"
 flate2 = "1.1.10"
 hex = "0.4.3"
+minijinja = "3.0.2"
 sha2 = "0.11.1"
 walkdir = "2.5.0"
 zstd = "0.14.3"
