@@ -1,3 +1,0 @@
-Link: <{{ asset("/stylesheet.css") }}>; rel=preload; as=style
-Link: <{{ asset("/contact.js") }}>; rel=modulepreload
-Link: <https://challenges.cloudflare.com>; rel=preconnect

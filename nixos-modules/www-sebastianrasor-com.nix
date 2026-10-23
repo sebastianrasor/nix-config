@@ -26,9 +26,9 @@ in
       serviceConfig = {
         DynamicUser = true;
         Environment = [
-          "SMTP_CONNECTION_URL_FILE=%d/smtpConnectionUrl"
-          "TO_MAILBOX_FILE=%d/toMailbox"
-          "TURNSTILE_SECRET_KEY_FILE=%d/turnstileSecretKey"
+          "WWW_SMTP_CONNECTION_URL_FILE=%d/smtpConnectionUrl"
+          "WWW_TO_MAILBOX_FILE=%d/toMailbox"
+          "WWW_TURNSTILE_SECRET_KEY_FILE=%d/turnstileSecretKey"
         ];
         ExecStart = "${lib.getExe www-sebastianrasor-com}";
         LoadCredential = [

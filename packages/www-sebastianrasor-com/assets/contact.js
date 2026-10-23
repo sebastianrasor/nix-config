@@ -1,27 +1,26 @@
 const API_ENDPOINT = "/api/contact";
 const TURNSTILE_HEADER = "CF-Turnstile-Token";
 const TURNSTILE_FIELD = "cf-turnstile-response";
-const HTTP_STATUS_UNPROCESSABLE_ENTITY = 422;
+const PROBLEM_JSON_MEDIA_TYPE = "application/problem+json";
+const PLAIN_TEXT_MEDIA_TYPE = "text/plain";
 
 const BASE_NOTICE_DURATION_MS = 3_000;
 const MS_PER_CHARACTER = 50;
 
-const BUTTON_VALUE = Object.freeze({
+const BUTTON_VALUE = {
   READY: "Send Message",
   WAITING: "Please wait...",
-});
+};
 
-const NOTICE = Object.freeze({
+const NOTICE = {
   SENDING: "Sending your message...",
   ERROR: "Security verification failed. Retrying...",
-  TIMEOUT: "Security verification timed out. Retrying...",
   EXPIRED: "Security verification expired. Refreshing...",
   UNSUPPORTED: "Your browser does not support security verification.",
-  INTERACTIVE: "Additional security verification required.",
   NETWORK_ERROR: "Network error. Please check your connection and try again.",
   SERVER_ERROR:
     "The server was unable to complete your request. Please try again later.",
-});
+};
 
 const form = document.getElementById("contact-form");
 const successArticle = document.getElementById("success");
@@ -30,27 +29,25 @@ const messageInput = document.getElementById("message");
 const messageLabel = document.querySelector("label[for=message]");
 const formFields = [...form.querySelectorAll("input:not(.button), textarea")];
 
-const fieldNamePattern = new RegExp(
-  `\\b(${formFields.map((field) => field.name).join("|")})\\b`,
-  "i",
-);
-
 const defaultMessageLabel = messageLabel.textContent;
 
 let turnstileToken = null;
 let isSubmitting = false;
 let activeNotice = null;
 let noticeTimeoutId = null;
-let invalidFields = [];
 
 function calculateNoticeDuration(message) {
   return BASE_NOTICE_DURATION_MS + message.length * MS_PER_CHARACTER;
 }
 
+function canSubmit() {
+  return Boolean(turnstileToken) && !isSubmitting && activeNotice === null;
+}
+
 function syncUiState() {
   const currentNotice = activeNotice ?? (isSubmitting ? NOTICE.SENDING : null);
   const isBusy = currentNotice !== null;
-  const isReady = Boolean(turnstileToken) && !isBusy;
+  const isReady = canSubmit();
 
   if (isBusy) {
     messageInput.blur();
@@ -59,7 +56,6 @@ function syncUiState() {
   messageLabel.textContent = currentNotice ?? defaultMessageLabel;
 
   submitButton.disabled = !isReady;
-  submitButton.classList.toggle("button-disabled", !isReady);
   submitButton.value = isReady ? BUTTON_VALUE.READY : BUTTON_VALUE.WAITING;
 
   for (const field of formFields) {
@@ -75,53 +71,25 @@ function showNotice(message) {
   activeNotice = message;
   syncUiState();
 
-  const duration = calculateNoticeDuration(message);
-
   noticeTimeoutId = setTimeout(() => {
     activeNotice = null;
     noticeTimeoutId = null;
     syncUiState();
-
-    if (!turnstileToken) {
-      window.turnstile?.reset();
-    }
-  }, duration);
+  }, calculateNoticeDuration(message));
 }
 
-function findInvalidFields(message) {
-  const match = message.match(fieldNamePattern);
-  if (!match) {
-    return formFields;
-  }
-
-  const matchedName = match[1].toLowerCase();
-  return formFields.filter((field) => field.name === matchedName);
+function verificationFailed(notice) {
+  turnstileToken = null;
+  showNotice(notice);
 }
 
-function setValidityError(message) {
-  for (const field of invalidFields) {
-    field.setCustomValidity("");
-  }
-
-  invalidFields = findInvalidFields(message);
-
-  for (const field of invalidFields) {
-    field.setCustomValidity(message);
-  }
-}
-
-function handleFieldInput(event) {
-  if (!invalidFields.includes(event.target)) {
-    return;
-  }
-
-  for (const field of invalidFields) {
-    field.setCustomValidity("");
-  }
-
-  invalidFields = [];
-}
-
+/**
+ * Turnstile widget callbacks, named in `contact.html.hbs`.
+ *
+ * These only update the UI: Turnstile retries failures and refreshes expired tokens on its
+ * own (`retry` and `refresh-expired` both default to `auto`), calling `onSuccess` again
+ * with the new token.
+ */
 const turnstileCallbacks = {
   onSuccess(token) {
     turnstileToken = token;
@@ -129,58 +97,74 @@ const turnstileCallbacks = {
   },
 
   onError() {
-    turnstileToken = null;
-    showNotice(NOTICE.ERROR);
-  },
-
-  onTimeout() {
-    turnstileToken = null;
-    showNotice(NOTICE.TIMEOUT);
-    window.turnstile?.reset();
+    verificationFailed(NOTICE.ERROR);
+    // Marks the error as handled, so Turnstile doesn't also log a console warning.
+    return true;
   },
 
   onExpired() {
-    turnstileToken = null;
-    showNotice(NOTICE.EXPIRED);
-    window.turnstile?.reset();
+    verificationFailed(NOTICE.EXPIRED);
   },
 
   onUnsupported() {
-    turnstileToken = null;
-    showNotice(NOTICE.UNSUPPORTED);
-  },
-
-  onBeforeInteractive() {
-    turnstileToken = null;
-    showNotice(NOTICE.INTERACTIVE);
-  },
-
-  onAfterInteractive() {
-    syncUiState();
+    verificationFailed(NOTICE.UNSUPPORTED);
   },
 };
 
 Object.assign(window, turnstileCallbacks);
 
+/**
+ * Extracts a user-facing message and the offending field (if any) from an error response.
+ *
+ * The contact API answers with RFC 9457 problem details and the Turnstile middleware with
+ * plain text. Any other body (such as a proxy's HTML error page) isn't fit to display.
+ */
+async function readErrorResponse(response) {
+  const mediaType = response.headers
+    .get("Content-Type")
+    ?.split(";")[0]
+    .trim()
+    .toLowerCase();
+
+  if (mediaType === PROBLEM_JSON_MEDIA_TYPE) {
+    const problem = await response.json().catch(() => null);
+    const message =
+      (typeof problem?.detail === "string" && problem.detail.trim()) ||
+      (typeof problem?.title === "string" && problem.title.trim()) ||
+      NOTICE.SERVER_ERROR;
+    const field = typeof problem?.field === "string" ? problem.field : null;
+    return { message, field };
+  }
+
+  if (mediaType === PLAIN_TEXT_MEDIA_TYPE) {
+    const text = (await response.text()).trim();
+    return { message: text || NOTICE.SERVER_ERROR, field: null };
+  }
+
+  return { message: NOTICE.SERVER_ERROR, field: null };
+}
+
 async function handleSubmit(event) {
   event.preventDefault();
 
-  if (!turnstileToken || isSubmitting || activeNotice !== null) {
+  if (!canSubmit()) {
     return;
   }
 
   isSubmitting = true;
   syncUiState();
 
+  // The token travels in a header, so drop the copy the widget adds to the form.
   const formData = new FormData(form);
-  const token = turnstileToken || formData.get(TURNSTILE_FIELD);
   formData.delete(TURNSTILE_FIELD);
+
+  let failureNotice = NOTICE.NETWORK_ERROR;
 
   try {
     const response = await fetch(API_ENDPOINT, {
       method: "POST",
       headers: {
-        [TURNSTILE_HEADER]: token,
+        [TURNSTILE_HEADER]: turnstileToken,
       },
       body: new URLSearchParams(formData),
     });
@@ -191,29 +175,25 @@ async function handleSubmit(event) {
       return;
     }
 
-    const errorText = (await response.text()).trim();
-    const errorMessage = errorText || NOTICE.SERVER_ERROR;
-
-    if (response.status === HTTP_STATUS_UNPROCESSABLE_ENTITY) {
-      setValidityError(errorMessage);
-    }
-
-    showNotice(errorMessage);
+    const { message, field } = await readErrorResponse(response);
+    formFields.find((el) => el.name === field)?.setCustomValidity(message);
+    failureNotice = message;
   } catch {
-    showNotice(NOTICE.NETWORK_ERROR);
-  } finally {
-    if (!form.hidden) {
-      turnstileToken = null;
-      isSubmitting = false;
-      window.turnstile?.reset();
-      syncUiState();
-    }
+    // Use default `NOTICE.NETWORK_ERROR`.
   }
+
+  // Only failed attempts get here. Tokens are single-use, so get a fresh one.
+  turnstileToken = null;
+  isSubmitting = false;
+  window.turnstile?.reset();
+  showNotice(failureNotice);
 }
 
-form.addEventListener("input", handleFieldInput);
+form.addEventListener("input", (event) => event.target.setCustomValidity(""));
 form.addEventListener("submit", handleSubmit);
 
+// The Turnstile script loads `async`, so it may have rendered the widget and solved the
+// challenge before this module defined `onSuccess`. Pick up any token issued in the meantime.
 const existingToken = window.turnstile?.getResponse();
 if (existingToken) {
   turnstileCallbacks.onSuccess(existingToken);

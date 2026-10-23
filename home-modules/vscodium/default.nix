@@ -19,15 +19,23 @@ in
   config = lib.mkIf cfg.enable {
     programs.vscodium = {
       enable = true;
-      package = pkgs.vscodium.fhsWithPackages (ps: with ps; [
+      package = (pkgs.vscodium.fhsWithPackages (ps: with ps; [
+          (pkgs.runCommand "fhs-ca-certificates" { } ''
+            install -Dm644 ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt $out/etc/ssl/certs/ca-certificates.crt
+            install -Dm644 ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt $out/etc/ssl/cert.pem
+            install -Dm644 ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt $out/etc/pki/tls/certs/ca-bundle.crt
+          '')
           stdenv.cc.cc.lib
           zlib
-        ]);
+        ])).override {
+  extraArgs = "--no-sandbox --disable-gpu-sandbox";
+};
       mutableExtensionsDir = false;
       profiles.default = {
         extensions =
           with pkgs.vscode-extensions;
           [
+            esbenp.prettier-vscode
             jjk.jjk
             jnoortheen.nix-ide
             mkhl.direnv
@@ -51,12 +59,32 @@ in
           "workbench.sideBar.experimental.fontFamily" = "'Atkinson Hyperlegible Next'";
           "workbench.experimental.fontFamily" = "'Atkinson Hyperlegible Next'";
           "workbench.bottomPane.experimental.fontFamily" = "'Atkinson Hyperlegible Next'";
+          "files.insertFinalNewline" = true;
+          "editor.formatOnSave" = true;
           "editor.lineNumbers" = "relative";
+          "editor.inlayHints.enabled" = "offUnlessPressed";
           "editor.wordBasedSuggestions" = "off";
-          "editor.rulers" = [
-            80
-            120
-          ];
+          "editor.rulers" = [ 80 ];
+          "prettier.resolveGlobalModules" = true;
+          "[html]" = {
+            "editor.defaultFormatter" = "esbenp.prettier-vscode";
+          };
+          "[css]" = {
+            "editor.defaultFormatter" = "esbenp.prettier-vscode";
+          };
+          "[handlebars]" = {
+            "editor.defaultFormatter" = "esbenp.prettier-vscode";
+          };
+          "[javascript]" = {
+            "editor.defaultFormatter" = "esbenp.prettier-vscode";
+          };
+          "[java][rust][nix]" = {
+            "editor.rulers" = [ 100 ];
+          };
+          "[git-commit]" = {
+            "editor.rulers" = [ 50 72 ];
+          };
+          "editor.minimap.enabled" = false;
           "nix.enableLanguageServer" = true;
           "nix.serverPath" = "nixd";
           "nix.serverSettings" = {

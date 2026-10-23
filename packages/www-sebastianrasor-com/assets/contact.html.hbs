@@ -1,0 +1,90 @@
+<html lang="en">
+  <meta charset="UTF-8" />
+  <meta name="color-scheme" content="dark light" />
+  <meta
+    name="description"
+    content="You can contact Sebastian Rasor through this page."
+  />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="canonical" href="https://www.sebastianrasor.com/contact" />
+  <link rel="prefetch" href="/" as="document" />
+  <link rel="prefetch" href="/targets" as="document" />
+  <link rel="preconnect" href="https://challenges.cloudflare.com" />
+  <link rel="stylesheet" href="{{asset '/stylesheet.css'}}" />
+  <title>Contact Sebastian Rasor</title>
+  <script type="module" src="{{asset '/contact.js'}}"></script>
+  <script
+    async
+    defer
+    src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+  ></script>
+  <main>
+    <article id="success" hidden>
+      <header>
+        <h1>Thanks for reaching out!</h1>
+        <aside>I've received your message and I'll get back to you as soon as
+          possible.</aside>
+      </header>
+      <p><a href="https://www.sebastianrasor.com">Return to
+          www.sebastianrasor.com</a></p>
+    </article>
+    <form id="contact-form">
+      <noscript>This form requires JavaScript to function.</noscript>
+      <div class="horizontal-container">
+        <div class="input-container">
+          <input
+            type="text"
+            id="name"
+            name="name"
+            autocomplete="name"
+            placeholder=" "
+            required
+          />
+          <label for="name">Your Name</label>
+        </div>
+        <div class="input-container">
+          <input
+            type="email"
+            id="email"
+            name="email"
+            autocomplete="email"
+            placeholder=" "
+            required
+          />
+          <label for="email">your@email.address</label>
+        </div>
+      </div>
+      <div class="input-container">
+        <textarea
+          id="message"
+          name="message"
+          autocomplete="off"
+          placeholder=" "
+          rows="4"
+          required
+        ></textarea>
+        <label for="message">Your Message</label>
+      </div>
+      <input
+        class="button"
+        type="submit"
+        id="submit-button"
+        value="Please wait..."
+        disabled
+      />
+      <div
+        class="cf-turnstile"
+        data-sitekey="{{turnstile_sitekey}}"
+        data-callback="onSuccess"
+        data-error-callback="onError"
+        data-expired-callback="onExpired"
+        data-unsupported-callback="onUnsupported"
+      ></div>
+    </form>
+  </main>
+  <nav>
+    <a class="button" href="/">Home</a>
+    <div class="button button-disabled">Contact</div>
+    <a class="button" href="/targets">Targets</a>
+  </nav>
+</html>

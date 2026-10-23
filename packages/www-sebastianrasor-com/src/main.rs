@@ -1,24 +1,18 @@
-use std::net::{Ipv4Addr, SocketAddr};
+mod const_assets;
+mod contact;
 
-use crate::include_dir_backend::IncludeDirBackend;
-use axum::{Router, middleware, response::NoContent, routing::get};
+use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+
+use axum::{
+    Router,
+    http::{StatusCode, header},
+    routing::get,
+};
 use figment::{Figment, providers::Env};
 use figment_file_provider_adapter::FileAdapter;
-use include_dir::{Dir, include_dir};
 use serde::Deserialize;
-use serde_inline_default::serde_inline_default;
-use tower_http::{services::ServeDir, trace::TraceLayer};
+use tower_http::trace::TraceLayer;
 use tracing::info;
-
-mod caching;
-mod contact;
-mod headers;
-mod include_dir_backend;
-
-const DEFAULT_PORT: u16 = 2002;
-const DEFAULT_BIND_ADDR: SocketAddr = SocketAddr::new(std::net::IpAddr::V4(Ipv4Addr::UNSPECIFIED), DEFAULT_PORT);
-
-static ASSETS_DIR: Dir<'_> = include_dir!("$OUT_DIR/assets");
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -26,28 +20,21 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let config = Config::from_env()?;
 
-    let api_routes = Router::new().merge(contact::app(config.contact)?);
-
-    let assets_service = ServeDir::with_backend("", IncludeDirBackend::from(&ASSETS_DIR))
-        .append_index_html_on_directories(true)
-        .html_as_default_extension(true)
-        .precompressed_br()
-        .precompressed_deflate()
-        .precompressed_gzip()
-        .precompressed_zstd();
-
     let app = Router::new()
-        .nest("/api", api_routes)
-        .route("/favicon.ico", get(|| async { NoContent }))
-        .fallback_service(assets_service)
-        .layer(middleware::from_fn_with_state(
-            &ASSETS_DIR,
-            headers::middleware,
-        ))
-        .layer(middleware::from_fn_with_state(
-            &ASSETS_DIR,
-            caching::middleware,
-        ))
+        // The site has no favicon. Answering with an empty, long-cached response stops browsers
+        // from requesting it on every page load.
+        .route(
+            "/favicon.ico",
+            get(|| async {
+                (
+                    StatusCode::NO_CONTENT,
+                    [(header::CACHE_CONTROL, const_assets::CACHE_CONTROL_IMMUTABLE)],
+                )
+            }),
+        )
+        .nest("/api", contact::app(config.contact)?)
+        // Static assets are read-only: other methods get `405 Method Not Allowed`.
+        .fallback_service(get(const_assets::handler))
         .layer(TraceLayer::new_for_http());
 
     let listener = tokio::net::TcpListener::bind(config.bind_addr).await?;
@@ -57,19 +44,28 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-#[serde_inline_default]
-#[derive(Clone, Deserialize)]
+#[derive(Deserialize)]
 struct Config {
-    #[serde_inline_default(DEFAULT_BIND_ADDR)]
+    #[serde(default = "default_bind_addr")]
     bind_addr: SocketAddr,
     #[serde(flatten)]
     contact: contact::Config,
 }
 
+const fn default_bind_addr() -> SocketAddr {
+    SocketAddr::new(IpAddr::V4(Ipv4Addr::UNSPECIFIED), 2002)
+}
+
 impl Config {
+    /// Reads the config from `WWW_`-prefixed environment variables (`WWW_BIND_ADDR` sets
+    /// `bind_addr`), where any setting `WWW_KEY` can instead be given as `WWW_KEY_FILE`
+    /// naming a file that holds the value.
+    ///
+    /// The prefix keeps unrelated variables that happen to end in `_FILE` (such as
+    /// `SSL_CERT_FILE`) from being treated as settings and read from disk.
     fn from_env() -> Result<Self, Box<figment::Error>> {
         Ok(Figment::new()
-            .merge(FileAdapter::wrap(Env::raw()))
+            .merge(FileAdapter::wrap(Env::prefixed("WWW_")))
             .extract()?)
     }
 }
