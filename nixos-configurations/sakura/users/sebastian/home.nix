@@ -4,7 +4,6 @@
     core.graphical = true;
 
     persistence.enable = true;
-    prismlauncher.enable = true;
   };
 
   home = {
