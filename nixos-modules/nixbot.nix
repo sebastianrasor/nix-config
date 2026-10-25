@@ -69,7 +69,8 @@ in
               "data": {
                 "privateKey": "${config.sops.placeholder."ssh/privateKeys/deploy"}",
                 "publicKey": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIBkrE2bWnp2A0RmoNxwMMtEAwi9kplYp7kJ+YxAHnF9"
-              }
+              },
+              "condition": "isDefaultBranch"
             }
           }
         '';
