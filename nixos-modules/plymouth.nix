@@ -18,7 +18,6 @@ in
   config = lib.mkIf cfg.enable {
     boot = {
       consoleLogLevel = 0;
-      initrd.verbose = false;
       loader.timeout = 0;
       plymouth.enable = true;
       kernelParams = [

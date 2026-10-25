@@ -102,7 +102,6 @@ in
         solaar.enable = true;
         yubikey.enable = true;
       };
-      boot.initrd.systemd.enable = true;
       networking.networkmanager.wifi.powersave = true;
       services.logind.settings.Login =
         let
