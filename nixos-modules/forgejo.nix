@@ -32,6 +32,10 @@ in
         };
 
         services.DISABLE_REGISTRATION = true;
+
+        webhook = {
+          ALLOWED_HOST_LIST = "nixbot.ts.rasor.us";
+        };
       };
     };
 

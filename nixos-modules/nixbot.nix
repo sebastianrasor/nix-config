@@ -22,6 +22,8 @@ in
   config = lib.mkIf cfg.enable {
     services.nixbot = {
       enable = true;
+      nginx.enable = false;
+      useHTTPS = true;
       domain = "nixbot.ts.${constants.domain}";
       admins = [ "oidc:Authentik:sebastian" ];
       gitea = {
@@ -30,7 +32,6 @@ in
 
         tokenFile = config.sops.secrets."forgejo/accessTokens/nixbot".path;
       };
-      webhookBaseUrl = "https://nixbot.${constants.domain}/";
       oidc = {
         enable = true;
         name = "Authentik";
