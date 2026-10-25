@@ -19,23 +19,27 @@ in
   config = lib.mkIf cfg.enable {
     programs.vscodium = {
       enable = true;
-      package = (pkgs.vscodium.fhsWithPackages (ps: with ps; [
-          (pkgs.runCommand "fhs-ca-certificates" { } ''
-            install -Dm644 ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt $out/etc/ssl/certs/ca-certificates.crt
-            install -Dm644 ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt $out/etc/ssl/cert.pem
-            install -Dm644 ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt $out/etc/pki/tls/certs/ca-bundle.crt
-          '')
-          stdenv.cc.cc.lib
-          zlib
-        ])).override {
-  extraArgs = "--no-sandbox --disable-gpu-sandbox";
-};
+      package =
+        (pkgs.vscodium.fhsWithPackages (
+          ps: with ps; [
+            djlint
+            (pkgs.runCommand "fhs-ca-certificates" { } ''
+              install -Dm644 ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt $out/etc/ssl/certs/ca-certificates.crt
+              install -Dm644 ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt $out/etc/ssl/cert.pem
+              install -Dm644 ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt $out/etc/pki/tls/certs/ca-bundle.crt
+            '')
+            stdenv.cc.cc.lib
+            zlib
+          ]
+        )).override
+          {
+            extraArgs = "--no-sandbox --disable-gpu-sandbox";
+          };
       mutableExtensionsDir = false;
       profiles.default = {
         extensions =
           with pkgs.vscode-extensions;
           [
-            esbenp.prettier-vscode
             jjk.jjk
             jnoortheen.nix-ide
             mkhl.direnv
@@ -44,6 +48,12 @@ in
           ]
           ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
             {
+              name = "djlint";
+              publisher = "monosans";
+              version = "2026.10.1";
+              hash = "sha256-BbNMtS9GZp2iuH+uICltm1jbz2hADmoYGXbTPvxvPiU=";
+            }
+            {
               name = "google-antigravity";
               publisher = "Google";
               version = "1.9.0";
@@ -51,6 +61,12 @@ in
             }
           ];
         userSettings = {
+          "[django-html][jinja][jinja-html][jinja2][html-hubl][hubl-html][twig][html-nunjucks][njk][nunjucks][handlebars][hbs][spacebars][liquid][jekyll][go-template][go-tmpl][gotemplate][GoTemplate][gohtml][GoHTML][gotmpl][hugo-html][mustache][htmlmustache][tera][askama-html][html]" =
+            {
+              "editor.defaultFormatter" = "monosans.djlint";
+            };
+          "djlint.useVenv" = false;
+          "djlint.executablePath" = lib.getExe pkgs.djlint;
           "terminal.integrated.defaultProfile.linux" = "fish";
           "editor.fontFamily" = "'Atkinson Hyperlegible Mono', monospace";
           "workbench.activityBar.experimental.fontFamily" = "'Atkinson Hyperlegible Next'";
@@ -65,24 +81,14 @@ in
           "editor.inlayHints.enabled" = "offUnlessPressed";
           "editor.wordBasedSuggestions" = "off";
           "editor.rulers" = [ 80 ];
-          "prettier.resolveGlobalModules" = true;
-          "[html]" = {
-            "editor.defaultFormatter" = "esbenp.prettier-vscode";
-          };
-          "[css]" = {
-            "editor.defaultFormatter" = "esbenp.prettier-vscode";
-          };
-          "[handlebars]" = {
-            "editor.defaultFormatter" = "esbenp.prettier-vscode";
-          };
-          "[javascript]" = {
-            "editor.defaultFormatter" = "esbenp.prettier-vscode";
-          };
           "[java][rust][nix]" = {
             "editor.rulers" = [ 100 ];
           };
           "[git-commit]" = {
-            "editor.rulers" = [ 50 72 ];
+            "editor.rulers" = [
+              50
+              72
+            ];
           };
           "editor.minimap.enabled" = false;
           "nix.enableLanguageServer" = true;
