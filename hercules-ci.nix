@@ -41,6 +41,7 @@ hercules-ci-effects.lib.mkHerculesCI { inherit inputs; } {
           name = "deploy-${hostName}";
           value = hci-effects.runIf (herculesCI.config.repo.branch == "main") (
             hci-effects.mkEffect {
+              secretsMap.ssh = "ssh";
               effectScript = ''
                 writeSSHKey ssh
                 # todo: move this into the configuration itself somehow
