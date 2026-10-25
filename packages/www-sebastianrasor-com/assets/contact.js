@@ -1,6 +1,5 @@
 const API_ENDPOINT = "/api/contact";
 const TURNSTILE_HEADER = "CF-Turnstile-Token";
-const TURNSTILE_FIELD = "cf-turnstile-response";
 const PROBLEM_JSON_MEDIA_TYPE = "application/problem+json";
 const PLAIN_TEXT_MEDIA_TYPE = "text/plain";
 
@@ -31,7 +30,9 @@ const formFields = [...form.querySelectorAll("input:not(.button), textarea")];
 
 const defaultMessageLabel = messageLabel.textContent;
 
-let turnstileToken = null;
+// The Turnstile script loads `async`, so it may have already solved the challenge before
+// this module defined `onSuccess`.
+let turnstileToken = window.turnstile?.getResponse() ?? null;
 let isSubmitting = false;
 let activeNotice = null;
 let noticeTimeoutId = null;
@@ -120,25 +121,15 @@ Object.assign(window, turnstileCallbacks);
  * plain text. Any other body (such as a proxy's HTML error page) isn't fit to display.
  */
 async function readErrorResponse(response) {
-  const mediaType = response.headers
-    .get("Content-Type")
-    ?.split(";")[0]
-    .trim()
-    .toLowerCase();
+  const contentType = response.headers.get("Content-Type") ?? "";
 
-  if (mediaType === PROBLEM_JSON_MEDIA_TYPE) {
-    const problem = await response.json().catch(() => null);
-    const message =
-      (typeof problem?.detail === "string" && problem.detail.trim()) ||
-      (typeof problem?.title === "string" && problem.title.trim()) ||
-      NOTICE.SERVER_ERROR;
-    const field = typeof problem?.field === "string" ? problem.field : null;
-    return { message, field };
+  if (contentType.startsWith(PROBLEM_JSON_MEDIA_TYPE)) {
+    const { detail, field } = await response.json();
+    return { message: detail, field };
   }
 
-  if (mediaType === PLAIN_TEXT_MEDIA_TYPE) {
-    const text = (await response.text()).trim();
-    return { message: text || NOTICE.SERVER_ERROR, field: null };
+  if (contentType.startsWith(PLAIN_TEXT_MEDIA_TYPE)) {
+    return { message: await response.text(), field: null };
   }
 
   return { message: NOTICE.SERVER_ERROR, field: null };
@@ -154,10 +145,6 @@ async function handleSubmit(event) {
   isSubmitting = true;
   syncUiState();
 
-  // The token travels in a header, so drop the copy the widget adds to the form.
-  const formData = new FormData(form);
-  formData.delete(TURNSTILE_FIELD);
-
   let failureNotice = NOTICE.NETWORK_ERROR;
 
   try {
@@ -166,7 +153,7 @@ async function handleSubmit(event) {
       headers: {
         [TURNSTILE_HEADER]: turnstileToken,
       },
-      body: new URLSearchParams(formData),
+      body: new URLSearchParams(new FormData(form)),
     });
 
     if (response.ok) {
@@ -192,9 +179,4 @@ async function handleSubmit(event) {
 form.addEventListener("input", (event) => event.target.setCustomValidity(""));
 form.addEventListener("submit", handleSubmit);
 
-// The Turnstile script loads `async`, so it may have rendered the widget and solved the
-// challenge before this module defined `onSuccess`. Pick up any token issued in the meantime.
-const existingToken = window.turnstile?.getResponse();
-if (existingToken) {
-  turnstileCallbacks.onSuccess(existingToken);
-}
+syncUiState();
