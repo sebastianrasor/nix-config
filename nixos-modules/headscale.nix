@@ -78,11 +78,6 @@ in
               value = "100.64.0.3";
             }
             {
-              name = "buildbot.ts.${constants.domain}";
-              type = "A";
-              value = "100.64.0.3";
-            }
-            {
               name = "cache.ts.${constants.domain}";
               type = "A";
               value = "100.64.0.3";
@@ -124,6 +119,11 @@ in
             }
             {
               name = "jellyfin.ts.${constants.domain}";
+              type = "A";
+              value = "100.64.0.3";
+            }
+            {
+              name = "nixbot.ts.${constants.domain}";
               type = "A";
               value = "100.64.0.3";
             }
