@@ -55,11 +55,6 @@
       url = "github:nix-community/authentik-nix";
     };
 
-    buildbot-nix = {
-      url = "github:nix-community/buildbot-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     cosmic-manager = {
       url = "github:HeitorAugustoLN/cosmic-manager";
       inputs = {
@@ -84,6 +79,11 @@
 
     lanzaboote = {
       url = "github:nix-community/lanzaboote/v1.1.0";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    nixbot = {
+      url = "github:Mic92/nixbot";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
