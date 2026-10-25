@@ -23,7 +23,7 @@ in
       Service.ExecStart =
         let
           autoRotateScript = pkgs.writeShellApplication {
-            name = "minecraft-world-backup";
+            name = "auto-rotate";
             runtimeInputs = with pkgs; [
               iio-sensor-proxy
               wlr-randr

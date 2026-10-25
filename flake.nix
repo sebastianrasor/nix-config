@@ -36,8 +36,6 @@
 
       homeModules = import ./home-modules inputsWithConstants;
 
-      legacyPackages = forAllSystems (pkgs: import ./legacy-packages pkgs);
-
       nixosConfigurations = import ./nixos-configurations inputsWithConstants;
 
       nixosModules = import ./nixos-modules inputsWithConstants;

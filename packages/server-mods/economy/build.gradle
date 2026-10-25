@@ -1,4 +1,0 @@
-dependencies {
-    implementation include("xyz.nucleoid:server-translations-api:3.0.1+26.1")
-    implementation include("org.locationtech.jts:jts-core:1.16.1")
-}

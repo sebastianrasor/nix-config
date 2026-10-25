@@ -11,13 +11,11 @@ _: {
     buildbot.enable = true;
     cheaters-swear-jar.enable = true;
     forgejo.enable = true;
-    gate.enable = true;
     harmonia.enable = true;
     homebox.enable = true;
     immich.enable = true;
     intel-arc-a380.enable = true;
     jellyfin.enable = true;
-    minecraft-server.enable = true;
     paperless.enable = true;
     persistence.enable = true;
     postgresql.enable = true;

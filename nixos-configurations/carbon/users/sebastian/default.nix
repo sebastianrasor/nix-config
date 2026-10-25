@@ -9,7 +9,6 @@
     home = "/home/sebastian";
     description = "Sebastian Rasor";
     extraGroups = [
-      "minecraft"
       "tss"
       "wheel"
     ];

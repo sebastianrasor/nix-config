@@ -8,7 +8,6 @@ _: {
     authentik-public-proxy.enable = true;
     acme.enable = true;
     buildbot-webhook-public-proxy.enable = true;
-    gate.enable = true;
     headscale.enable = true;
     immich-public-proxy.enable = true;
     persistence.enable = true;
