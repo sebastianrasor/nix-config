@@ -3,7 +3,7 @@ use std::iter;
 use axum::{
     Router,
     http::{StatusCode, Uri, header},
-    response::{IntoResponse, Response},
+    response::{AppendHeaders, IntoResponse, Response},
     routing::get,
 };
 use axum_extra::{extract::TypedHeader, headers::IfNoneMatch};
@@ -25,6 +25,7 @@ struct ConstAsset {
     content_type: &'static str,
     identity: EncodedAsset,
     compressed: &'static [EncodedAsset],
+    headers: &'static [(&'static str, &'static str)],
 }
 
 impl ConstAsset {
@@ -74,11 +75,14 @@ async fn handler(
     } else {
         CACHE_CONTROL_REVALIDATE
     };
-    let headers = [
-        (header::VARY, "Accept-Encoding"),
-        (header::ETAG, variant.etag),
-        (header::CACHE_CONTROL, cache_control),
-    ];
+    let headers = (
+        [
+            (header::VARY, "Accept-Encoding"),
+            (header::ETAG, variant.etag),
+            (header::CACHE_CONTROL, cache_control),
+        ],
+        AppendHeaders(asset.headers.iter().copied()),
+    );
 
     if let Some(TypedHeader(if_none_match)) = if_none_match
         && let Ok(etag) = variant.etag.parse()

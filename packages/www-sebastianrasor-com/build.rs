@@ -4,7 +4,9 @@ use std::{
     error::Error,
     fs,
     io::{self, Read},
+    mem,
     path::{Path, PathBuf},
+    sync::Mutex,
 };
 
 use brotli::CompressorReader;
@@ -12,7 +14,10 @@ use flate2::{
     Compression,
     read::{GzEncoder, ZlibEncoder},
 };
-use handlebars::{Handlebars, to_json};
+use handlebars::{
+    Context, Handlebars, Helper, HelperResult, Output, PathAndJson, RenderContext,
+    RenderErrorReason, to_json,
+};
 use sha2::{Digest, Sha256};
 use walkdir::WalkDir;
 
@@ -48,14 +53,18 @@ impl AssetTable {
         })
     }
 
-    fn add(&mut self, path: &Path, bytes: &[u8]) -> io::Result<()> {
+    fn add(&mut self, path: &Path, bytes: &[u8], headers: &[(String, String)]) -> io::Result<()> {
         let identity = self.write_blob(bytes)?;
         let compressed = self.write_compressed(bytes)?;
         let content_type = mime_guess::from_path(path).first_or_text_plain();
 
         let asset_ref = format!("&CONST_ASSETS[{}]", self.assets.len());
-        self.assets
-            .push(const_asset(content_type.as_ref(), &identity, &compressed));
+        self.assets.push(const_asset(
+            content_type.as_ref(),
+            &identity,
+            &compressed,
+            headers,
+        ));
 
         let url_path = url_path(path);
         let digest_path = format!("{DIGEST_PREFIX}{identity}{url_path}");
@@ -121,13 +130,18 @@ impl AssetTable {
     }
 }
 
-fn const_asset(content_type: &str, identity: &str, compressed: &[(&str, String)]) -> String {
+fn const_asset(
+    content_type: &str,
+    identity: &str,
+    compressed: &[(&str, String)],
+    headers: &[(String, String)],
+) -> String {
     let compressed: Vec<_> = compressed
         .iter()
         .map(|(encoding, digest)| encoded_asset(encoding, digest))
         .collect();
     format!(
-        "ConstAsset {{ content_type: {content_type:?}, identity: {}, compressed: &[{}] }}",
+        "ConstAsset {{ content_type: {content_type:?}, identity: {}, compressed: &[{}], headers: &{headers:?} }}",
         encoded_asset("Identity", identity),
         compressed.join(", "),
     )
@@ -178,13 +192,32 @@ fn main() -> Result<(), Box<dyn Error>> {
             if asset_path.extension().is_some_and(|ext| ext == "hbs") {
                 templates.push((entry.path().to_path_buf(), asset_path.with_extension("")));
             } else {
-                table.add(asset_path, &fs::read(entry.path())?)?;
+                table.add(asset_path, &fs::read(entry.path())?, &[])?;
             }
         }
     }
 
+    let template_headers = Mutex::new(Vec::new());
     let mut handlebars = Handlebars::new();
     handlebars.set_strict_mode(true);
+    handlebars.register_helper(
+        "header",
+        Box::new(
+            |h: &Helper,
+             _: &Handlebars,
+             _: &Context,
+             _: &mut RenderContext,
+             _: &mut dyn Output|
+             -> HelperResult {
+                let mut params = h.params().iter().map(PathAndJson::render);
+                let name = params
+                    .next()
+                    .ok_or(RenderErrorReason::ParamNotFoundForIndex("header", 0))?;
+                template_headers.lock().unwrap().push((name, params.collect()));
+                Ok(())
+            },
+        ),
+    );
 
     let turnstile_sitekey = if env::var_os("CARGO_CFG_DEBUG_ASSERTIONS").is_some() {
         "1x00000000000000000000BB"
@@ -199,7 +232,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     for (template_path, asset_path) in templates {
         let template = fs::read_to_string(&template_path)?;
         let rendered = handlebars.render_template(&template, &template_data)?;
-        table.add(&asset_path, rendered.as_bytes())?;
+        let headers = mem::take(&mut *template_headers.lock().unwrap());
+        table.add(&asset_path, rendered.as_bytes(), &headers)?;
     }
 
     table.write_to(&out_dir.join("asset_table.rs"))?;
