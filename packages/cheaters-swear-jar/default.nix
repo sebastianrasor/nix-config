@@ -10,4 +10,7 @@ pkgs.rustPlatform.buildRustPackage {
   nativeBuildInputs = [ pkgs.pkg-config ];
   src = pkgs.lib.cleanSource ./.;
   cargoLock.lockFile = ./Cargo.lock;
+  meta = {
+    platforms = [ "x86_64-linux" ];
+  };
 }
