@@ -1,4 +1,5 @@
 {{~header 'Link' '<' (lookup assets '/stylesheet.css') '>; rel=preload; as=style; fetchpriority=high'~}}
+{{~header 'Link' '<' (lookup assets '/AtkinsonHyperlegibleNextVF-Variable.woff2') '>; rel=preload; as="font"; type="font/woff2"; fetchpriority=high; crossorigin'~}}
 {{~header 'Link' '<' (lookup assets '/contact.js') '>; rel=modulepreload'~}}
 {{~header 'Link' '<https://challenges.cloudflare.com>; rel=preconnect'~}}
 <!DOCTYPE html>
@@ -62,8 +63,10 @@
                     placeholder=" "
                     rows="4"
                     required></textarea>
-          <label for="message">Your Message</label>
-          <output id="form-status"></output>
+          <label for="message">
+            <span class="label-text">Your Message</span>
+            <span id="form-status" class="label-status" role="status"></span>
+          </label>
         </div>
         <button class="button" type="submit" id="submit-button" disabled>Please wait...</button>
         <div class="cf-turnstile"

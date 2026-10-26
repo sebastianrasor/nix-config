@@ -24,7 +24,7 @@ const NOTICE = {
 const form = document.getElementById("contact-form");
 const successArticle = document.getElementById("success");
 const submitButton = document.getElementById("submit-button");
-const statusOutput = document.getElementById("form-status");
+const statusText = document.getElementById("form-status");
 const turnstileContainer = form.querySelector(".cf-turnstile");
 const formFields = [...form.querySelectorAll("input, textarea")];
 
@@ -50,7 +50,7 @@ function syncUiState() {
     document.activeElement.blur();
   }
 
-  statusOutput.textContent = currentNotice ?? "";
+  statusText.textContent = currentNotice ?? "";
 
   submitButton.disabled = !isReady;
   submitButton.textContent = isReady ? BUTTON_TEXT.READY : BUTTON_TEXT.WAITING;

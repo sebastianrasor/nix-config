@@ -187,7 +187,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let template_headers = Mutex::new(Vec::new());
     let mut handlebars = Handlebars::new();
-    handlebars.set_strict_mode(!is_debug);
+    handlebars.set_strict_mode(true);
     handlebars.register_helper(
         "header",
         Box::new(
@@ -212,16 +212,32 @@ fn main() -> Result<(), Box<dyn Error>> {
     } else {
         "0x4AAAAAAACsmQqydNII05ly"
     };
-    let template_data = HashMap::from([
-        ("assets", to_json(&table.digest_paths)),
-        ("turnstile_sitekey", to_json(turnstile_sitekey)),
-    ]);
-
-    for path in templates {
-        let template = fs::read_to_string(&path)?;
-        let rendered = handlebars.render_template(&template, &template_data)?;
-        let headers = mem::take(&mut *template_headers.lock().unwrap());
-        table.add(&path.with_extension(""), rendered.as_bytes(), &headers)?;
+    // Templates may reference each other's output, so render in passes until none are left.
+    while !templates.is_empty() {
+        let template_data = HashMap::from([
+            ("assets", to_json(&table.digest_paths)),
+            ("turnstile_sitekey", to_json(turnstile_sitekey)),
+        ]);
+        let pending = templates.len();
+        let mut error = None;
+        for path in mem::take(&mut templates) {
+            let result = handlebars.render_template(&fs::read_to_string(&path)?, &template_data);
+            let headers = mem::take(&mut *template_headers.lock().unwrap());
+            match result {
+                Ok(rendered) => table.add(&path.with_extension(""), rendered.as_bytes(), &headers)?,
+                Err(e) => {
+                    templates.push(path);
+                    error = Some(e);
+                }
+            }
+        }
+        if templates.len() == pending {
+            // No progress: fail in release, fall back to lenient rendering in debug.
+            if !(is_debug && handlebars.strict_mode()) {
+                return Err(error.unwrap().into());
+            }
+            handlebars.set_strict_mode(false);
+        }
     }
 
     table.write()?;

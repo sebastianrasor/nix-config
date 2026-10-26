@@ -1,0 +1,439 @@
+/* ==========================================================================
+   Fonts
+   ========================================================================== */
+
+@font-face {
+  font-display: swap;
+  font-family: "Atkinson Hyperlegible Next";
+  font-style: normal;
+  font-weight: 200 800;
+  src: url({{lookup assets '/AtkinsonHyperlegibleNextVF-Variable.woff2'}}) format("woff2");
+}
+
+/* Metric-matched local fallbacks: the overrides make each system font take up
+   the same space as Atkinson Hyperlegible Next, so swapping in the web font
+   doesn't cause layout shift. */
+
+@font-face {
+  font-family: "Atkinson Fallback Verdana";
+  src: local("Verdana");
+  size-adjust: 91.88%;
+  ascent-override: 86.64%;
+  descent-override: 27.32%;
+  line-gap-override: 16.33%;
+}
+
+@font-face {
+  font-family: "Atkinson Fallback Roboto";
+  src: local("Roboto"), local("Roboto Regular"), local("Roboto-Regular");
+  size-adjust: 93.96%;
+  ascent-override: 84.72%;
+  descent-override: 26.71%;
+  line-gap-override: 15.96%;
+}
+
+@font-face {
+  font-family: "Atkinson Fallback Ubuntu";
+  src: local("Ubuntu"), local("Ubuntu Regular"), local("Ubuntu-Regular");
+  size-adjust: 96.39%;
+  ascent-override: 82.58%;
+  descent-override: 26.04%;
+  line-gap-override: 15.56%;
+}
+
+@font-face {
+  font-family: "Atkinson Fallback MetricArial";
+  src:
+    local("Liberation Sans"), local("Liberation Sans Regular"), local("LiberationSans-Regular"),
+    local("Arimo"), local("Arimo Regular"), local("Arimo-Regular"),
+    local("Arial"), local("ArialMT");
+  size-adjust: 93.26%;
+  ascent-override: 85.36%;
+  descent-override: 26.92%;
+  line-gap-override: 16.08%;
+}
+
+/* ==========================================================================
+   Tokens
+   ========================================================================== */
+
+:root {
+  color-scheme: dark light;
+
+  /* Colours */
+  --bg: light-dark(#fff, #000);
+  --fg: light-dark(#000, #fff);
+  --muted: #757575;
+  --border: 1px solid var(--fg);
+
+  /* Spacing (everything sits on a 1rcap grid) */
+  --padding: 1rcap;
+  --gap: 3rcap;
+  --min-width: min(100vw - 4rcap, 32ch + var(--gap));
+  /* Space below the last element so it can scroll clear of the fixed nav */
+  --nav-clearance: calc(var(--gap) + 3 * var(--padding) + 1rcap);
+
+  /* Floating labels */
+  --label-scale: 0.75;
+
+  font-family:
+    "Atkinson Hyperlegible Next",
+    "Atkinson Fallback Verdana",
+    "Atkinson Fallback Roboto",
+    "Atkinson Fallback Ubuntu",
+    "Atkinson Fallback MetricArial",
+    "DejaVu Sans",
+    "Noto Sans",
+    sans-serif;
+  font-size: clamp(1.125rem, 1rem + 0.5vw, 1.5rem);
+  font-size-adjust: cap-height 0.668;
+  line-height: 2rcap;
+}
+
+/* ==========================================================================
+   Base & typography
+   ========================================================================== */
+
+html {
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: 0;
+}
+
+a {
+  color: var(--fg);
+}
+
+h1 {
+  font-size: 2rem;
+  line-height: 3rcap;
+}
+
+h1,
+p,
+header,
+hgroup {
+  margin-block: 2rcap;
+}
+
+hgroup > * {
+  margin-block: 1rcap;
+}
+
+:is(article, header, hgroup) {
+  & > :first-child {
+    margin-block-start: 0;
+  }
+
+  & > :last-child {
+    margin-block-end: 0;
+  }
+}
+
+/* Trim text boxes to cap height and baseline so they line up on the rcap grid */
+h1,
+p,
+figcaption,
+label,
+.button,
+.input-container:has(input)::before {
+  text-box: trim-both cap alphabetic;
+}
+
+/* ==========================================================================
+   Layout
+   ========================================================================== */
+
+main {
+  align-items: center;
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
+  overflow: auto;
+}
+
+/* Last visible child */
+main > :nth-last-child(1 of :not([hidden])) {
+  padding-block-end: var(--nav-clearance);
+}
+
+article,
+form {
+  margin: auto;
+  min-width: var(--min-width);
+  padding: var(--padding);
+  width: 50%;
+}
+
+/* #success is focused from JS after the form is submitted */
+article:focus {
+  outline: none;
+}
+
+form {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+/* ==========================================================================
+   Components: button
+   ========================================================================== */
+
+.button {
+  background-color: var(--fg);
+  border: var(--border);
+  color: var(--bg);
+  cursor: pointer;
+  font: inherit;
+  font-weight: bold;
+  padding: calc(var(--padding) - 1px) var(--padding);
+  text-decoration-line: none;
+  user-select: none;
+
+  &:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: 2px;
+  }
+
+  &:disabled,
+  &[aria-current="page"] {
+    background-color: var(--bg);
+    color: var(--muted);
+    cursor: default;
+    pointer-events: none;
+  }
+}
+
+/* ==========================================================================
+   Components: target gallery
+   ========================================================================== */
+
+.target-gallery {
+  display: grid;
+  gap: var(--gap);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+}
+
+.target {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  overflow: hidden;
+
+  & > figcaption {
+    margin-block: auto 1rcap;
+  }
+
+  & > iframe {
+    border: 0;
+    /* 4:5 portrait preview, rounded to the rcap grid */
+    height: round(100cqi * 5 / 4, 1rcap);
+    width: 100%;
+  }
+}
+
+/* ==========================================================================
+   Components: form fields
+   ========================================================================== */
+
+input,
+textarea {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  outline: none;
+  padding: 0;
+}
+
+:is(input, textarea):read-only {
+  pointer-events: none;
+}
+
+input {
+  /* Paint the background only behind the typed text, so it covers the
+     container's ::before underline there and the text's own underline shows */
+  background: var(--bg) content-box;
+  field-sizing: content;
+  height: 2rcap;
+  margin-block: -0.5rcap;
+  max-width: 100%;
+  /* Width follows the text, but padding extends the input to the full row
+     so the whole line is clickable */
+  padding-inline-end: 100%;
+  text-decoration: underline;
+  width: fit-content;
+  /* Grid items honour z-index without `position`. This keeps the input (and
+     its background) above the ::before underline and the transformed label. */
+  z-index: 1;
+
+  &:placeholder-shown {
+    background: transparent;
+    text-decoration: none;
+  }
+}
+
+textarea {
+  border-block-end: var(--border);
+  border-inline-end: var(--border);
+  height: 8rcap;
+  margin-block: -0.5rcap -1px;
+  overflow-wrap: break-word;
+  padding-block-end: 0.5rcap;
+  resize: none;
+
+  /* While busy, hide the message so the status notice in the label shows in its place */
+  &:read-only {
+    color: transparent;
+    overflow: hidden;
+    overflow-wrap: unset;
+  }
+}
+
+.input-container {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+
+  &:has(input) {
+    overflow-x: clip;
+
+    /* Full-width underline: nbsp + space + nbsp with huge word-spacing is far
+       wider than the row and gets clipped by overflow-x above. Drawing it as
+       text-decoration makes it match the input's own text underline. */
+    &::before {
+      align-self: end;
+      content: "\a0 \a0";
+      pointer-events: none;
+      text-decoration: underline;
+      white-space: nowrap;
+      word-spacing: 100vw;
+    }
+  }
+}
+
+/* Put every child (field, label, underline) in the same grid cell.
+   :where() keeps the specificity at zero, so element rules such as
+   `input { width: fit-content }` still win. */
+:where(.input-container > *),
+.input-container:has(input)::before {
+  grid-area: 1 / 1;
+  width: 100%;
+}
+
+.horizontal-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap);
+  justify-content: space-between;
+  width: 100%;
+
+  & .input-container {
+    flex: 16ch;
+  }
+}
+
+/* Floating labels: they sit inside the empty field, then shrink and move
+   below it once the field has focus or content. */
+.input-container {
+  & > label {
+    --label-offset: 0.25rcap;
+    color: var(--muted);
+    pointer-events: none;
+    transform-origin: bottom left;
+    user-select: none;
+  }
+
+  /* Inputs need a slightly larger offset than the textarea */
+  & > input + label {
+    --label-offset: 0.5rcap;
+  }
+
+  & > :is(input, textarea):is(:focus, :not(:placeholder-shown)) + label {
+    transform:
+      translateY(var(--label-offset))
+      scale(var(--label-scale))
+      translateY(calc(100% + 1px));
+    /* Undo the scale so the label still spans the whole row */
+    width: calc(100% / var(--label-scale));
+  }
+
+  & > :focus + label {
+    color: var(--fg);
+  }
+
+  /* While a status notice is shown, the label returns to the field and shows
+     the notice instead of its own text. The :has() makes this rule more
+     specific than the floating rule above. */
+  & > label:has(> .label-status:not(:empty)) {
+    transform: none;
+    width: 100%;
+
+    & > .label-text {
+      display: none;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .input-container > label {
+    transition:
+      color 0.25s,
+      transform 0.25s;
+  }
+}
+
+/* ==========================================================================
+   Components: navigation
+   ========================================================================== */
+
+nav {
+  background: var(--bg);
+  /* Fade out content that scrolls underneath */
+  box-shadow: 0 0 0.5rcap 1rcap var(--bg);
+  display: flex;
+  gap: var(--padding);
+  inset-block-end: var(--padding);
+  inset-inline: 0;
+  justify-content: center;
+  margin-inline: auto;
+  position: fixed;
+  user-select: none;
+  width: fit-content;
+}
+
+/* ==========================================================================
+   Utilities
+   ========================================================================== */
+
+.visually-hidden {
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+/* Debug aid: add class="debug-baseline" to an element to show the 1rcap grid */
+.debug-baseline {
+  background-image: repeating-linear-gradient(
+    transparent 0 calc(1rcap - 1px),
+    color-mix(in srgb, var(--fg) 20%, transparent) calc(1rcap - 1px) 1rcap
+  );
+}
+
+[hidden] {
+  display: none !important;
+}
