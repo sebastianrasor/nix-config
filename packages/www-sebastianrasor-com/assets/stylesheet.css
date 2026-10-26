@@ -1,17 +1,14 @@
 :root {
-  --gap: 2rem;
-  --min-width: min(calc(100vw - 3rem), calc(32ch + var(--gap)));
+  color-scheme: dark light;
+  font-family: "Atkinson Hyperlegible", system-ui, sans-serif;
+  font-size: clamp(1.125rem, 1rem + 0.5vw, 1.5rem);
+  line-height: 2rcap;
+  --gap: 3rcap;
+  --min-width: min(100vw - 4rcap, 32ch + var(--gap));
   --muted: #757575;
-  --padding: 1ch;
-  --primary: #000;
-  --secondary: #fff;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --primary: #fff;
-    --secondary: #000;
-  }
+  --padding: 1rcap;
+  --primary: light-dark(#000, #fff);
+  --secondary: light-dark(#fff, #000);
 }
 
 html,
@@ -25,22 +22,47 @@ body {
   color: var(--primary);
   display: flex;
   flex-direction: column;
-  font-family: "Atkinson Hyperlegible", sans-serif;
-  font-size: calc(14pt + 0.5vw);
-  -webkit-user-select: none;
-  user-select: none;
 }
 
 a {
   color: var(--primary);
 }
 
+h1 {
+  font-size: 2rem;
+  line-height: 3rcap;
+}
+
+h1,
+p,
+header,
+hgroup {
+  margin-block: 2rcap;
+}
+
+hgroup>* {
+  margin-block: 1rcap;
+}
+
+:is(article, header, hgroup)> :first-child {
+  margin-block-start: 0;
+}
+
+:is(article, header, hgroup)> :last-child {
+  margin-block-end: 0;
+}
+
 article,
 form {
+  /* background-image: repeating-linear-gradient(transparent 0 calc(1rcap - 1px), color-mix(in srgb, var(--primary) 20%, transparent) calc(1rcap - 1px) 1rcap); */
   margin: auto;
   min-width: var(--min-width);
   padding: var(--padding);
   width: 50%;
+}
+
+article:focus {
+  outline: none;
 }
 
 main {
@@ -52,8 +74,8 @@ main {
 }
 
 /* Last visible child */
-main > *:nth-last-child(1 of :not([hidden])) {
-  padding-bottom: calc(var(--gap) + 3ch + 0.667em);
+main>*:nth-last-child(1 of :not([hidden])) {
+  padding-block-end: calc(var(--gap) + 3 * var(--padding) + 1rcap);
 }
 
 .target-gallery {
@@ -63,18 +85,20 @@ main > *:nth-last-child(1 of :not([hidden])) {
 }
 
 .target {
+  container-type: inline-size;
   display: flex;
   flex-direction: column;
+  margin: 0;
   overflow: hidden;
 }
 
-.target > p {
-  margin-top: auto;
+.target>figcaption {
+  margin-block: auto 1rcap;
 }
 
-.target > iframe {
-  aspect-ratio: 8.5 / 11;
+.target>iframe {
   border: 0;
+  height: round(100cqi * 5 / 4, 1rcap);
   width: 100%;
 }
 
@@ -90,42 +114,77 @@ form {
   border: 1px var(--primary) solid;
   color: var(--secondary);
   cursor: pointer;
+  font: inherit;
   font-weight: bold;
-  height: 0.667em;
-  line-height: 0.667em;
-  padding: var(--padding);
+  padding: calc(var(--padding) - 1px) var(--padding);
   text-decoration-line: none;
+  user-select: none;
 }
 
-@supports (text-box: trim-both cap alphabetic) {
-  .button {
-    height: unset;
-    line-height: unset;
-    text-box: trim-both cap alphabetic;
-  }
+.button:focus-visible {
+  outline: 2px var(--primary) solid;
+  outline-offset: 2px;
 }
 
-.button-disabled,
+h1,
+p,
+figcaption,
+.button,
+label,
+output,
+.input-container:has(input)::before {
+  text-box: trim-both cap alphabetic;
+}
+
+.button[aria-current="page"],
 .button:disabled {
   background-color: var(--secondary);
   color: var(--muted);
   cursor: default;
+  pointer-events: none;
 }
 
 input,
 textarea {
-  all: unset;
-  border-bottom: 1px var(--primary) solid;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  outline: none;
+  padding: 0;
 }
 
-input:not(.button):read-only,
+input {
+  background: var(--secondary) content-box;
+  field-sizing: content;
+  height: 2rcap;
+  margin-block: -0.5rcap;
+  max-width: 100%;
+  padding-inline-end: 100%;
+  text-decoration: underline;
+  width: fit-content;
+  z-index: 1;
+}
+
+input:placeholder-shown {
+  background: transparent;
+  text-decoration: none;
+}
+
+input:read-only,
 textarea:read-only {
   pointer-events: none;
 }
 
 textarea {
-  border-right: 1px var(--primary) solid;
+  border-block-end: 1px var(--primary) solid;
+  border-inline-end: 1px var(--primary) solid;
+  height: 8rcap;
+  margin-block: -0.5rcap -1px;
   overflow-wrap: break-word;
+  padding-block-end: 0.5rcap;
+  resize: none;
 }
 
 textarea:read-only {
@@ -136,13 +195,27 @@ textarea:read-only {
 
 .input-container {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   width: 100%;
 }
 
-.input-container * {
-  grid-column: 1;
-  grid-row: 1;
+.input-container:has(input) {
+  overflow-x: clip;
+}
+
+:where(.input-container > *),
+.input-container:has(input)::before {
+  grid-area: 1 / 1;
   width: 100%;
+}
+
+.input-container:has(input)::before {
+  align-self: end;
+  content: "\a0 \a0";
+  pointer-events: none;
+  text-decoration: underline;
+  white-space: nowrap;
+  word-spacing: 100vw;
 }
 
 .horizontal-container {
@@ -157,40 +230,67 @@ textarea:read-only {
   flex: 16ch;
 }
 
-input + label,
-textarea + label {
+:is(input, textarea)+label {
   color: var(--muted);
   pointer-events: none;
   transform-origin: bottom left;
   transition:
     color 0.25s,
-    transform 0.25s,
-    width 0.25s;
+    transform 0.25s;
+  user-select: none;
 }
 
-input:focus + label,
-input:not(:placeholder-shown) + label,
-textarea:focus + label,
-textarea:not(:read-only, :placeholder-shown) + label {
-  color: var(--primary);
+:is(input, textarea):is( :focus,
+  :not(:placeholder-shown),
+  :has(~ output:not(:empty)))+label {
   cursor: default;
-  transform: scale(75%) translate(0, 100%);
+  transform: translateY(0.25rcap) scale(75%) translateY(calc(100% + 1px));
   width: calc(100% + (100% / 3));
+}
+
+:is(input, textarea):focus+label {
+  color: var(--primary);
+}
+
+input:is(:focus, :not(:placeholder-shown))+label {
+  transform: translateY(0.5rcap) scale(75%) translateY(calc(100% + 1px));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(input, textarea)+label {
+    transition: none;
+  }
+}
+
+output {
+  color: var(--muted);
+  pointer-events: none;
+  user-select: none;
 }
 
 nav {
   background: var(--secondary);
-  bottom: var(--padding);
-  box-shadow: 0 0 0.5ch 1ch var(--secondary);
+  box-shadow: 0 0 0.5rcap 1rcap var(--secondary);
   display: flex;
   gap: var(--padding);
+  inset-block-end: var(--padding);
+  inset-inline: 0;
   justify-content: center;
-  left: 50%;
+  margin-inline: auto;
   position: fixed;
-  transform: translate(-50%);
+  user-select: none;
+  width: fit-content;
 }
 
-[hidden],
-.cf-turnstile {
-  display: none;
+.visually-hidden {
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+[hidden] {
+  display: none !important;
 }

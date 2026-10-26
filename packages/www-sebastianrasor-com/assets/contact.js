@@ -6,7 +6,7 @@ const PLAIN_TEXT_MEDIA_TYPE = "text/plain";
 const BASE_NOTICE_DURATION_MS = 3_000;
 const MS_PER_CHARACTER = 50;
 
-const BUTTON_VALUE = {
+const BUTTON_TEXT = {
   READY: "Send Message",
   WAITING: "Please wait...",
 };
@@ -24,15 +24,11 @@ const NOTICE = {
 const form = document.getElementById("contact-form");
 const successArticle = document.getElementById("success");
 const submitButton = document.getElementById("submit-button");
-const messageInput = document.getElementById("message");
-const messageLabel = document.querySelector("label[for=message]");
-const formFields = [...form.querySelectorAll("input:not(.button), textarea")];
+const statusOutput = document.getElementById("form-status");
+const turnstileContainer = form.querySelector(".cf-turnstile");
+const formFields = [...form.querySelectorAll("input, textarea")];
 
-const defaultMessageLabel = messageLabel.textContent;
-
-// The Turnstile script loads `async`, so it may have already solved the challenge before
-// this module defined `onSuccess`.
-let turnstileToken = window.turnstile?.getResponse() ?? null;
+let turnstileToken = null;
 let isSubmitting = false;
 let activeNotice = null;
 let noticeTimeoutId = null;
@@ -50,14 +46,14 @@ function syncUiState() {
   const isBusy = currentNotice !== null;
   const isReady = canSubmit();
 
-  if (isBusy) {
-    messageInput.blur();
+  if (isBusy && formFields.includes(document.activeElement)) {
+    document.activeElement.blur();
   }
 
-  messageLabel.textContent = currentNotice ?? defaultMessageLabel;
+  statusOutput.textContent = currentNotice ?? "";
 
   submitButton.disabled = !isReady;
-  submitButton.value = isReady ? BUTTON_VALUE.READY : BUTTON_VALUE.WAITING;
+  submitButton.textContent = isReady ? BUTTON_TEXT.READY : BUTTON_TEXT.WAITING;
 
   for (const field of formFields) {
     field.readOnly = isBusy;
@@ -85,34 +81,49 @@ function verificationFailed(notice) {
 }
 
 /**
- * Turnstile widget callbacks, named in `contact.html.hbs`.
+ * Renders the Turnstile widget explicitly once the Turnstile script has loaded.
  *
- * These only update the UI: Turnstile retries failures and refreshes expired tokens on its
- * own (`retry` and `refresh-expired` both default to `auto`), calling `onSuccess` again
+ * Callbacks only update the UI: Turnstile retries failures and refreshes expired tokens on
+ * its own (`retry` and `refresh-expired` both default to `auto`), calling `callback` again
  * with the new token.
  */
-const turnstileCallbacks = {
-  onSuccess(token) {
-    turnstileToken = token;
-    syncUiState();
-  },
+function renderTurnstile() {
+  window.turnstile.render(turnstileContainer, {
+    callback(token) {
+      turnstileToken = token;
+      syncUiState();
+    },
+    "error-callback"() {
+      verificationFailed(NOTICE.ERROR);
+      // Marks the error as handled, so Turnstile doesn't also log a console warning.
+      return true;
+    },
+    "expired-callback"() {
+      verificationFailed(NOTICE.EXPIRED);
+    },
+    "unsupported-callback"() {
+      verificationFailed(NOTICE.UNSUPPORTED);
+    },
+    "before-interactive-callback"() {
+      turnstileContainer.hidden = false;
+    },
+    "after-interactive-callback"() {
+      turnstileContainer.hidden = true;
+    },
+  });
+}
 
-  onError() {
-    verificationFailed(NOTICE.ERROR);
-    // Marks the error as handled, so Turnstile doesn't also log a console warning.
-    return true;
-  },
-
-  onExpired() {
-    verificationFailed(NOTICE.EXPIRED);
-  },
-
-  onUnsupported() {
-    verificationFailed(NOTICE.UNSUPPORTED);
-  },
-};
-
-Object.assign(window, turnstileCallbacks);
+if (window.turnstile) {
+  renderTurnstile();
+} else {
+  const turnstileScript = document.querySelector('script[src*="turnstile"]');
+  turnstileScript?.addEventListener("load", renderTurnstile, { once: true });
+  turnstileScript?.addEventListener(
+    "error",
+    () => verificationFailed(NOTICE.ERROR),
+    { once: true },
+  );
+}
 
 /**
  * Extracts a user-facing message and the offending field (if any) from an error response.
@@ -124,8 +135,11 @@ async function readErrorResponse(response) {
   const contentType = response.headers.get("Content-Type") ?? "";
 
   if (contentType.startsWith(PROBLEM_JSON_MEDIA_TYPE)) {
-    const { detail, field } = await response.json();
-    return { message: detail, field };
+    const { detail, title, field } = await response.json();
+    return {
+      message: detail ?? title ?? NOTICE.SERVER_ERROR,
+      field: field ?? null,
+    };
   }
 
   if (contentType.startsWith(PLAIN_TEXT_MEDIA_TYPE)) {
@@ -146,6 +160,7 @@ async function handleSubmit(event) {
   syncUiState();
 
   let failureNotice = NOTICE.NETWORK_ERROR;
+  let invalidField = null;
 
   try {
     const response = await fetch(API_ENDPOINT, {
@@ -159,11 +174,14 @@ async function handleSubmit(event) {
     if (response.ok) {
       form.hidden = true;
       successArticle.hidden = false;
+      successArticle.focus();
       return;
     }
 
     const { message, field } = await readErrorResponse(response);
-    formFields.find((el) => el.name === field)?.setCustomValidity(message);
+    const candidate = field ? form.elements.namedItem(field) : null;
+    invalidField = candidate instanceof HTMLElement ? candidate : null;
+    invalidField?.setCustomValidity(message);
     failureNotice = message;
   } catch {
     // Use default `NOTICE.NETWORK_ERROR`.
@@ -173,7 +191,13 @@ async function handleSubmit(event) {
   turnstileToken = null;
   isSubmitting = false;
   window.turnstile?.reset();
-  showNotice(failureNotice);
+
+  if (invalidField !== null) {
+    syncUiState();
+    invalidField.reportValidity();
+  } else {
+    showNotice(failureNotice);
+  }
 }
 
 form.addEventListener("input", (event) => event.target.setCustomValidity(""));
