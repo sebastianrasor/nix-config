@@ -21,7 +21,7 @@ use handlebars::{
 use sha2::{Digest, Sha256};
 use walkdir::WalkDir;
 
-const BLOB_SUBDIR: &str = "assets";
+const ASSETS_DIR: &str = "assets";
 
 const DIGEST_PREFIX: &str = "/by-digest/";
 
@@ -31,26 +31,20 @@ const BROTLI_LGWIN: u32 = 24;
 const ZSTD_COMPRESSION_LEVEL: i32 = 19;
 
 struct AssetTable {
-    blob_dir: PathBuf,
+    out_dir: PathBuf,
     assets: Vec<String>,
     map: phf_codegen::Map<'static, String>,
     digest_paths: HashMap<String, String>,
 }
 
 impl AssetTable {
-    fn new(out_dir: &Path) -> io::Result<Self> {
-        let blob_dir = out_dir.join(BLOB_SUBDIR);
-        if blob_dir.exists() {
-            fs::remove_dir_all(&blob_dir)?;
-        }
-        fs::create_dir_all(&blob_dir)?;
-
-        Ok(Self {
-            blob_dir,
+    fn new(out_dir: PathBuf) -> Self {
+        Self {
+            out_dir,
             assets: Vec::new(),
             map: phf_codegen::Map::new(),
             digest_paths: HashMap::new(),
-        })
+        }
     }
 
     fn add(&mut self, path: &Path, bytes: &[u8], headers: &[(String, String)]) -> io::Result<()> {
@@ -108,16 +102,16 @@ impl AssetTable {
         let mut bytes = Vec::new();
         reader.read_to_end(&mut bytes)?;
         let digest = hex::encode(Sha256::digest(&bytes));
-        fs::write(self.blob_dir.join(&digest), bytes)?;
+        fs::write(self.out_dir.join(&digest), bytes)?;
         Ok(digest)
     }
 
-    fn write_to(&self, path: &Path) -> io::Result<()> {
+    fn write(&self) -> io::Result<()> {
         let len = self.assets.len();
         let assets = self.assets.join(",\n");
         let map = self.map.build();
         fs::write(
-            path,
+            self.out_dir.join("asset_table.rs"),
             format!(
                 r"
                     const DIGEST_PREFIX: &str = {DIGEST_PREFIX:?};
@@ -133,17 +127,16 @@ impl AssetTable {
 fn const_asset(
     content_type: &str,
     identity: &str,
-    compressed: &[(&str, String)],
+    compressed: &[(&str, String); 4],
     headers: &[(String, String)],
 ) -> String {
-    let compressed: Vec<_> = compressed
-        .iter()
+    let compressed = compressed
+        .each_ref()
         .map(|(encoding, digest)| encoded_asset(encoding, digest))
-        .collect();
+        .join(", ");
     format!(
-        "ConstAsset {{ content_type: {content_type:?}, identity: {}, compressed: &[{}], headers: &{headers:?} }}",
+        "ConstAsset {{ content_type: {content_type:?}, identity: {}, compressed: &[{compressed}], headers: &{headers:?} }}",
         encoded_asset("Identity", identity),
-        compressed.join(", "),
     )
 }
 
@@ -152,13 +145,17 @@ fn encoded_asset(encoding: &str, digest: &str) -> String {
         r#"EncodedAsset {{
             encoding: Encoding::{encoding},
             etag: "\"{digest}\"",
-            data: include_bytes!(concat!(env!("OUT_DIR"), "/{BLOB_SUBDIR}/{digest}")),
+            data: include_bytes!(concat!(env!("OUT_DIR"), "/{digest}")),
         }}"#
     )
 }
 
 fn url_path(path: &Path) -> String {
-    let path = path.to_str().expect("asset paths must be valid UTF-8");
+    let path = path
+        .strip_prefix(ASSETS_DIR)
+        .expect("asset must be in ASSETS_DIR")
+        .to_str()
+        .expect("asset paths must be valid UTF-8");
     let path = match path.strip_suffix("index.html") {
         Some(dir) if dir.is_empty() || dir.ends_with('/') => dir,
         _ => path.strip_suffix(".html").unwrap_or(path),
@@ -167,39 +164,30 @@ fn url_path(path: &Path) -> String {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let manifest_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR")?);
-    let out_dir = PathBuf::from(env::var("OUT_DIR")?);
+    println!("cargo::rerun-if-changed={ASSETS_DIR}");
 
-    println!("cargo::rerun-if-env-changed=TARGETS_DIR");
-    let asset_dirs = [
-        Some(manifest_dir.join("assets")),
-        env::var_os("TARGETS_DIR").map(PathBuf::from),
-    ];
-
-    let mut table = AssetTable::new(&out_dir)?;
+    let mut table = AssetTable::new(PathBuf::from(env::var("OUT_DIR")?));
     let mut templates = Vec::new();
 
-    for root in asset_dirs.iter().flatten() {
-        println!("cargo::rerun-if-changed={}", root.display());
-        for entry in WalkDir::new(root) {
-            let entry = entry?;
-            if !entry.file_type().is_file() {
-                continue;
-            }
+    for entry in WalkDir::new(ASSETS_DIR) {
+        let entry = entry?;
+        if !entry.file_type().is_file() {
+            continue;
+        }
 
-            let asset_path = entry.path().strip_prefix(root)?;
-
-            if asset_path.extension().is_some_and(|ext| ext == "hbs") {
-                templates.push((entry.path().to_path_buf(), asset_path.with_extension("")));
-            } else {
-                table.add(asset_path, &fs::read(entry.path())?, &[])?;
-            }
+        let path = entry.into_path();
+        if path.extension().is_some_and(|ext| ext == "hbs") {
+            templates.push(path);
+        } else {
+            table.add(&path, &fs::read(&path)?, &[])?;
         }
     }
 
+    let is_debug = env::var_os("CARGO_CFG_DEBUG_ASSERTIONS").is_some();
+
     let template_headers = Mutex::new(Vec::new());
     let mut handlebars = Handlebars::new();
-    handlebars.set_strict_mode(true);
+    handlebars.set_strict_mode(!is_debug);
     handlebars.register_helper(
         "header",
         Box::new(
@@ -219,7 +207,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         ),
     );
 
-    let turnstile_sitekey = if env::var_os("CARGO_CFG_DEBUG_ASSERTIONS").is_some() {
+    let turnstile_sitekey = if is_debug {
         "1x00000000000000000000BB"
     } else {
         "0x4AAAAAAACsmQqydNII05ly"
@@ -229,14 +217,14 @@ fn main() -> Result<(), Box<dyn Error>> {
         ("turnstile_sitekey", to_json(turnstile_sitekey)),
     ]);
 
-    for (template_path, asset_path) in templates {
-        let template = fs::read_to_string(&template_path)?;
+    for path in templates {
+        let template = fs::read_to_string(&path)?;
         let rendered = handlebars.render_template(&template, &template_data)?;
         let headers = mem::take(&mut *template_headers.lock().unwrap());
-        table.add(&asset_path, rendered.as_bytes(), &headers)?;
+        table.add(&path.with_extension(""), rendered.as_bytes(), &headers)?;
     }
 
-    table.write_to(&out_dir.join("asset_table.rs"))?;
+    table.write()?;
 
     Ok(())
 }

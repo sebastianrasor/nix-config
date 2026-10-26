@@ -16,7 +16,9 @@ rustPlatform.buildRustPackage {
   nativeBuildInputs = [ pkg-config ];
   src = lib.cleanSource ./.;
   cargoLock.lockFile = ./Cargo.lock;
-  env.TARGETS_DIR = "${targets}";
+  postPatch = ''
+    install -Dm644 -t assets/ ${targets}/*.pdf
+  '';
   meta = {
     inherit (targets.meta) platforms;
     mainProgram = cargoToml.package.name;

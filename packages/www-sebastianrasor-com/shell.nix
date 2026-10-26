@@ -5,8 +5,6 @@ let
   pkg = pkgs.callPackage ./default.nix { };
 in
 pkgs.mkShell {
-  inherit (pkg) TARGETS_DIR;
-
   inputsFrom = [
     pkg
   ];
