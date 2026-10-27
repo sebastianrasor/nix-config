@@ -142,8 +142,7 @@ h1,
 p,
 figcaption,
 label,
-.button,
-.input-container:has(input)::before {
+.button {
   text-box: trim-both cap alphabetic;
 }
 
@@ -262,26 +261,18 @@ textarea {
 }
 
 input {
-  /* Paint the background only behind the typed text, so it covers the
-     container's ::before underline there and the text's own underline shows */
-  background: var(--bg) content-box;
-  field-sizing: content;
+  /* Share a baseline with the label and the .input-underline mirror */
+  align-self: baseline;
   height: 2rcap;
-  margin-block: -0.5rcap;
-  max-width: 100%;
-  /* Width follows the text, but padding extends the input to the full row
-     so the whole line is clickable */
-  padding-inline-end: 100%;
-  text-decoration: underline;
-  width: fit-content;
-  /* Grid items honour z-index without `position`. This keeps the input (and
-     its background) above the ::before underline and the transformed label. */
+  /* The text's baseline lands about 1rcap down only if the font's ascent
+     minus descent equals its cap height, so baseline alignment usually nudges
+     this box down a little to meet the label's. The large negative end margin
+     keeps the box out of the row's height, so the row stays 1rcap (set by the
+     trimmed label) after the nudge. */
+  margin-block: -0.5rcap -1rcap;
+  /* Grid items honour z-index without `position`. This keeps the input above
+     the .input-underline mirror and the transformed label. */
   z-index: 1;
-
-  &:placeholder-shown {
-    background: transparent;
-    text-decoration: none;
-  }
 }
 
 textarea {
@@ -308,26 +299,40 @@ textarea {
 
   &:has(input) {
     overflow-x: clip;
-
-    /* Full-width underline: nbsp + space + nbsp with huge word-spacing is far
-       wider than the row and gets clipped by overflow-x above. Drawing it as
-       text-decoration makes it match the input's own text underline. */
-    &::before {
-      align-self: end;
-      content: "\a0 \a0";
-      pointer-events: none;
-      text-decoration: underline;
-      white-space: nowrap;
-      word-spacing: 100vw;
-    }
   }
 }
 
+/* Input underline: contact.js copies the input's value into this element,
+   followed by a run of em spaces far wider than the row (clipped by the
+   container's overflow-x). It sits under the input with the same font and
+   baseline. The copied text is transparent; only its font-native underline
+   shows. The typed text and the extension are one text run under one
+   text-decoration, so the underline is a single continuous line at one
+   position, and skip-ink clears descenders natively, including past the last
+   character. (A separate ::after box for the extension would get its own
+   underline segment, which doesn't quite meet the text's.) */
+.input-underline {
+  /* Grid baseline alignment puts this baseline exactly on the input's (and
+     the label's). It copies the input's box, including the margins, so it
+     stays out of the row's height the same way. */
+  align-self: baseline;
+  /* Not `transparent`: Chromium skips the decoration of fully transparent
+     text. Background-coloured glyphs are just as invisible, as the input's
+     identical glyphs are painted right on top of them. */
+  color: var(--bg);
+  height: 2rcap;
+  margin-block: -0.5rcap -1rcap;
+  pointer-events: none;
+  text-decoration: underline var(--fg);
+  user-select: none;
+  /* Keep runs of spaces, like the input does, and never wrap */
+  white-space: pre;
+}
+
 /* Put every child (field, label, underline) in the same grid cell.
-   :where() keeps the specificity at zero, so element rules such as
-   `input { width: fit-content }` still win. */
-:where(.input-container > *),
-.input-container:has(input)::before {
+   :where() keeps the specificity at zero, so element rules can still
+   override these. */
+:where(.input-container > *) {
   grid-area: 1 / 1;
   width: 100%;
 }
@@ -355,9 +360,13 @@ textarea {
     user-select: none;
   }
 
-  /* Inputs need a slightly larger offset than the textarea */
+  /* Inputs need a slightly larger offset than the textarea.
+     Baseline alignment puts the label's baseline (its trimmed bottom edge) on
+     the typed text's and the underline's, so the placeholder sits where the
+     text will. */
   & > input + label {
     --label-offset: 0.5rcap;
+    align-self: baseline;
   }
 
   & > :is(input, textarea):is(:focus, :not(:placeholder-shown)) + label {

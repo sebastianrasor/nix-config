@@ -28,6 +28,22 @@ const statusText = document.getElementById("form-status");
 const turnstileContainer = form.querySelector(".cf-turnstile");
 const formFields = [...form.querySelectorAll("input, textarea")];
 
+// Mirror each input's value into its underline element, followed by enough em
+// spaces to run past the end of any row. Keeping the text and the extension in
+// one text node gives them one continuous native underline (see stylesheet).
+// The extension can't use the `word-spacing` trick, as that would also widen
+// the spaces in the copied value.
+const UNDERLINE_EXTENSION = "\u2003".repeat(256);
+
+for (const input of form.querySelectorAll("input")) {
+  const underline = input.parentElement.querySelector(".input-underline");
+  const syncUnderline = () => {
+    underline.textContent = input.value + UNDERLINE_EXTENSION;
+  };
+  input.addEventListener("input", syncUnderline);
+  syncUnderline();
+}
+
 let turnstileToken = null;
 let isSubmitting = false;
 let activeNotice = null;
