@@ -299,6 +299,7 @@ textarea {
   }
 
   & > :is(input, textarea):is(:focus, :not(:placeholder-shown)) + label {
+    color: var(--fg);
     transform:
       translateY(var(--label-offset))
       scale(var(--label-scale))
@@ -306,11 +307,8 @@ textarea {
     width: calc(100% / var(--label-scale));
   }
 
-  & > :focus + label {
-    color: var(--fg);
-  }
-
   & > label:has(> .label-status:not(:empty)) {
+    color: var(--muted);
     transform: none;
     width: 100%;
 
