@@ -35,9 +35,29 @@ in
   ];
 
   config = lib.mkIf cfg.enable {
-    environment.persistence."${cfg.storagePath}" = {
-      inherit (cfg) directories files;
-      hideMounts = true;
-    };
+    environment.persistence = lib.mkMerge (
+      [
+        {
+          "${cfg.storagePath}" = {
+            inherit (cfg) directories files;
+            hideMounts = true;
+          };
+        }
+      ]
+      ++ lib.mapAttrsToList (
+        username: userCfg:
+        let
+          pCfg = userCfg.sebastianrasor.persistence;
+        in
+        lib.mkIf (userCfg.enable && pCfg.enable) {
+          "${pCfg.storagePath}" = {
+            hideMounts = true;
+            users.${username} = {
+              inherit (pCfg) directories files;
+            };
+          };
+        }
+      ) config.hjem.users
+    );
   };
 }

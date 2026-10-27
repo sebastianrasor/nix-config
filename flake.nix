@@ -34,6 +34,10 @@
 
       herculesCI = import ./hercules-ci.nix inputsWithConstants;
 
+      hjemConfigurations = import ./hjem-configurations inputsWithConstants;
+
+      hjemModules = import ./hjem-modules inputsWithConstants;
+
       homeModules = import ./home-modules inputsWithConstants;
 
       nixosConfigurations = import ./nixos-configurations inputsWithConstants;
@@ -71,6 +75,11 @@
     };
 
     hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
+
+    hjem = {
+      url = "github:feel-co/hjem";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     home-manager = {
       url = "github:nix-community/home-manager";

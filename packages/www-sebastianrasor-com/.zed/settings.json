@@ -1,0 +1,14 @@
+{
+  "lsp": {
+    "rust-analyzer": {
+      "binary": {
+        "path": "direnv",
+        "arguments": [
+          "exec",
+          "packages/www-sebastianrasor-com",
+          "rust-analyzer"
+        ]
+      }
+    }
+  }
+}

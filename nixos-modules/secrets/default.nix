@@ -54,6 +54,17 @@ in
             keyFile = "/var/lib/sops-nix/key.txt";
             generateKey = true;
           };
+
+      secrets = lib.mkMerge (
+        lib.mapAttrsToList (
+          username: userCfg:
+          lib.mkIf userCfg.enable (
+            lib.mapAttrs (_: _: {
+              owner = username;
+            }) userCfg.sebastianrasor.secrets
+          )
+        ) config.hjem.users
+      );
     };
 
     system.activationScripts.install-age-key =

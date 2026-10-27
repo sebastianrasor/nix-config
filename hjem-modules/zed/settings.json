@@ -1,0 +1,160 @@
+{
+  "window_title_separator": " — ",
+  "proxy": "",
+  "git": {
+    "disable_git": true
+  },
+  "collaboration_panel": {
+    "button": false
+  },
+  "git_panel": {
+    "dock": "bottom",
+    "button": true
+  },
+  "outline_panel": {
+    "button": false
+  },
+  "bottom_dock_layout": "full",
+  "tabs": {
+    "show_close_button": "hover",
+    "show_diagnostics": "all",
+    "file_icons": true,
+    "git_status": true
+  },
+  "tab_bar": {
+    "show_pinned_tabs_in_separate_row": false,
+    "show_tab_bar_buttons": true,
+    "show_nav_history_buttons": false,
+    "show": true
+  },
+  "project_panel": {
+    "git_status_indicator": true,
+    "diagnostic_badges": true,
+    "git_status": true,
+    "folder_indicator": "chevron",
+    "file_icons": true,
+    "entry_spacing": "standard",
+    "dock": "left",
+    "button": true
+  },
+  "diagnostics": {
+    "inline": {
+      "enabled": true
+    }
+  },
+  "document_symbols": "on",
+  "document_folding_ranges": "on",
+  "semantic_tokens": "combined",
+  "colorize_brackets": true,
+  "code_lens": "on",
+  "inlay_hints": {
+    "show_background": false,
+    "show_type_hints": true,
+    "show_value_hints": true,
+    "enabled": false
+  },
+  "completion_menu_item_kind": "symbol",
+  "show_whitespaces": "trailing",
+  "ensure_final_newline_on_save": true,
+  "allow_rewrap": "anywhere",
+  "vim": {
+    "use_smartcase_find": true,
+    "use_system_clipboard": "never",
+    "toggle_relative_line_numbers": false
+  },
+  "toolbar": {
+    "code_actions": true,
+    "breadcrumbs": true
+  },
+  "show_signature_help_after_edits": true,
+  "auto_signature_help": true,
+  "autosave": {
+    "after_delay": {
+      "milliseconds": 1000
+    }
+  },
+  "markdown_preview": {
+    "font_family": "Atkinson Hyperlegible Next"
+  },
+  "agent": {
+    "default_model": {
+      "effort": "high",
+      "enable_thinking": true,
+      "model": "gemini-4-argon",
+      "provider": "google",
+    },
+    "dock": "bottom",
+    "thinking_display": "always_expanded",
+  },
+  "auto_install_extensions": {
+    "emmet": true,
+    "git-firefly": true,
+    "html": true,
+    "nix": true,
+    "toml": true,
+    "xml": true,
+  },
+  "buffer_font_family": "Atkinson Hyperlegible Mono",
+  "completions": {
+    "words": "disabled",
+  },
+  "file_types": {
+    "CSS": ["*.css.hbs"],
+    "HTML": ["*.html.hbs"],
+  },
+  "format_on_save": "on",
+  "languages": {
+    "Nix": {
+      "language_servers": ["nixd", "!nil"],
+    },
+  },
+  "load_direnv": "direct",
+  "lsp": {
+    "nixd": {
+      "settings": {
+        "nixpkgs": {
+          "expr": "import (builtins.getFlake (toString ./.)).inputs.nixpkgs { }",
+        },
+        "formatting": {
+          "command": ["nixfmt"],
+        },
+        "options": {
+          "nixos": {
+            "expr": "let flake = builtins.getFlake (toString ./.); in (flake.inputs.nixpkgs.lib.nixosSystem { check = false; modules = builtins.attrValues (flake.outputs.nixosModules or { }); }).options",
+          },
+          "home_manager": {
+            "expr": "let flake = builtins.getFlake (toString ./.); pkgs = import flake.inputs.nixpkgs { }; in (flake.inputs.home-manager.lib.homeManagerConfiguration { inherit pkgs; check = false; modules = [ { home = { homeDirectory = \"/home/sebastian\"; username = \"sebastian\"; stateVersion = pkgs.lib.lists.last (import (flake.inputs.home-manager.outPath + \"/modules/misc/version.nix\") { config = { }; inherit (pkgs) lib; }).options.home.stateVersion.type.functor.payload.values; }; } ] ++ builtins.attrValues (flake.outputs.homeModules or { }); }).options",
+          },
+          "hjem": {
+            "expr": "let flake = builtins.getFlake (toString ./.); in (flake.inputs.nixpkgs.lib.nixosSystem { check = false; modules = builtins.attrValues (flake.outputs.nixosModules or { }); }).options.hjem.users.type.getSubOptions [ ]",
+          },
+        },
+      },
+    },
+  },
+  "minimap": {
+    "thumb": "always",
+    "show": "never",
+  },
+  "relative_line_numbers": "enabled",
+  "telemetry": {
+    "anthropic_retention": false,
+    "diagnostics": false,
+    "metrics": false,
+  },
+  "terminal": {
+    "toolbar": {
+      "breadcrumbs": false
+    },
+    "show_count_badge": false,
+    "starts_open": true,
+    "shell": "system",
+  },
+  "theme": {
+    "dark": "Modus Vivendi Tinted",
+    "light": "Modus Operandi Tinted",
+    "mode": "system",
+  },
+  "ui_font_family": "Atkinson Hyperlegible Next",
+  "vim_mode": true,
+}

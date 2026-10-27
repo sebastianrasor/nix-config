@@ -11,6 +11,7 @@ pkgs.craneLib.devShell {
 
   packages = with pkgs; [
     bacon
+    lemminx
     mailpit
     rust-analyzer
   ];

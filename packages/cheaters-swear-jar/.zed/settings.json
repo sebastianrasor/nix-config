@@ -1,0 +1,14 @@
+{
+  "lsp": {
+    "rust-analyzer": {
+      "binary": {
+        "path": "direnv",
+        "arguments": [
+          "exec",
+          "packages/cheaters-swear-jar",
+          "rust-analyzer"
+        ]
+      }
+    }
+  }
+}
