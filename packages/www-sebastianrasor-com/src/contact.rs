@@ -3,23 +3,27 @@ use std::{error::Error, sync::Arc, time::Duration};
 use axum::{
     Router,
     extract::{Form, State, rejection::FormRejection},
-    http::StatusCode,
+    http::{HeaderMap, StatusCode, header},
     response::{IntoResponse, NoContent, Response},
     routing::post,
 };
-use axum_turnstile::TurnstileLayer;
 use check_if_email_exists::{
     CheckEmailInput, check_email,
     smtp::{SmtpError, verif_method::VerifMethod},
 };
+use fernet::Fernet;
 use lettre::{
     Address, AsyncSmtpTransport, AsyncTransport, Message, Tokio1Executor,
     message::{Mailbox, header::ContentType},
 };
+use moka::sync::Cache;
 use problem_details::ProblemDetails;
 use serde::{Deserialize, Serialize};
 
 const DELIVERABILITY_CHECK_TIMEOUT: Duration = Duration::from_secs(10);
+const TIMESTAMP_TTL: Duration = Duration::from_hours(1);
+const MIN_SUBMISSION_DELAY: Duration = Duration::from_secs(5);
+const TIMESTAMP_HEADER: &str = "x-timestamp";
 
 #[derive(Deserialize)]
 #[cfg_attr(debug_assertions, serde(default))]
@@ -28,7 +32,6 @@ pub struct Config {
     from_address: Address,
     smtp_connection_url: String,
     to_mailbox: Mailbox,
-    turnstile_secret_key: String,
 }
 
 fn default_from_address() -> Address {
@@ -45,7 +48,6 @@ impl Default for Config {
                 Some("Sebastian Rasor".to_string()),
                 Address::new_dangerous("sebastian", "test"),
             ),
-            turnstile_secret_key: "1x0000000000000000000000000000000AA".to_string(),
         }
     }
 }
@@ -55,10 +57,15 @@ struct AppState {
     to_mailbox: Mailbox,
     verif_method: VerifMethod,
     sender: AsyncSmtpTransport<Tokio1Executor>,
+    fernet: Fernet,
+    spent_tokens: Cache<String, ()>,
 }
 
 #[derive(Deserialize)]
 struct Submission {
+    #[serde(rename(deserialize = "given-name"))]
+    honeypot: Option<String>,
+    #[serde(rename(deserialize = "family-name"))]
     name: Option<String>,
     email: Option<String>,
     message: Option<String>,
@@ -66,6 +73,8 @@ struct Submission {
 
 #[derive(Debug, thiserror::Error)]
 enum ContactError {
+    #[error("Form session expired or invalid. Please reload the page and try again.")]
+    InvalidTimestamp,
     #[error(transparent)]
     Form(#[from] FormRejection),
     #[error("The {0} field is required.")]
@@ -87,6 +96,7 @@ struct ProblemExt {
 impl IntoResponse for ContactError {
     fn into_response(self) -> Response {
         let (status, detail, field) = match self {
+            Self::InvalidTimestamp => (StatusCode::FORBIDDEN, self.to_string(), None),
             Self::Form(rejection) => (rejection.status(), rejection.body_text(), None),
             Self::MissingField(field) => (
                 StatusCode::UNPROCESSABLE_ENTITY,
@@ -127,53 +137,97 @@ pub fn app(config: Config) -> Result<Router, Box<dyn Error>> {
         Some(DELIVERABILITY_CHECK_TIMEOUT),
         0,
     );
-    let turnstile = TurnstileLayer::from_secret(&config.turnstile_secret_key);
     let state = Arc::new(AppState {
         from_address: config.from_address,
         to_mailbox: config.to_mailbox,
         verif_method,
         sender,
+        fernet: Fernet::new(&Fernet::generate_key()).expect("generated key is always valid"),
+        spent_tokens: Cache::builder().time_to_live(TIMESTAMP_TTL).build(),
     });
 
-    Ok(Router::new().route("/contact", post(handler).with_state(state).layer(turnstile)))
+    Ok(Router::new().route(
+        "/contact",
+        post(submit).get(issue_timestamp).with_state(state),
+    ))
 }
 
-async fn handler(
+async fn issue_timestamp(State(state): State<Arc<AppState>>) -> impl IntoResponse {
+    (
+        [(header::CACHE_CONTROL, "no-store")],
+        state.fernet.encrypt(b""),
+    )
+}
+
+async fn submit(
     State(state): State<Arc<AppState>>,
+    headers: HeaderMap,
     form: Result<Form<Submission>, FormRejection>,
 ) -> Result<NoContent, ContactError> {
-    let Form(submission) = form?;
-    let name = required(submission.name, "name")?;
-    let email: Address = required(submission.email, "email")?
-        .parse()
-        .map_err(|_| ContactError::InvalidEmail)?;
-    let body = required(submission.message, "message")?;
+    let token = headers
+        .get(TIMESTAMP_HEADER)
+        .and_then(|value| value.to_str().ok())
+        .filter(|&token| {
+            state
+                .fernet
+                .decrypt_with_ttl(token, TIMESTAMP_TTL.as_secs())
+                .is_ok()
+                && state
+                    .spent_tokens
+                    .entry_by_ref(token)
+                    .or_insert(())
+                    .is_fresh()
+        })
+        .ok_or(ContactError::InvalidTimestamp)?;
 
-    let deliverability_check = CheckEmailInput {
-        to_email: email.to_string(),
-        verif_method: state.verif_method.clone(),
-        ..Default::default()
-    };
-    if !check_email(&deliverability_check)
-        .await
-        .smtp?
-        .is_deliverable
-    {
-        return Err(ContactError::InvalidEmail);
+    async {
+        let Form(submission) = form?;
+
+        if state
+            .fernet
+            .decrypt_with_ttl(token, MIN_SUBMISSION_DELAY.as_secs())
+            .is_ok()
+            || submission
+                .honeypot
+                .is_some_and(|honeypot| !honeypot.is_empty())
+        {
+            return Ok(NoContent);
+        }
+
+        let name = required(submission.name, "name")?;
+        let email: Address = required(submission.email, "email")?
+            .parse()
+            .map_err(|_| ContactError::InvalidEmail)?;
+        let body = required(submission.message, "message")?;
+
+        let deliverability_check = CheckEmailInput {
+            to_email: email.to_string(),
+            verif_method: state.verif_method.clone(),
+            ..Default::default()
+        };
+        if !check_email(&deliverability_check)
+            .await
+            .smtp?
+            .is_deliverable
+        {
+            return Err(ContactError::InvalidEmail);
+        }
+
+        let message = Message::builder()
+            .from(Mailbox::new(Some(name.clone()), state.from_address.clone()))
+            .reply_to(Mailbox::new(Some(name), email))
+            .to(state.to_mailbox.clone())
+            .subject("Contact Form Submission")
+            .header(ContentType::TEXT_PLAIN)
+            .body(body)
+            .expect("from and to are always set");
+
+        state.sender.send(message).await?;
+
+        Ok(NoContent)
     }
-
-    let message = Message::builder()
-        .from(Mailbox::new(Some(name.clone()), state.from_address.clone()))
-        .reply_to(Mailbox::new(Some(name), email))
-        .to(state.to_mailbox.clone())
-        .subject("Contact Form Submission")
-        .header(ContentType::TEXT_PLAIN)
-        .body(body)
-        .expect("from and to are always set");
-
-    state.sender.send(message).await?;
-
-    Ok(NoContent)
+    .await
+    .inspect_err(|_| state.spent_tokens.invalidate(token))
 }
 
 fn required(value: Option<String>, field: &'static str) -> Result<String, ContactError> {

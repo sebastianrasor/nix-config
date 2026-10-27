@@ -183,8 +183,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
-    let is_debug = env::var_os("CARGO_CFG_DEBUG_ASSERTIONS").is_some();
-
     let template_headers = Mutex::new(Vec::new());
     let mut handlebars = Handlebars::new();
     handlebars.set_strict_mode(true);
@@ -207,17 +205,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         ),
     );
 
-    let turnstile_sitekey = if is_debug {
-        "1x00000000000000000000BB"
-    } else {
-        "0x4AAAAAAACsmQqydNII05ly"
-    };
     // Templates may reference each other's output, so render in passes until none are left.
     while !templates.is_empty() {
-        let template_data = HashMap::from([
-            ("assets", to_json(&table.digest_paths)),
-            ("turnstile_sitekey", to_json(turnstile_sitekey)),
-        ]);
+        let template_data = HashMap::from([("assets", to_json(&table.digest_paths))]);
         let pending = templates.len();
         let mut error = None;
         for path in mem::take(&mut templates) {
@@ -233,6 +223,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         if templates.len() == pending {
             // No progress: fail in release, fall back to lenient rendering in debug.
+            let is_debug = env::var_os("CARGO_CFG_DEBUG_ASSERTIONS").is_some();
             if !(is_debug && handlebars.strict_mode()) {
                 return Err(error.unwrap().into());
             }

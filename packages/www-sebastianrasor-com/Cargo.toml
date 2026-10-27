@@ -10,13 +10,14 @@ nursery = "warn"
 [dependencies]
 axum = "0.8.9"
 axum-extra = { version = "0.12.6", features = ["typed-header"] }
-axum-turnstile = "0.1.2"
 check-if-email-exists = "0.11.10"
+fernet = "0.2.2"
 figment = { version = "0.10.19", features = ["env"] }
 figment_file_provider_adapter = "0.1.1"
 hostname = "0.4.2"
 http_encoding_headers = "0.2.0"
 lettre = { version = "0.11.23", features = ["serde", "tokio1", "tokio1-native-tls"] }
+moka = { version = "0.12.16", features = ["sync"] }
 phf = "0.14.0"
 problem_details = { version = "0.11.0", features = ["axum"] }
 serde = { version = "1.0.229", features = ["derive"] }

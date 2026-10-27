@@ -1,7 +1,6 @@
 {{~header 'Link' '<' (lookup assets '/stylesheet.css') '>; rel=preload; as=style; fetchpriority=high'~}}
 {{~header 'Link' '<' (lookup assets '/AtkinsonHyperlegibleNextVF-Variable.woff2') '>; rel=preload; as="font"; type="font/woff2"; fetchpriority=high; crossorigin'~}}
 {{~header 'Link' '<' (lookup assets '/contact.js') '>; rel=modulepreload'~}}
-{{~header 'Link' '<https://challenges.cloudflare.com>; rel=preconnect'~}}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -16,8 +15,6 @@
     <link rel="stylesheet" href="{{lookup assets '/stylesheet.css'}}">
     <title>Contact Sebastian Rasor</title>
     <script type="module" src="{{lookup assets '/contact.js'}}"></script>
-    <script defer
-            src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"></script>
   </head>
   <body>
     <main>
@@ -40,12 +37,22 @@
           <div class="input-container">
             <span class="input-underline" aria-hidden="true"></span>
             <input type="text"
-                   id="name"
-                   name="name"
-                   autocomplete="name"
+                   id="given-name"
+                   name="given-name"
+                   autocomplete="given-name"
                    placeholder=" "
                    required>
-            <label for="name">Your Name</label>
+            <label for="given-name">Your First Name</label>
+          </div>
+          <div class="input-container">
+            <span class="input-underline" aria-hidden="true"></span>
+            <input type="text"
+                   id="family-name"
+                   name="family-name"
+                   autocomplete="family-name"
+                   placeholder=" "
+                   required>
+            <label for="family-name">Your Last Name</label>
           </div>
           <div class="input-container">
             <span class="input-underline" aria-hidden="true"></span>
@@ -71,11 +78,6 @@
           </label>
         </div>
         <button class="button" type="submit" id="submit-button" disabled>Please wait...</button>
-        <div class="cf-turnstile"
-             data-sitekey="{{turnstile_sitekey}}"
-             data-appearance="interaction-only"
-             data-response-field="false"
-             hidden></div>
       </form>
     </main>
     <nav aria-label="Primary">
