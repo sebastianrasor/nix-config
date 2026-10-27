@@ -35,7 +35,7 @@ pub struct Config {
 }
 
 fn default_from_address() -> Address {
-    Address::new_dangerous("noreply", "sebastianrasor.com")
+    Address::new_dangerous("noreply", "www.sebastianrasor.com")
 }
 
 #[cfg(debug_assertions)]
@@ -131,7 +131,7 @@ pub fn app(config: Config) -> Result<Router, Box<dyn Error>> {
         AsyncSmtpTransport::<Tokio1Executor>::from_url(&config.smtp_connection_url)?.build();
     let verif_method = VerifMethod::new_with_same_config_for_all(
         None,
-        hostname::get()?.to_string_lossy().into_owned(),
+        "www.sebastianrasor.com".to_string(),
         config.from_address.to_string(),
         lettre::transport::smtp::SMTP_PORT,
         Some(DELIVERABILITY_CHECK_TIMEOUT),
