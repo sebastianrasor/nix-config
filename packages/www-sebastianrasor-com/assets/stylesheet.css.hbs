@@ -1,7 +1,3 @@
-/* ==========================================================================
-   Fonts
-   ========================================================================== */
-
 @font-face {
   font-display: swap;
   font-family: "Atkinson Hyperlegible Next";
@@ -9,10 +5,6 @@
   font-weight: 200 800;
   src: url({{lookup assets '/AtkinsonHyperlegibleNextVF-Variable.woff2'}}) format("woff2");
 }
-
-/* Metric-matched local fallbacks: the overrides make each system font take up
-   the same space as Atkinson Hyperlegible Next, so swapping in the web font
-   doesn't cause layout shift. */
 
 @font-face {
   font-family: "Atkinson Fallback Verdana";
@@ -53,27 +45,21 @@
   line-gap-override: 16.08%;
 }
 
-/* ==========================================================================
-   Tokens
-   ========================================================================== */
-
 :root {
   color-scheme: dark light;
 
-  /* Colours */
   --bg: light-dark(#fff, #000);
   --fg: light-dark(#000, #fff);
   --muted: #757575;
-  --border: 1px solid var(--fg);
 
-  /* Spacing (everything sits on a 1rcap grid) */
+  --line-width: 2px;
+  --border: var(--line-width) solid var(--fg);
+
   --padding: 1rcap;
   --gap: 3rcap;
   --min-width: min(100vw - 4rcap, 32ch + var(--gap));
-  /* Space below the last element so it can scroll clear of the fixed nav */
   --nav-clearance: calc(var(--gap) + 3 * var(--padding) + 1rcap);
 
-  /* Floating labels */
   --label-scale: 0.75;
 
   font-family:
@@ -90,10 +76,6 @@
   line-height: 2rcap;
 }
 
-/* ==========================================================================
-   Base & typography
-   ========================================================================== */
-
 html {
   height: 100%;
 }
@@ -109,6 +91,7 @@ body {
 
 a {
   color: var(--fg);
+  text-decoration-thickness: var(--line-width);
 }
 
 h1 {
@@ -137,7 +120,6 @@ hgroup > * {
   }
 }
 
-/* Trim text boxes to cap height and baseline so they line up on the rcap grid */
 h1,
 p,
 figcaption,
@@ -145,10 +127,6 @@ label,
 .button {
   text-box: trim-both cap alphabetic;
 }
-
-/* ==========================================================================
-   Layout
-   ========================================================================== */
 
 main {
   align-items: center;
@@ -158,7 +136,6 @@ main {
   overflow: auto;
 }
 
-/* Last visible child */
 main > :nth-last-child(1 of :not([hidden])) {
   padding-block-end: var(--nav-clearance);
 }
@@ -171,7 +148,6 @@ form {
   width: 50%;
 }
 
-/* #success is focused from JS after the form is submitted */
 article:focus {
   outline: none;
 }
@@ -183,10 +159,6 @@ form {
   gap: var(--gap);
 }
 
-/* ==========================================================================
-   Components: button
-   ========================================================================== */
-
 .button {
   background-color: var(--fg);
   border: var(--border);
@@ -194,7 +166,7 @@ form {
   cursor: pointer;
   font: inherit;
   font-weight: bold;
-  padding: calc(var(--padding) - 1px) var(--padding);
+  padding: calc(var(--padding) - var(--line-width)) var(--padding);
   text-decoration-line: none;
   user-select: none;
 
@@ -211,10 +183,6 @@ form {
     pointer-events: none;
   }
 }
-
-/* ==========================================================================
-   Components: target gallery
-   ========================================================================== */
 
 .target-gallery {
   display: grid;
@@ -235,15 +203,10 @@ form {
 
   & > iframe {
     border: 0;
-    /* 4:5 portrait preview, rounded to the rcap grid */
     height: round(100cqi * 5 / 4, 1rcap);
     width: 100%;
   }
 }
-
-/* ==========================================================================
-   Components: form fields
-   ========================================================================== */
 
 input,
 textarea {
@@ -261,17 +224,9 @@ textarea {
 }
 
 input {
-  /* Share a baseline with the label and the .input-underline mirror */
   align-self: baseline;
   height: 2rcap;
-  /* The text's baseline lands about 1rcap down only if the font's ascent
-     minus descent equals its cap height, so baseline alignment usually nudges
-     this box down a little to meet the label's. The large negative end margin
-     keeps the box out of the row's height, so the row stays 1rcap (set by the
-     trimmed label) after the nudge. */
   margin-block: -0.5rcap -1rcap;
-  /* Grid items honour z-index without `position`. This keeps the input above
-     the .input-underline mirror and the transformed label. */
   z-index: 1;
 }
 
@@ -279,12 +234,11 @@ textarea {
   border-block-end: var(--border);
   border-inline-end: var(--border);
   height: 8rcap;
-  margin-block: -0.5rcap -1px;
+  margin-block: -0.5rcap calc(-1 * var(--line-width));
   overflow-wrap: break-word;
   padding-block-end: 0.5rcap;
   resize: none;
 
-  /* While busy, hide the message so the status notice in the label shows in its place */
   &:read-only {
     color: transparent;
     overflow: hidden;
@@ -302,36 +256,17 @@ textarea {
   }
 }
 
-/* Input underline: contact.js copies the input's value into this element,
-   followed by a run of em spaces far wider than the row (clipped by the
-   container's overflow-x). It sits under the input with the same font and
-   baseline. The copied text is transparent; only its font-native underline
-   shows. The typed text and the extension are one text run under one
-   text-decoration, so the underline is a single continuous line at one
-   position, and skip-ink clears descenders natively, including past the last
-   character. (A separate ::after box for the extension would get its own
-   underline segment, which doesn't quite meet the text's.) */
 .input-underline {
-  /* Grid baseline alignment puts this baseline exactly on the input's (and
-     the label's). It copies the input's box, including the margins, so it
-     stays out of the row's height the same way. */
   align-self: baseline;
-  /* Not `transparent`: Chromium skips the decoration of fully transparent
-     text. Background-coloured glyphs are just as invisible, as the input's
-     identical glyphs are painted right on top of them. */
   color: var(--bg);
   height: 2rcap;
   margin-block: -0.5rcap -1rcap;
   pointer-events: none;
-  text-decoration: underline var(--fg);
+  text-decoration: underline var(--line-width) var(--fg);
   user-select: none;
-  /* Keep runs of spaces, like the input does, and never wrap */
   white-space: pre;
 }
 
-/* Put every child (field, label, underline) in the same grid cell.
-   :where() keeps the specificity at zero, so element rules can still
-   override these. */
 :where(.input-container > *) {
   grid-area: 1 / 1;
   width: 100%;
@@ -349,8 +284,6 @@ textarea {
   }
 }
 
-/* Floating labels: they sit inside the empty field, then shrink and move
-   below it once the field has focus or content. */
 .input-container {
   & > label {
     --label-offset: 0.25rcap;
@@ -360,10 +293,6 @@ textarea {
     user-select: none;
   }
 
-  /* Inputs need a slightly larger offset than the textarea.
-     Baseline alignment puts the label's baseline (its trimmed bottom edge) on
-     the typed text's and the underline's, so the placeholder sits where the
-     text will. */
   & > input + label {
     --label-offset: 0.5rcap;
     align-self: baseline;
@@ -373,8 +302,7 @@ textarea {
     transform:
       translateY(var(--label-offset))
       scale(var(--label-scale))
-      translateY(calc(100% + 1px));
-    /* Undo the scale so the label still spans the whole row */
+      translateY(calc(100% + var(--line-width)));
     width: calc(100% / var(--label-scale));
   }
 
@@ -382,9 +310,6 @@ textarea {
     color: var(--fg);
   }
 
-  /* While a status notice is shown, the label returns to the field and shows
-     the notice instead of its own text. The :has() makes this rule more
-     specific than the floating rule above. */
   & > label:has(> .label-status:not(:empty)) {
     transform: none;
     width: 100%;
@@ -403,13 +328,8 @@ textarea {
   }
 }
 
-/* ==========================================================================
-   Components: navigation
-   ========================================================================== */
-
 nav {
   background: var(--bg);
-  /* Fade out content that scrolls underneath */
   box-shadow: 0 0 0.5rcap 1rcap var(--bg);
   display: flex;
   gap: var(--padding);
@@ -422,10 +342,6 @@ nav {
   width: fit-content;
 }
 
-/* ==========================================================================
-   Utilities
-   ========================================================================== */
-
 .visually-hidden {
   clip-path: inset(50%);
   height: 1px;
@@ -435,7 +351,6 @@ nav {
   width: 1px;
 }
 
-/* Debug aid: add class="debug-baseline" to an element to show the 1rcap grid */
 .debug-baseline {
   background-image: repeating-linear-gradient(
     transparent 0 calc(1rcap - 1px),
