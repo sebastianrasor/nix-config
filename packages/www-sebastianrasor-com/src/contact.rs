@@ -19,10 +19,15 @@ use lettre::{
 use moka::sync::Cache;
 use problem_details::ProblemDetails;
 use serde::{Deserialize, Serialize};
+use tower_governor::{
+    GovernorLayer, governor::GovernorConfigBuilder, key_extractor::SmartIpKeyExtractor,
+};
 
 const DELIVERABILITY_CHECK_TIMEOUT: Duration = Duration::from_secs(10);
 const TIMESTAMP_TTL: Duration = Duration::from_hours(1);
-const MIN_SUBMISSION_DELAY: Duration = Duration::from_secs(5);
+const MIN_SUBMISSION_DELAY: Duration = Duration::from_secs(3);
+const RATE_LIMIT_PERIOD: Duration = Duration::from_secs(15);
+const RATE_LIMIT_BURST_SIZE: u32 = 8;
 const TIMESTAMP_HEADER: &str = "x-timestamp";
 
 #[derive(Deserialize)]
@@ -137,6 +142,12 @@ pub fn app(config: Config) -> Result<Router, Box<dyn Error>> {
         Some(DELIVERABILITY_CHECK_TIMEOUT),
         0,
     );
+    let governor = GovernorConfigBuilder::default()
+        .period(RATE_LIMIT_PERIOD)
+        .burst_size(RATE_LIMIT_BURST_SIZE)
+        .key_extractor(SmartIpKeyExtractor)
+        .finish()
+        .expect("governor config is always valid");
     let state = Arc::new(AppState {
         from_address: config.from_address,
         to_mailbox: config.to_mailbox,
@@ -148,7 +159,10 @@ pub fn app(config: Config) -> Result<Router, Box<dyn Error>> {
 
     Ok(Router::new().route(
         "/contact",
-        post(submit).get(issue_timestamp).with_state(state),
+        post(submit)
+            .get(issue_timestamp)
+            .with_state(state)
+            .layer(GovernorLayer::new(governor)),
     ))
 }
 

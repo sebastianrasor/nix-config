@@ -3,7 +3,7 @@
   font-family: "Atkinson Hyperlegible Next";
   font-style: normal;
   font-weight: 200 800;
-  src: url({{lookup assets '/AtkinsonHyperlegibleNextVF-Variable.woff2'}}) format("woff2");
+  src: url("{{lookup assets '/AtkinsonHyperlegibleNextVF-Variable.woff2'}}") format("woff2");
 }
 
 @font-face {
@@ -106,16 +106,16 @@ hgroup {
   margin-block: 2rcap;
 }
 
-hgroup > * {
+hgroup>* {
   margin-block: 1rcap;
 }
 
 :is(article, header, hgroup) {
-  & > :first-child {
+  &> :first-child {
     margin-block-start: 0;
   }
 
-  & > :last-child {
+  &> :last-child {
     margin-block-end: 0;
   }
 }
@@ -136,7 +136,7 @@ main {
   overflow: auto;
 }
 
-main > :nth-last-child(1 of :not([hidden])) {
+main> :nth-last-child(1 of :not([hidden])) {
   padding-block-end: var(--nav-clearance);
 }
 
@@ -197,11 +197,11 @@ form {
   margin: 0;
   overflow: hidden;
 
-  & > figcaption {
+  &>figcaption {
     margin-block: auto 1rcap;
   }
 
-  & > iframe {
+  &>iframe {
     border: 0;
     height: round(100cqi * 5 / 4, 1rcap);
     width: 100%;
@@ -285,7 +285,7 @@ textarea {
 }
 
 .input-container {
-  & > label {
+  &>label {
     --label-offset: 0.25rcap;
     color: var(--muted);
     pointer-events: none;
@@ -293,33 +293,31 @@ textarea {
     user-select: none;
   }
 
-  & > input + label {
+  &>input+label {
     --label-offset: 0.5rcap;
     align-self: baseline;
   }
 
-  & > :is(input, textarea):is(:focus, :not(:placeholder-shown)) + label {
+  &> :is(input, textarea):is(:focus, :not(:placeholder-shown))+label {
     color: var(--fg);
     transform:
-      translateY(var(--label-offset))
-      scale(var(--label-scale))
-      translateY(calc(100% + var(--line-width)));
+      translateY(var(--label-offset)) scale(var(--label-scale)) translateY(calc(100% + var(--line-width)));
     width: calc(100% / var(--label-scale));
   }
 
-  & > label:has(> .label-status:not(:empty)) {
+  &>label:has(> .label-status:not(:empty)) {
     color: var(--muted);
     transform: none;
     width: 100%;
 
-    & > .label-text {
+    &>.label-text {
       display: none;
     }
   }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .input-container > label {
+  .input-container>label {
     transition:
       color 0.25s,
       transform 0.25s;
@@ -350,12 +348,11 @@ nav {
 }
 
 .debug-baseline {
-  background-image: repeating-linear-gradient(
-    transparent 0 calc(1rcap - 1px),
-    color-mix(in srgb, var(--fg) 20%, transparent) calc(1rcap - 1px) 1rcap
-  );
+  background-image: repeating-linear-gradient(transparent 0 calc(1rcap - 1px),
+      color-mix(in srgb, var(--fg) 20%, transparent) calc(1rcap - 1px) 1rcap);
 }
 
-[hidden], div.input-container:has(#given-name) {
+[hidden],
+div.input-container:has(#given-name) {
   display: none !important;
 }
