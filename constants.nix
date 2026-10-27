@@ -1,5 +1,6 @@
 {
   domain = "rasor.us";
+  test = 1;
   gpgKey = builtins.toFile "0xE346A2A083D90F7D.asc" ''
     -----BEGIN PGP PUBLIC KEY BLOCK-----
 
