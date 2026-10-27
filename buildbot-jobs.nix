@@ -33,6 +33,7 @@ lib.genAttrs supportedSystems (system: {
       newPkgs = import nixpkgs {
         crossSystem = targetSystem;
         localSystem = system;
+        overlays = builtins.attrValues self.overlays;
       };
     in
     if (compatibleCrossBuild system targetSystem) then

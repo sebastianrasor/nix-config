@@ -1,4 +1,4 @@
-{ nixpkgs, ... }:
+inputs@{ nixpkgs, ... }:
 let
   inherit (nixpkgs) lib;
 in
@@ -8,7 +8,7 @@ lib.pipe ./. [
   (builtins.filter (name: name != "default.nix"))
   (map (name: {
     name = lib.removeSuffix ".nix" name;
-    value = import ./${name};
+    value = import ./${name} inputs;
   }))
   builtins.listToAttrs
 ]

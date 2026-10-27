@@ -1,17 +1,15 @@
 {
   lib,
-  atkinson-hyperlegible-next,
   callPackage,
+  craneLib,
   fetchzip,
   openssl,
   pkg-config,
-  rustPlatform,
   stdenvNoCC,
-  woff2,
   targets ? callPackage ../targets { },
 }:
 let
-  atkinson-hyperlegible-next-woff2 = stdenvNoCC.mkDerivation (finalAttrs: {
+  atkinson-hyperlegible-next-woff2 = stdenvNoCC.mkDerivation {
     pname = "atkinson-hyperlegible-next-woff2";
     version = "1.0.0";
 
@@ -24,22 +22,32 @@ let
     installPhase = ''
       install -Dm644 "Atkinson Hyperlegible Next/For Professional Use Only/Variable/AtkinsonHyperlegibleNextVF-Variable.woff2" "$out/AtkinsonHyperlegibleNextVF-Variable.woff2"
     '';
-  });
-  cargoToml = fromTOML (builtins.readFile ./Cargo.toml);
-in
-rustPlatform.buildRustPackage {
-  inherit (cargoToml.package) version;
-  pname = cargoToml.package.name;
-  buildInputs = [ openssl ];
-  nativeBuildInputs = [ pkg-config ];
-  src = lib.cleanSource ./.;
-  cargoLock.lockFile = ./Cargo.lock;
-  postPatch = ''
-    install -Dm644 -t assets/ ${targets}/*.pdf
-    install -Dm644 -t assets/ ${atkinson-hyperlegible-next-woff2}/AtkinsonHyperlegibleNextVF-Variable.woff2
-  '';
-  meta = {
-    inherit (targets.meta) platforms;
-    mainProgram = cargoToml.package.name;
   };
-}
+  src = lib.fileset.toSource {
+    root = ./.;
+    fileset = lib.fileset.unions [
+      (craneLib.fileset.commonCargoSources ./.)
+      ./assets
+    ];
+  };
+  commonArgs = {
+    inherit src;
+    strictDeps = true;
+    buildInputs = [ openssl ];
+    nativeBuildInputs = [ pkg-config ];
+  };
+in
+craneLib.buildPackage (
+  commonArgs
+  // {
+    cargoArtifacts = craneLib.buildDepsOnly commonArgs;
+    postPatch = ''
+      install -Dm644 -t assets/ ${targets}/*.pdf
+      install -Dm644 -t assets/ ${atkinson-hyperlegible-next-woff2}/AtkinsonHyperlegibleNextVF-Variable.woff2
+    '';
+    meta = {
+      inherit (targets.meta) platforms;
+      mainProgram = (craneLib.crateNameFromCargoToml { inherit src; }).pname;
+    };
+  }
+)

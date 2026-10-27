@@ -63,6 +63,8 @@
       };
     };
 
+    crane.url = "github:ipetkov/crane";
+
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
