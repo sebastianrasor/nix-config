@@ -2,6 +2,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 let
@@ -18,6 +19,7 @@ in
   config = lib.mkIf cfg.enable {
     services.forgejo = {
       enable = true;
+      package = pkgs.forgejo;
       database.type = "postgres";
       dump.enable = true;
       lfs.enable = true;
