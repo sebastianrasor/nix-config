@@ -1,21 +1,16 @@
 pkgs:
 let
   inherit (pkgs) lib;
-in
-lib.pipe ./. [
-  builtins.readDir
-  builtins.attrNames
-  (builtins.filter (name: name != "default.nix"))
-  (map (
-    entry:
+  repoLib = import ../lib { inherit lib; };
+  packages = repoLib.readNixDir ./. (
+    path:
     let
-      name = lib.removeSuffix ".nix" entry;
+      name = lib.removeSuffix ".nix" (baseNameOf path);
     in
-    {
-      inherit name;
-      value = pkgs.${name} or (pkgs.callPackage ./${entry} { });
-    }
-  ))
-  builtins.listToAttrs
-  (lib.filterAttrs (_: lib.meta.availableOn { inherit (pkgs.stdenv.hostPlatform) system; }))
-]
+    pkgs.${name} or (pkgs.callPackage path { })
+  );
+in
+if pkgs ? stdenv then
+  lib.filterAttrs (_: lib.meta.availableOn { inherit (pkgs.stdenv.hostPlatform) system; }) packages
+else
+  packages

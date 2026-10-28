@@ -1,17 +1,12 @@
 {
   pkgs ? import <nixpkgs> { },
 }:
-let
-  pkg = pkgs.callPackage ./default.nix { };
-in
 pkgs.craneLib.devShell {
   inputsFrom = [
-    pkg
+    pkgs.www-sebastianrasor-com
   ];
 
   packages = with pkgs; [
-    bacon
-    lemminx
     mailpit
     rust-analyzer
   ];

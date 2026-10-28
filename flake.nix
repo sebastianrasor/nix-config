@@ -12,7 +12,6 @@
       systems = [
         "x86_64-linux"
         "aarch64-linux"
-        "x86_64-darwin"
         "aarch64-darwin"
       ];
       pkgsFor = nixpkgs.lib.genAttrs systems (
@@ -29,7 +28,33 @@
       forAllSystems = f: nixpkgs.lib.mapAttrs (_: f) pkgsFor;
     in
     {
-      buildbotJobs = import ./buildbot-jobs.nix inputsWithConstants;
+      checks = forAllSystems (
+        pkgs:
+        self.packages.${pkgs.stdenv.hostPlatform.system}
+        // {
+          formatting =
+            pkgs.runCommand "check-formatting"
+              {
+                nativeBuildInputs = with pkgs; [
+                  fd
+                  nixfmt
+                ];
+              }
+              ''
+                fd -e nix -E hardware-configuration.nix -X nixfmt --check ${self}
+                touch "$out"
+              '';
+          statix =
+            pkgs.runCommand "check-statix"
+              {
+                nativeBuildInputs = [ pkgs.statix ];
+              }
+              ''
+                statix check -i '**/hardware-configuration.nix' ${self}
+                touch "$out"
+              '';
+        }
+      );
 
       devShells = forAllSystems (pkgs: import ./devshells.nix pkgs);
 
@@ -40,6 +65,8 @@
       hjemConfigurations = import ./hjem-configurations inputsWithConstants;
 
       hjemModules = import ./hjem-modules inputsWithConstants;
+
+      nixbotJobs = import ./nixbot-jobs.nix inputsWithConstants;
 
       nixosConfigurations = import ./nixos-configurations inputsWithConstants;
 

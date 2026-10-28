@@ -31,7 +31,10 @@ stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "targets";
   version = "1.0.0";
 
-  src = lib.cleanSource ./.;
+  src = lib.fileset.toSource {
+    root = ./.;
+    fileset = lib.fileset.fileFilter (file: file.hasExt "svg") ./.;
+  };
 
   nativeBuildInputs = [
     atkinson-hyperlegible-next

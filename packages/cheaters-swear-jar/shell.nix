@@ -1,19 +1,12 @@
 {
   pkgs ? import <nixpkgs> { },
 }:
-let
-  pkg = pkgs.callPackage ./default.nix { };
-in
-pkgs.mkShell {
+pkgs.craneLib.devShell {
   inputsFrom = [
-    pkg
+    pkgs.cheaters-swear-jar
   ];
 
   packages = with pkgs; [
-    bacon
-    cargo
-    clippy
     rust-analyzer
-    rustfmt
   ];
 }

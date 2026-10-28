@@ -1,13 +1,8 @@
 { constants, ... }:
 {
   config,
-  lib,
   ...
 }:
-let
-  acmeEnabled = config.sebastianrasor.acme.enable;
-  acmeBaseDomain = config.sebastianrasor.acme.baseDomainName;
-in
 {
   networking.hostName = "nephele";
 

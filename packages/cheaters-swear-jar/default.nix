@@ -1,21 +1,31 @@
 {
   lib,
+  craneLib,
   openssl,
   pkg-config,
-  rustPlatform,
 }:
 let
-  cargoToml = fromTOML (builtins.readFile ./Cargo.toml);
-in
-rustPlatform.buildRustPackage {
-  inherit (cargoToml.package) version;
-  pname = cargoToml.package.name;
-  buildInputs = [ openssl ];
-  nativeBuildInputs = [ pkg-config ];
-  src = lib.cleanSource ./.;
-  cargoLock.lockFile = ./Cargo.lock;
-  meta = {
-    mainProgram = cargoToml.package.name;
-    platforms = [ "x86_64-linux" ];
+  src = lib.fileset.toSource {
+    root = ./.;
+    fileset = lib.fileset.unions [
+      (craneLib.fileset.commonCargoSources ./.)
+      ./src
+    ];
   };
-}
+  commonArgs = {
+    inherit src;
+    strictDeps = true;
+    buildInputs = [ openssl ];
+    nativeBuildInputs = [ pkg-config ];
+  };
+in
+craneLib.buildPackage (
+  commonArgs
+  // {
+    cargoArtifacts = craneLib.buildDepsOnly commonArgs;
+    meta = {
+      mainProgram = (craneLib.crateNameFromCargoToml { inherit src; }).pname;
+      platforms = [ "x86_64-linux" ];
+    };
+  }
+)

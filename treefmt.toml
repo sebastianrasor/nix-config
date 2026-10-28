@@ -1,0 +1,4 @@
+[formatter.nix]
+command = "nixfmt"
+includes = ["*.nix"]
+excludes = ["**/hardware-configuration.nix"]

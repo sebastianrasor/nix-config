@@ -1,0 +1,48 @@
+_:
+{
+  config,
+  lib,
+  ...
+}:
+let
+  cfg = config.sebastianrasor.radicale;
+in
+{
+  options.sebastianrasor.radicale = {
+    enable = lib.mkEnableOption "Radicale";
+  };
+
+  config = lib.mkIf cfg.enable {
+    services.radicale = {
+      enable = true;
+      settings = {
+        server.hosts = [ "127.0.0.1:5232" ];
+        auth = {
+          type = "htpasswd";
+          htpasswd_filename = config.sops.secrets."radicale/users".path;
+          htpasswd_encryption = "bcrypt";
+        };
+      };
+    };
+
+    sebastianrasor = {
+      reverse-proxy.proxies."radicale" = "http://127.0.0.1:5232";
+
+      unas.mounts."Radicale" = "/media/radicale";
+
+      persistence.directories = [
+        (
+          if lib.hasAttrByPath [ "storage" "filesystem_folder" ] config.services.radicale.settings then
+            config.services.radicale.settings.storage.filesystem_folder
+          else
+            "/var/lib/radicale/collections"
+        )
+      ];
+    };
+
+    sops.secrets."radicale/users" = {
+      inherit (config.users.users.radicale) group;
+      owner = config.users.users.radicale.name;
+    };
+  };
+}

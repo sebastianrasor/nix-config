@@ -1,20 +1,11 @@
 inputs@{ nixpkgs, self, ... }:
 let
   inherit (nixpkgs) lib;
+  repoLib = import ../lib { inherit lib; };
 in
-lib.pipe ./. [
-  builtins.readDir
-  builtins.attrNames
-  (builtins.filter (name: name != "default.nix"))
-  (map (name: {
-    name = lib.removeSuffix ".nix" name;
-    value =
-      let
-        configurationModule = lib.modules.importApply ./${name} inputs;
-      in
-      lib.nixosSystem {
-        modules = [ configurationModule ] ++ lib.attrsets.attrValues self.nixosModules;
-      };
-  }))
-  builtins.listToAttrs
-]
+repoLib.readNixDir ./. (
+  path:
+  lib.nixosSystem {
+    modules = [ (lib.modules.importApply path inputs) ] ++ lib.attrsets.attrValues self.nixosModules;
+  }
+)

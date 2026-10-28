@@ -1,5 +1,7 @@
-{
+rec {
   domain = "rasor.us";
+  binaryCachePublicKey = "cache.ts.${domain}-1:f2inISwhx2bWqv3HkEjsZw6VXJpKGxKqzTAqRl6rJWc=";
+  deploySshPublicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIBkrE2bWnp2A0RmoNxwMMtEAwi9kplYp7kJ+YxAHnF9";
   gpgKey = builtins.toFile "0xE346A2A083D90F7D.asc" ''
     -----BEGIN PGP PUBLIC KEY BLOCK-----
 
@@ -34,5 +36,12 @@
     "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAID7ln2zszWc43qSl+dXV9OggPGaGHrnFTIc1I5XApzNPAAAABHNzaDo= cardno:27_783_866"
     "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIErDNREHB8l520qIQFeuHI0YXXJ59kXn8rYWX72zLXY+AAAABHNzaDo= cardno:27_783_800"
     "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIPiuG0iczZTy3jO7MCI0ZXl7YehqJ2M46KKmyknRlFaSAAAABHNzaDo= cardno:35_203_939"
+  ];
+  u2fKeys = [
+    "+RUZCkSEWmTZHmgH0Ht0x2KMvJSRwgO8/+UOl7ew8FBP5neEtkOCGvq1ez9vGWQjRz6HAm7dG58BzMlNZ2T5ow==,oqGhe0jguLbpzShd4pL3O8AwiUTnmwbXttJMWDUGQyTkibwySDs2N/QvpSfDpKWJk5/6AOPCxb/1qfVuRSG2fA==,es256,+presence"
+    "iQCjhuV/mErNOZfGsCocSZi72e2eXT8MZJKWeIekN5SLgTsIAuqd/UNW3qzNdVqSpYLbnO9tZETtsNPcJR6POg==,EvrmUWX9Yh0mpry0CSHfz/mLTC8FpOqoaI65Nk1wQ9bmyPFBL91Z/weNLVYMsTh9lG7UehY8K1ePBIVn0QqK3g==,es256,+presence"
+    "7x2gUIu8nEHbTlWYxMJ4So0PCP4osYDrkquqSFXvXtsR4KG1OZX3yX8iQ1OO0daYUhkyWMSRm7cQEbg60fg9AA==,wHzUMdF3sult3309R0HyylZ94W7PXq1hdMHEzmKcrzzLaBeOLZH6opiOm/m9Rs/rxU5ixh4YZeqciUSoxMuysw==,es256,+presence"
+    "TbSWNmShaEjbISE1SVS9kgD+Li6L3iz9D3an7w3UTGfo8JBhOqBiT3eJBOrNptc8ewCfstNmylLRDsiBO86sCA==,WNOaGRBebrl+dHkTs7T/Ws8gh0mnlC9Rz1YLq5E6DVjyRAQq1UoJCQnag2FYLYmh/CQzGnhn2r5VQeGPH5U7ow==,es256,+presence"
+    "4ech4nXbYMeqL3rXT7C0oFqvTJ686u5XR+MO2IKIG1VVH7SuXfTFGSPruW2I8hZn8xGxqOHUiBAODLSwRg+Mdg==,S2+pqucnawDCNNOet2dBgsueIUdy9ZFh0oVoNlmQeQt/KJPXUTDKrcAeD0u9l0yRGkbz0rcG2WadKni6hQUtRQ==,es256,+presence"
   ];
 }

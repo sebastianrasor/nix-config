@@ -8,6 +8,7 @@ inputs@{
 }:
 let
   inherit (nixpkgs) lib;
+  repoLib = import ../lib { inherit lib; };
 
   mkHjemOutput =
     pkgs: userConfig:
@@ -43,62 +44,65 @@ let
     ) (lib.filterAttrs (_: u: u.enable) nixosConfiguration.config.hjem.users)
   ) self.nixosConfigurations;
 
-  standaloneHjemConfigurations = lib.pipe ./. [
-    builtins.readDir
-    builtins.attrNames
-    (builtins.filter (name: name != "default.nix"))
-    (map (
-      entry:
-      let
-        name = lib.removeSuffix ".nix" entry;
-        parts = lib.splitString "@" name;
-        username = builtins.head parts;
-        pkgs =
-          pkgsFor.x86_64-linux or (import nixpkgs {
-            system = "x86_64-linux";
-            config = constants.nixConfig;
-            overlays = builtins.attrValues self.overlays;
-          });
-        utils = import "${nixpkgs}/nixos/lib/utils.nix" {
-          inherit lib pkgs;
-          config = {
-            systemd = {
-              package = pkgs.systemd;
-              globalEnvironment = { };
-            };
-          };
+  standaloneHjemConfigurations = repoLib.readNixDir ./. (
+    path:
+    let
+      name = lib.removeSuffix ".nix" (baseNameOf path);
+      parts = lib.splitString "@" name;
+      username = builtins.head parts;
+      pkgsForSystem =
+        system:
+        pkgsFor.${system} or (import nixpkgs {
+          inherit system;
+          config = constants.nixConfig;
+          overlays = builtins.attrValues self.overlays;
+        });
+      configurationModule = lib.modules.importApply path inputs;
+      evaluated = lib.evalModules {
+        specialArgs = {
+          osConfig = null;
         };
-        hjem-lib = import "${hjem}/lib.nix" { inherit lib pkgs; };
-        configurationModule = lib.modules.importApply ./${entry} inputs;
-        evaluated = lib.evalModules {
-          specialArgs = {
-            inherit
-              hjem-lib
-              pkgs
-              utils
-              ;
-            osConfig = null;
-          };
-          modules = [
-            "${hjem}/modules/common/user.nix"
-            "${hjem}/modules/nixos/systemd.nix"
+        modules = [
+          (
+            { config, ... }:
+            let
+              pkgs = pkgsForSystem config.sebastianrasor.system;
+            in
             {
-              _module.args.name = username;
-              user = lib.mkDefault username;
-              directory = lib.mkDefault "/home/${username}";
-              clobberFiles = lib.mkDefault true;
+              options.sebastianrasor.system = lib.mkOption {
+                type = lib.types.str;
+                default = "x86_64-linux";
+              };
+
+              config._module.args = {
+                inherit pkgs;
+                name = username;
+                hjem-lib = import "${hjem}/lib.nix" { inherit lib pkgs; };
+                utils = import "${nixpkgs}/nixos/lib/utils.nix" {
+                  inherit lib pkgs;
+                  config = {
+                    systemd = {
+                      package = pkgs.systemd;
+                      globalEnvironment = { };
+                    };
+                  };
+                };
+              };
             }
-            configurationModule
-          ]
-          ++ lib.attrsets.attrValues self.hjemModules;
-        };
-      in
-      {
-        inherit name;
-        value = mkHjemOutput pkgs evaluated.config;
-      }
-    ))
-    builtins.listToAttrs
-  ];
+          )
+          "${hjem}/modules/common/user.nix"
+          "${hjem}/modules/nixos/systemd.nix"
+          {
+            user = lib.mkDefault username;
+            directory = lib.mkDefault "/home/${username}";
+            clobberFiles = lib.mkDefault true;
+          }
+          configurationModule
+        ]
+        ++ lib.attrsets.attrValues self.hjemModules;
+      };
+    in
+    mkHjemOutput (pkgsForSystem evaluated.config.sebastianrasor.system) evaluated.config
+  );
 in
 nixosHjemConfigurations // standaloneHjemConfigurations
