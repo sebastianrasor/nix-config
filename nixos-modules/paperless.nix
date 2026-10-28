@@ -13,11 +13,6 @@ in
       type = lib.types.bool;
       default = false;
     };
-
-    oidc = lib.mkOption {
-      type = lib.types.bool;
-      default = true;
-    };
   };
 
   config = lib.mkIf cfg.enable {

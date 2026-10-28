@@ -2,6 +2,7 @@ _:
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 let
@@ -28,22 +29,84 @@ in
       type = lib.types.attrsOf lib.types.str;
       default = { };
     };
-  };
 
-  config = lib.mkIf cfg.enable {
-    users.groups.unifi-drive.gid = 988;
-    users.users.unifi-drive-nfs = {
-      group = "unifi-drive";
-      isSystemUser = true;
-      uid = 977;
+    lazyMedia.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
     };
-
-    fileSystems = lib.mapAttrs' (
-      shareName: mountPath:
-      lib.nameValuePair mountPath {
-        device = "${cfg.host}:${cfg.basePath}/${shareName}";
-        fsType = "nfs";
-      }
-    ) cfg.mounts;
   };
+
+  config = lib.mkMerge [
+    (lib.mkIf cfg.enable {
+      users.groups.unifi-drive.gid = 988;
+      users.users.unifi-drive-nfs = {
+        group = "unifi-drive";
+        isSystemUser = true;
+        uid = 977;
+      };
+
+      fileSystems = lib.mapAttrs' (
+        shareName: mountPath:
+        lib.nameValuePair mountPath {
+          device = "${cfg.host}:${cfg.basePath}/${shareName}";
+          fsType = "nfs";
+        }
+      ) cfg.mounts;
+    })
+    (lib.mkIf cfg.lazyMedia.enable {
+      environment.systemPackages = with pkgs; [
+        nfs-utils
+      ];
+
+      boot.supportedFilesystems = [ "nfs" ];
+      services.rpcbind.enable = true; # needed for NFS
+      systemd.mounts =
+        let
+          commonMountOptions = {
+            type = "nfs";
+            mountConfig = {
+              Options = "noatime";
+            };
+          };
+        in
+        [
+          (
+            commonMountOptions
+            // {
+              what = "${cfg.host}:${cfg.basePath}/Movies";
+              where = "/media/movies";
+            }
+          )
+          (
+            commonMountOptions
+            // {
+              what = "${cfg.host}:${cfg.basePath}/Music";
+              where = "/media/music";
+            }
+          )
+          (
+            commonMountOptions
+            // {
+              what = "${cfg.host}:${cfg.basePath}/Shows";
+              where = "/media/shows";
+            }
+          )
+        ];
+
+      systemd.automounts =
+        let
+          commonAutoMountOptions = {
+            wantedBy = [ "multi-user.target" ];
+            automountConfig = {
+              TimeoutIdleSec = "600";
+            };
+          };
+        in
+        [
+          (commonAutoMountOptions // { where = "/media/movies"; })
+          (commonAutoMountOptions // { where = "/media/music"; })
+          (commonAutoMountOptions // { where = "/media/shows"; })
+        ];
+    })
+  ];
 }

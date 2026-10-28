@@ -13,11 +13,23 @@ in
       type = lib.types.bool;
       default = false;
     };
+
+    backup.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = cfg.enable;
+    };
   };
 
-  config = lib.mkIf cfg.enable {
-    services.postgresql.enable = true;
+  config = lib.mkMerge [
+    (lib.mkIf cfg.enable {
+      services.postgresql.enable = true;
 
-    sebastianrasor.persistence.directories = [ config.services.postgresql.dataDir ];
-  };
+      sebastianrasor.persistence.directories = [ config.services.postgresql.dataDir ];
+    })
+    (lib.mkIf cfg.backup.enable {
+      services.postgresqlBackup.enable = true;
+
+      sebastianrasor.unas.mounts."PostgreSQL" = config.services.postgresqlBackup.location;
+    })
+  ];
 }

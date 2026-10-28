@@ -12,6 +12,7 @@ pkgs.mkShellNoCC {
     nixd
     nixf
     nixfmt
+    package-version-server
     sops
     statix
   ];

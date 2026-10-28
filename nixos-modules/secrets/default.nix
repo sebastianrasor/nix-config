@@ -17,7 +17,7 @@ let
 
   hostKeyFile =
     if builtins.hasAttr config.networking.hostName hostKeys then
-      pkgs.writeText "key.txt" hostKeys.${config.networking.hostName}
+      builtins.toFile "key.txt" hostKeys.${config.networking.hostName}
     else
       null;
 in

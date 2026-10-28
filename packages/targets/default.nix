@@ -7,26 +7,24 @@
   writeShellApplication,
 }:
 let
-  svg2pdf = (
-    writeShellApplication {
-      name = "svg2pdf";
+  svg2pdf = writeShellApplication {
+    name = "svg2pdf";
 
-      runtimeInputs = [
-        chromium
-        qpdf
-      ];
+    runtimeInputs = [
+      chromium
+      qpdf
+    ];
 
-      text = ''
-        for svg
-        do
-          temp_pdf="$(mktemp --suffix=.pdf)"
-          chromium --headless --print-to-pdf="$temp_pdf" --no-pdf-header-footer "$svg"
-          qpdf --empty --pages "$temp_pdf" 1-z -- --deterministic-id "''${svg%.svg}.pdf"
-          rm "$temp_pdf"
-        done
-      '';
-    }
-  );
+    text = ''
+      for svg
+      do
+        temp_pdf="$(mktemp --suffix=.pdf)"
+        chromium --headless --print-to-pdf="$temp_pdf" --no-pdf-header-footer "$svg"
+        qpdf --empty --pages "$temp_pdf" 1-z -- --deterministic-id "''${svg%.svg}.pdf"
+        rm "$temp_pdf"
+      done
+    '';
+  };
 
 in
 stdenvNoCC.mkDerivation (finalAttrs: {

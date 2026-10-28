@@ -37,16 +37,14 @@ in
       };
     };
 
-    nixpkgs.overlays = [
-      (final: prev: {
-        jellyfin-ffmpeg = prev.jellyfin-ffmpeg.override {
-          ffmpeg_8-full = prev.ffmpeg_8-full.override {
-            withMfx = false;
-            withVpl = true;
-            withUnfree = true;
-          };
+    services.jellyfin.package = pkgs.jellyfin.override {
+      jellyfin-ffmpeg = pkgs.jellyfin-ffmpeg.override {
+        ffmpeg_8-full = pkgs.ffmpeg_8-full.override {
+          withMfx = false;
+          withVpl = true;
+          withUnfree = true;
         };
-      })
-    ];
+      };
+    };
   };
 }

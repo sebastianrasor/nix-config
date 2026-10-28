@@ -1,4 +1,4 @@
-{ yubikey-touch-detector, ... }:
+_:
 {
   config,
   lib,
@@ -6,8 +6,6 @@
   ...
 }:
 let
-  ytdPackage =
-    yubikey-touch-detector.packages.${pkgs.stdenv.hostPlatform.system}.yubikey-touch-detector;
   cfg = config.sebastianrasor.yubikey-touch-detector;
 in
 {
@@ -19,9 +17,9 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    packages = [
-      pkgs.libnotify
-      ytdPackage
+    packages = with pkgs; [
+      libnotify
+      yubikey-touch-detector
     ];
 
     xdg.config.files."yubikey-touch-detector/service.conf".source = ./service.conf;
@@ -32,7 +30,7 @@ in
       wantedBy = [ "default.target" ];
       environment.GNUPGHOME = config.sebastianrasor.gpg.homedir;
       serviceConfig = {
-        ExecStart = lib.getExe' ytdPackage "yubikey-touch-detector";
+        ExecStart = lib.getExe pkgs.yubikey-touch-detector;
         EnvironmentFile = "-%E/yubikey-touch-detector/service.conf";
       };
     };

@@ -1,31 +1,21 @@
-inputs@{
+{
   hjem,
+  pkgsFor ? { },
   self,
   ...
 }:
+let
+  mkHjemCli = pkgs: pkgs.callPackage "${hjem}/cli/package.nix" { };
+  hjemCliBySystem = builtins.mapAttrs (_: mkHjemCli) pkgsFor;
+in
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 let
   cfg = config.sebastianrasor.hjem;
-  hostSuffix = "@${config.networking.hostName}";
-  hostUsers = lib.pipe ../hjem-configurations [
-    builtins.readDir
-    builtins.attrNames
-    (builtins.filter (name: name != "default.nix"))
-    (map (entry: {
-      inherit entry;
-      name = lib.removeSuffix ".nix" entry;
-    }))
-    (builtins.filter (x: lib.hasSuffix hostSuffix x.name))
-    (map (x: {
-      name = lib.removeSuffix hostSuffix x.name;
-      value = lib.modules.importApply ../hjem-configurations/${x.entry} inputs;
-    }))
-    builtins.listToAttrs
-  ];
 in
 {
   options.sebastianrasor.hjem = {
@@ -43,9 +33,16 @@ in
     environment.pathsToLink = [ "/share/fish" ];
 
     hjem = {
+      cli.package = hjemCliBySystem.${pkgs.stdenv.hostPlatform.system} or (mkHjemCli pkgs);
       clobberByDefault = true;
       extraModules = lib.attrsets.attrValues self.hjemModules;
-      users = hostUsers;
+      users.sebastian.sebastianrasor = {
+        core = {
+          enable = lib.mkDefault true;
+          graphical = lib.mkDefault config.sebastianrasor.core.laptop;
+        };
+        persistence.enable = lib.mkDefault config.sebastianrasor.persistence.enable;
+      };
     };
   };
 }

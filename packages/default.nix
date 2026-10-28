@@ -6,10 +6,16 @@ lib.pipe ./. [
   builtins.readDir
   builtins.attrNames
   (builtins.filter (name: name != "default.nix"))
-  (map (name: {
-    name = lib.removeSuffix ".nix" name;
-    value = pkgs.callPackage ./${name} { };
-  }))
+  (map (
+    entry:
+    let
+      name = lib.removeSuffix ".nix" entry;
+    in
+    {
+      inherit name;
+      value = pkgs.${name} or (pkgs.callPackage ./${entry} { });
+    }
+  ))
   builtins.listToAttrs
   (lib.filterAttrs (_: lib.meta.availableOn { inherit (pkgs.stdenv.hostPlatform) system; }))
 ]

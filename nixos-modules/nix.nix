@@ -17,7 +17,9 @@ in
 
   config = lib.mkIf cfg.enable {
     nix = {
-      registry = lib.mapAttrs (_: value: { flake = value; }) (removeAttrs inputs [ "constants" ]);
+      registry = lib.mapAttrs (_: value: { flake = value; }) (
+        lib.filterAttrs (_: lib.isType "flake") inputs
+      );
       nixPath = lib.mapAttrsToList (key: value: "${key}=${value.to.path}") config.nix.registry;
 
       extraOptions = ''

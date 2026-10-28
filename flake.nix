@@ -9,21 +9,24 @@
     }:
     let
       constants = import ./constants.nix;
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "x86_64-darwin"
+        "aarch64-darwin"
+      ];
+      pkgsFor = nixpkgs.lib.genAttrs systems (
+        system:
+        import nixpkgs {
+          inherit system;
+          config = constants.nixConfig;
+          overlays = builtins.attrValues self.overlays;
+        }
+      );
       inputsWithConstants = inputs // {
-        inherit constants;
+        inherit constants pkgsFor;
       };
-      forAllSystems =
-        f:
-        nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed (
-          system:
-          f (
-            import nixpkgs {
-              inherit system;
-              config = constants.nixConfig;
-              overlays = builtins.attrValues self.overlays;
-            }
-          )
-        );
+      forAllSystems = f: nixpkgs.lib.mapAttrs (_: f) pkgsFor;
     in
     {
       buildbotJobs = import ./buildbot-jobs.nix inputsWithConstants;
@@ -51,10 +54,18 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     # TODO(sebastianrasor): Go back to main when this PR is merged
-    nixos-hardware.url = "github:NixOS/nixos-hardware/pull/1994/head";
+    nixos-hardware = {
+      url = "github:NixOS/nixos-hardware/pull/1994/head";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     authentik-nix = {
       url = "github:nix-community/authentik-nix";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-parts.follows = "hercules-ci-effects/flake-parts";
+        flake-compat.follows = "";
+      };
     };
 
     crane.url = "github:ipetkov/crane";
@@ -64,37 +75,43 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
+    hercules-ci-effects = {
+      url = "github:hercules-ci/hercules-ci-effects";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     hjem = {
       url = "github:feel-co/hjem";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    impermanence.url = "github:nix-community/impermanence";
+    impermanence = {
+      url = "github:nix-community/impermanence";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        home-manager.follows = "";
+      };
+    };
 
     lanzaboote = {
       url = "github:nix-community/lanzaboote/v1.2.0";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        crane.follows = "crane";
+        pre-commit.follows = "";
+      };
     };
 
     nixbot = {
       url = "github:Mic92/nixbot";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        treefmt-nix.follows = "";
+      };
     };
 
     sops-nix = {
       url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    tailscale-golink = {
-      url = "github:tailscale/golink";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    yubikey-touch-detector = {
-      url = "github:maximbaz/yubikey-touch-detector";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

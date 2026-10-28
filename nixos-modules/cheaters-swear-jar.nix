@@ -1,4 +1,4 @@
-{ self, ... }:
+_:
 {
   config,
   lib,
@@ -7,7 +7,6 @@
 }:
 let
   cfg = config.sebastianrasor.cheaters-swear-jar;
-  cheaters-swear-jar = self.packages.${pkgs.stdenv.hostPlatform.system}.cheaters-swear-jar;
 in
 {
   options.sebastianrasor.cheaters-swear-jar = {
@@ -27,7 +26,7 @@ in
           "DISCORD_TOKEN_PATH=%d/discordToken"
           "GOOGLE_API_KEY_PATH=%d/googleApiKey"
         ];
-        ExecStart = "${lib.getExe cheaters-swear-jar}";
+        ExecStart = "${lib.getExe pkgs.cheaters-swear-jar}";
         LoadCredential = [
           "discordToken:${config.sops.secrets."discord/tokens/cheatersSwearJar".path}"
           "googleApiKey:${config.sops.secrets."google/apiKeys/cheatersSwearJar".path}"

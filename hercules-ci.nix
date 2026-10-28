@@ -16,12 +16,9 @@ hercules-ci-effects.lib.mkHerculesCI { inherit inputs; } {
       (map (
         nixosConfiguration:
         let
-          inherit (nixosConfiguration) config;
+          inherit (nixosConfiguration) config pkgs;
           inherit (config.networking) hostName;
           inherit (config.system.build) toplevel;
-          pkgs = import nixpkgs {
-            inherit (config.nixpkgs.hostPlatform) system;
-          };
           hci-effects = hercules-ci-effects.lib.withPkgs pkgs;
           sshCommand =
             hci-effects.ssh
@@ -44,13 +41,8 @@ hercules-ci-effects.lib.mkHerculesCI { inherit inputs; } {
               secretsMap.ssh = "ssh";
               effectScript = ''
                 writeSSHKey ssh
-                # todo: move this into the configuration itself somehow
                 cat >~/.ssh/known_hosts <<EOF
-                azalea.ts.${domain} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO5pVGXbupdNG/9acDwOd6loG8CBBaNsreyoYCY4at9J
-                carbon.ts.${domain} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAGdZ/fyPx7w2GsbE337H0kNst+GWL/gN4piJizkWj/9
-                dahlia.ts.${domain} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII85WkAO+BoPgHC8Vj7Y3ab3aOOLDx9e8jul4rBLAXiM
-                nephele.ts.${domain} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIISaqWRMez2mFczqhMmiYe0KzNeENKsqEQw/AsOC+Ay+
-                sakura.ts.${domain} ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICdHZOOgrwMkv66j61MiTU3oHacuTUW9+SL3r63P/3Ww
+                ${hostName}.ts.${domain} ${config.sebastianrasor.sshd.publicKey}
                 EOF
 
                 ${sshCommand} || exit "''${?/255/0}"

@@ -24,7 +24,7 @@ _: {
       enable = true;
       baseDomainName = "ts.${constants.domain}";
     };
-    systemd-boot.enable = true;
+    sshd.publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAGdZ/fyPx7w2GsbE337H0kNst+GWL/gN4piJizkWj/9";
     systemd-networkd.interfacesRequiredForOnline."enp10s0f0np0" = "routable";
     tailscale-golink.enable = true;
     unas = {
@@ -36,8 +36,7 @@ _: {
 
   imports = [
     ./hardware-configuration.nix
-  ]
-  ++ map (moduleFile: ./users + ("/" + moduleFile)) (builtins.attrNames (builtins.readDir ./users));
+  ];
 
   system.stateVersion = "25.05";
 }

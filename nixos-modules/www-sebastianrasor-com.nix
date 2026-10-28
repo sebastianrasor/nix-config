@@ -1,4 +1,4 @@
-{ self, ... }:
+_:
 {
   config,
   lib,
@@ -7,7 +7,6 @@
 }:
 let
   cfg = config.sebastianrasor.www-sebastianrasor-com;
-  www-sebastianrasor-com = self.packages.${pkgs.stdenv.hostPlatform.system}.www-sebastianrasor-com;
   acmeEnabled = config.sebastianrasor.acme.enable;
   acmeBaseDomain = config.sebastianrasor.acme.baseDomainName;
 in
@@ -30,7 +29,7 @@ in
           "WWW_TO_MAILBOX_FILE=%d/toMailbox"
           "WWW_TURNSTILE_SECRET_KEY_FILE=%d/turnstileSecretKey"
         ];
-        ExecStart = "${lib.getExe www-sebastianrasor-com}";
+        ExecStart = "${lib.getExe pkgs.www-sebastianrasor-com}";
         LoadCredential = [
           "smtpConnectionUrl:${config.sops.secrets."mxroute/smtpConnectionUrl".path}"
           "toMailbox:${config.sops.secrets."www-sebastianrasor-com/toMailbox".path}"

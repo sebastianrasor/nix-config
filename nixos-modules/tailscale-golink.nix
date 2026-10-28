@@ -1,11 +1,13 @@
-{ constants, tailscale-golink, ... }:
+{ constants, ... }:
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 let
   cfg = config.sebastianrasor.tailscale-golink;
+  dataDir = "/var/lib/golink";
 in
 {
   options.sebastianrasor.tailscale-golink = {
@@ -15,26 +17,37 @@ in
     };
   };
 
-  imports = [
-    tailscale-golink.nixosModules.default
-  ];
-
   config = lib.mkIf cfg.enable {
-    services.golink = {
-      enable = true;
-
-      controlUrl = "https://headscale.${constants.domain}";
-
-      tailscaleAuthKeyFile = config.sops.secrets."tailscale/authKey".path;
+    users.groups.golink = { };
+    users.users.golink = {
+      home = dataDir;
+      createHome = true;
+      group = "golink";
+      isSystemUser = true;
     };
 
-    sebastianrasor.persistence.directories = [ config.services.golink.dataDir ];
-
-    sops.secrets."tailscale/authKey" = {
-      # This doesn't interfere with tailscale at the moment because the current
-      # tailscale module runs tailscale as root.
-      inherit (config.services.golink) group;
-      owner = config.services.golink.user;
+    systemd.services.golink = {
+      wantedBy = [ "multi-user.target" ];
+      script = ''
+        export TS_AUTHKEY="$(head -n1 "$CREDENTIALS_DIRECTORY/authKey")"
+        exec ${lib.getExe pkgs.golink} \
+          --sqlitedb ${dataDir}/golink.db \
+          --control-url https://headscale.${constants.domain}
+      '';
+      serviceConfig = {
+        User = "golink";
+        Group = "golink";
+        LoadCredential = [
+          "authKey:${config.sops.secrets."tailscale/authKey".path}"
+        ];
+        Restart = "always";
+        RestartSec = "15";
+        WorkingDirectory = dataDir;
+      };
     };
+
+    sebastianrasor.persistence.directories = [ dataDir ];
+
+    sops.secrets."tailscale/authKey" = { };
   };
 }

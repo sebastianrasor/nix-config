@@ -1,4 +1,10 @@
-{ nixpkgs, self, ... }:
+{
+  constants,
+  nixpkgs,
+  pkgsFor,
+  self,
+  ...
+}:
 let
   inherit (nixpkgs) lib;
 
@@ -14,34 +20,55 @@ let
     in
     localSystem: crossSystem:
     isDarwin (mkSystemFromString localSystem) == isDarwin (mkSystemFromString crossSystem);
+
+  packageNames = lib.pipe ./packages [
+    builtins.readDir
+    builtins.attrNames
+    (builtins.filter (name: name != "default.nix"))
+    (map (lib.removeSuffix ".nix"))
+  ];
 in
 lib.genAttrs supportedSystems (system: {
   nixosConfigurations = builtins.mapAttrs (
     _: nixosConfiguration:
-    (nixosConfiguration.extendModules {
-      modules = [
-        {
-          nixpkgs.buildPlatform = system;
+    (
+      if nixosConfiguration.pkgs.stdenv.buildPlatform.system == system then
+        nixosConfiguration
+      else
+        nixosConfiguration.extendModules {
+          modules = [
+            {
+              nixpkgs.buildPlatform = system;
+            }
+          ];
         }
-      ];
-    }).config.system.build.toplevel
+    ).config.system.build.toplevel
   ) self.nixosConfigurations;
 
   packages = builtins.mapAttrs (
     targetSystem: packages:
     let
       newPkgs = import nixpkgs {
+        config = constants.nixConfig;
         crossSystem = targetSystem;
         localSystem = system;
         overlays = builtins.attrValues self.overlays;
       };
-    in
-    if (compatibleCrossBuild system targetSystem) then
-      lib.pipe packages [
-        (builtins.mapAttrs (
-          packageName: package: package.override (oldArgs: builtins.intersectAttrs oldArgs newPkgs)
+      crossPackages = lib.pipe packageNames [
+        (builtins.filter (
+          packageName: lib.meta.availableOn { system = targetSystem; } pkgsFor.${system}.${packageName}
         ))
-      ]
+        (map (packageName: {
+          name = packageName;
+          value = newPkgs.${packageName};
+        }))
+        builtins.listToAttrs
+      ];
+    in
+    if targetSystem == system then
+      packages
+    else if (compatibleCrossBuild system targetSystem) then
+      crossPackages
     else
       { }
   ) self.packages;

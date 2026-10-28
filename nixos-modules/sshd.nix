@@ -13,6 +13,11 @@ in
       type = lib.types.bool;
       default = false;
     };
+
+    publicKey = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+    };
   };
 
   config = lib.mkIf cfg.enable {

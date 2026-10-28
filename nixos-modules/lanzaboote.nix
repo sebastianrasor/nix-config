@@ -1,4 +1,18 @@
-{ lanzaboote, ... }:
+{
+  lanzaboote,
+  pkgsFor ? { },
+  ...
+}:
+let
+  mkLzbt =
+    pkgs:
+    (import lanzaboote {
+      inherit pkgs;
+      crane = pkgs.craneLib;
+      inherit (lanzaboote.inputs) rust-overlay;
+    }).packages.lzbt;
+  lzbtBySystem = builtins.mapAttrs (_: mkLzbt) pkgsFor;
+in
 {
   config,
   lib,
@@ -17,7 +31,7 @@ in
   };
 
   imports = [
-    lanzaboote.nixosModules.lanzaboote
+    "${lanzaboote}/nix/modules/lanzaboote.nix"
   ];
 
   config = lib.mkIf cfg.enable {
@@ -31,6 +45,7 @@ in
 
     boot.lanzaboote = {
       enable = true;
+      package = lzbtBySystem.${pkgs.stdenv.hostPlatform.system} or (mkLzbt pkgs);
       pkiBundle = "/var/lib/sbctl";
     };
   };

@@ -1,12 +1,10 @@
-{ constants, ... }:
 {
-  config,
-  lib,
-  pkgs,
+  constants,
+  nixpkgs,
   ...
 }:
 let
-  cfg = config.sebastianrasor.gpg;
+  inherit (nixpkgs) lib;
 
   hexStringToBase32 =
     let
@@ -60,6 +58,15 @@ let
           };
     in
     hexString: (lib.foldl' go initState (lib.stringToCharacters hexString)).ret;
+in
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  cfg = config.sebastianrasor.gpg;
 
   homedirHash = lib.substring 0 24 (hexStringToBase32 (builtins.hashString "sha1" cfg.homedir));
   socketSubdir =

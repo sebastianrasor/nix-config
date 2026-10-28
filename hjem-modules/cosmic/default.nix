@@ -1,4 +1,16 @@
-_:
+{ nixpkgs, ... }:
+let
+  inherit (nixpkgs) lib;
+
+  cosmicConfigFiles = lib.pipe ./cosmic [
+    lib.filesystem.listFilesRecursive
+    (map (file: {
+      name = "cosmic/${lib.strings.removePrefix "./" (lib.path.removePrefix ./cosmic file)}";
+      value.source = file;
+    }))
+    builtins.listToAttrs
+  ];
+in
 {
   config,
   lib,
@@ -21,15 +33,6 @@ let
           "$out/cosmic/com.system76.CosmicTheme.Dark.Builder/v2/accent"
         cosmic-ctl build-theme
       '';
-
-  cosmicConfigFiles = lib.pipe ./cosmic [
-    lib.filesystem.listFilesRecursive
-    (map (file: {
-      name = "cosmic/${lib.strings.removePrefix "./" (lib.path.removePrefix ./cosmic file)}";
-      value.source = file;
-    }))
-    builtins.listToAttrs
-  ];
 in
 {
   options.sebastianrasor.cosmic = {

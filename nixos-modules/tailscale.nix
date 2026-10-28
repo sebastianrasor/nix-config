@@ -14,11 +14,6 @@ in
       default = false;
     };
 
-    authKeyFile = lib.mkOption {
-      type = lib.types.str;
-      default = null;
-    };
-
     exitNode = lib.mkOption {
       type = lib.types.bool;
       default = false;
