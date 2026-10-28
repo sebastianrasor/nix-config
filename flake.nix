@@ -38,8 +38,6 @@
 
       hjemModules = import ./hjem-modules inputsWithConstants;
 
-      homeModules = import ./home-modules inputsWithConstants;
-
       nixosConfigurations = import ./nixos-configurations inputsWithConstants;
 
       nixosModules = import ./nixos-modules inputsWithConstants;
@@ -59,14 +57,6 @@
       url = "github:nix-community/authentik-nix";
     };
 
-    cosmic-manager = {
-      url = "github:HeitorAugustoLN/cosmic-manager";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        home-manager.follows = "home-manager";
-      };
-    };
-
     crane.url = "github:ipetkov/crane";
 
     disko = {
@@ -78,11 +68,6 @@
 
     hjem = {
       url = "github:feel-co/hjem";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    home-manager = {
-      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

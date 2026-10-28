@@ -1,0 +1,8 @@
+{
+    (
+        key: "c",
+        modifiers: [
+            Ctrl,
+        ],
+    ): Disable,
+}

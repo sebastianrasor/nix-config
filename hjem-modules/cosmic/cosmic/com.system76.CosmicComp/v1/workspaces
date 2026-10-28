@@ -1,0 +1,4 @@
+(
+    workspace_layout: Horizontal,
+    workspace_mode: OutputBound,
+)

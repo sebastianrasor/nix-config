@@ -1,0 +1,11 @@
+(
+    filter_by_theme: false,
+    filter_method: Lanczos,
+    output: "all",
+    rotation_frequency: 300,
+    sampling_method: Alphanumeric,
+    scaling_mode: Zoom,
+    source: Path(
+        "/home/sebastian/.local/share/wallpapers/bliss-600dpi.png",
+    ),
+)

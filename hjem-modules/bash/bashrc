@@ -1,0 +1,11 @@
+[[ -f ~/.profile ]] && . ~/.profile
+
+# Commands that should be applied only for interactive shells.
+[[ $- == *i* ]] || return
+
+if [[ -d ~/.config/bashrc.d ]]; then
+  for f in ~/.config/bashrc.d/*.sh; do
+    [[ -r "$f" ]] && . "$f"
+  done
+  unset f
+fi

@@ -1,0 +1,11 @@
+[git]
+sign-on-push = true
+
+[signing]
+backend = "ssh"
+behavior = "drop"
+key = "~/.ssh/id_ed25519_sk.pub"
+
+[user]
+email = "git@rasor.us"
+name = "Sebastian Rasor"

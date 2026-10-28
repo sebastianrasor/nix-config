@@ -2,30 +2,30 @@
   "window_title_separator": " — ",
   "proxy": "",
   "git": {
-    "disable_git": true
+    "disable_git": true,
   },
   "collaboration_panel": {
-    "button": false
+    "button": false,
   },
   "git_panel": {
     "dock": "bottom",
-    "button": true
+    "button": true,
   },
   "outline_panel": {
-    "button": false
+    "button": false,
   },
   "bottom_dock_layout": "full",
   "tabs": {
     "show_close_button": "hover",
     "show_diagnostics": "all",
     "file_icons": true,
-    "git_status": true
+    "git_status": true,
   },
   "tab_bar": {
     "show_pinned_tabs_in_separate_row": false,
     "show_tab_bar_buttons": true,
     "show_nav_history_buttons": false,
-    "show": true
+    "show": true,
   },
   "project_panel": {
     "git_status_indicator": true,
@@ -35,12 +35,12 @@
     "file_icons": true,
     "entry_spacing": "standard",
     "dock": "left",
-    "button": true
+    "button": true,
   },
   "diagnostics": {
     "inline": {
-      "enabled": true
-    }
+      "enabled": true,
+    },
   },
   "document_symbols": "on",
   "document_folding_ranges": "on",
@@ -51,7 +51,7 @@
     "show_background": false,
     "show_type_hints": true,
     "show_value_hints": true,
-    "enabled": false
+    "enabled": false,
   },
   "completion_menu_item_kind": "symbol",
   "show_whitespaces": "trailing",
@@ -60,21 +60,21 @@
   "vim": {
     "use_smartcase_find": true,
     "use_system_clipboard": "never",
-    "toggle_relative_line_numbers": false
+    "toggle_relative_line_numbers": false,
   },
   "toolbar": {
     "code_actions": true,
-    "breadcrumbs": true
+    "breadcrumbs": true,
   },
   "show_signature_help_after_edits": true,
   "auto_signature_help": true,
   "autosave": {
     "after_delay": {
-      "milliseconds": 1000
-    }
+      "milliseconds": 1000,
+    },
   },
   "markdown_preview": {
-    "font_family": "Atkinson Hyperlegible Next"
+    "font_family": "Atkinson Hyperlegible Next",
   },
   "agent": {
     "default_model": {
@@ -122,9 +122,6 @@
           "nixos": {
             "expr": "let flake = builtins.getFlake (toString ./.); in (flake.inputs.nixpkgs.lib.nixosSystem { check = false; modules = builtins.attrValues (flake.outputs.nixosModules or { }); }).options",
           },
-          "home_manager": {
-            "expr": "let flake = builtins.getFlake (toString ./.); pkgs = import flake.inputs.nixpkgs { }; in (flake.inputs.home-manager.lib.homeManagerConfiguration { inherit pkgs; check = false; modules = [ { home = { homeDirectory = \"/home/sebastian\"; username = \"sebastian\"; stateVersion = pkgs.lib.lists.last (import (flake.inputs.home-manager.outPath + \"/modules/misc/version.nix\") { config = { }; inherit (pkgs) lib; }).options.home.stateVersion.type.functor.payload.values; }; } ] ++ builtins.attrValues (flake.outputs.homeModules or { }); }).options",
-          },
           "hjem": {
             "expr": "let flake = builtins.getFlake (toString ./.); in (flake.inputs.nixpkgs.lib.nixosSystem { check = false; modules = builtins.attrValues (flake.outputs.nixosModules or { }); }).options.hjem.users.type.getSubOptions [ ]",
           },
@@ -144,7 +141,7 @@
   },
   "terminal": {
     "toolbar": {
-      "breadcrumbs": false
+      "breadcrumbs": false,
     },
     "show_count_badge": false,
     "starts_open": true,

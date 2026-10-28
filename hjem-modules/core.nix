@@ -22,10 +22,43 @@ in
 
   config = lib.mkMerge [
     (lib.mkIf cfg.enable {
-      sebastianrasor = { };
+      sebastianrasor = {
+        bash.enable = true;
+        bat.enable = true;
+        bottom.enable = true;
+        direnv.enable = true;
+        dust.enable = true;
+        dysk.enable = true;
+        eza.enable = true;
+        fish.enable = true;
+        git.enable = true;
+        jq.enable = true;
+        jujutsu.enable = true;
+        persistence.directories = [
+          config.xdg.data.directory
+          config.xdg.state.directory
+        ];
+        ripgrep.enable = true;
+        ssh.enable = true;
+        starship.enable = true;
+        vim.enable = true;
+        xdg-userdirs.enable = true;
+        zoxide.enable = true;
+      };
     })
     (lib.mkIf cfg.graphical {
       sebastianrasor = {
+        atkinson-hyperlegible.enable = true;
+        cosmic.enable = true;
+        discord.enable = true;
+        emoji.enable = true;
+        google-chrome.enable = true;
+        gpg.enable = true;
+        pass.enable = true;
+        posy-cursors.enable = true;
+        tailscale-systray.enable = true;
+        thunderbird.enable = true;
+        yubikey-touch-detector.enable = true;
         zed-editor.enable = true;
       };
     })

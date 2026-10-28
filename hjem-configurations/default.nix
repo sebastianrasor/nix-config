@@ -28,14 +28,38 @@ lib.pipe ./. [
             config = constants.nixConfig;
             overlays = builtins.attrValues self.overlays;
           };
+      osConfig =
+        if hostname != null && self.nixosConfigurations ? ${hostname} then
+          self.nixosConfigurations.${hostname}.config
+        else
+          null;
+      utils = import "${nixpkgs}/nixos/lib/utils.nix" {
+        inherit lib pkgs;
+        config =
+          if osConfig != null then
+            osConfig
+          else
+            {
+              systemd = {
+                package = pkgs.systemd;
+                globalEnvironment = { };
+              };
+            };
+      };
       hjem-lib = import "${hjem}/lib.nix" { inherit lib pkgs; };
       configurationModule = lib.modules.importApply ./${entry} inputs;
       evaluated = lib.evalModules {
         specialArgs = {
-          inherit hjem-lib pkgs;
+          inherit
+            hjem-lib
+            osConfig
+            pkgs
+            utils
+            ;
         };
         modules = [
           "${hjem}/modules/common/user.nix"
+          "${hjem}/modules/nixos/systemd.nix"
           {
             _module.args.name = username;
             user = lib.mkDefault username;

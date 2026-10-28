@@ -1,0 +1,9 @@
+AddKeysToAgent yes
+CanonicalDomains ts.rasor.us
+CanonicalizeHostname yes
+ControlMaster auto
+ControlPath ${XDG_RUNTIME_DIR}/ssh/control/%C
+ControlPersist 10m
+
+Host *.ts.rasor.us
+  ForwardAgent yes

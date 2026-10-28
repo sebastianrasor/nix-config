@@ -40,6 +40,8 @@ in
   ];
 
   config = lib.mkIf cfg.enable {
+    environment.pathsToLink = [ "/share/fish" ];
+
     hjem = {
       clobberByDefault = true;
       extraModules = lib.attrsets.attrValues self.hjemModules;

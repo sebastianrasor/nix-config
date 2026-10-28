@@ -60,30 +60,6 @@
         "type": "github"
       }
     },
-    "cosmic-manager": {
-      "inputs": {
-        "flake-parts": "flake-parts_2",
-        "home-manager": [
-          "home-manager"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1791070782,
-        "narHash": "sha256-1dHqiMHuMHvuru0f9ybyW+3XJHb7P8cz4k4GPa1YYyY=",
-        "owner": "HeitorAugustoLN",
-        "repo": "cosmic-manager",
-        "rev": "f7e32c4b314f8c3a1a23cfdac65132c0ab87d80c",
-        "type": "github"
-      },
-      "original": {
-        "owner": "HeitorAugustoLN",
-        "repo": "cosmic-manager",
-        "type": "github"
-      }
-    },
     "crane": {
       "locked": {
         "lastModified": 1789760033,
@@ -116,9 +92,7 @@
     },
     "disko": {
       "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
+        "nixpkgs": ["nixpkgs"]
       },
       "locked": {
         "lastModified": 1792526520,
@@ -186,31 +160,7 @@
     },
     "flake-parts_2": {
       "inputs": {
-        "nixpkgs-lib": [
-          "cosmic-manager",
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1759362264,
-        "narHash": "sha256-wfG0S7pltlYyZTM+qqlhJ7GMw2fTF4mLKCIVhLii/4M=",
-        "owner": "hercules-ci",
-        "repo": "flake-parts",
-        "rev": "758cf7296bee11f1706a574c77d072b8a7baa881",
-        "type": "github"
-      },
-      "original": {
-        "owner": "hercules-ci",
-        "repo": "flake-parts",
-        "type": "github"
-      }
-    },
-    "flake-parts_3": {
-      "inputs": {
-        "nixpkgs-lib": [
-          "hercules-ci-effects",
-          "nixpkgs"
-        ]
+        "nixpkgs-lib": ["hercules-ci-effects", "nixpkgs"]
       },
       "locked": {
         "lastModified": 1790898470,
@@ -227,10 +177,7 @@
     },
     "flake-utils": {
       "inputs": {
-        "systems": [
-          "authentik-nix",
-          "systems"
-        ]
+        "systems": ["authentik-nix", "systems"]
       },
       "locked": {
         "lastModified": 1791914995,
@@ -248,7 +195,7 @@
     },
     "hercules-ci-effects": {
       "inputs": {
-        "flake-parts": "flake-parts_3",
+        "flake-parts": "flake-parts_2",
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
@@ -267,9 +214,7 @@
     },
     "hjem": {
       "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
+        "nixpkgs": ["nixpkgs"]
       },
       "locked": {
         "lastModified": 1793026809,
@@ -287,30 +232,7 @@
     },
     "home-manager": {
       "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1792896866,
-        "narHash": "sha256-/0tELNnhdSnP+bHSdWiEe6KpfSwi6WrTnT9cm/jNkjA=",
-        "owner": "nix-community",
-        "repo": "home-manager",
-        "rev": "c216bf5a1f173b0481bd5c8c489ebe5595ecc68c",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-community",
-        "repo": "home-manager",
-        "type": "github"
-      }
-    },
-    "home-manager_2": {
-      "inputs": {
-        "nixpkgs": [
-          "impermanence",
-          "nixpkgs"
-        ]
+        "nixpkgs": ["impermanence", "nixpkgs"]
       },
       "locked": {
         "lastModified": 1768598210,
@@ -328,7 +250,7 @@
     },
     "impermanence": {
       "inputs": {
-        "home-manager": "home-manager_2",
+        "home-manager": "home-manager",
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
@@ -348,9 +270,7 @@
     "lanzaboote": {
       "inputs": {
         "crane": "crane_2",
-        "nixpkgs": [
-          "nixpkgs"
-        ],
+        "nixpkgs": ["nixpkgs"],
         "pre-commit": "pre-commit",
         "rust-overlay": "rust-overlay"
       },
@@ -371,9 +291,7 @@
     },
     "nixbot": {
       "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ],
+        "nixpkgs": ["nixpkgs"],
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
@@ -504,10 +422,7 @@
     "pre-commit": {
       "inputs": {
         "flake-compat": "flake-compat_2",
-        "nixpkgs": [
-          "lanzaboote",
-          "nixpkgs"
-        ]
+        "nixpkgs": ["lanzaboote", "nixpkgs"]
       },
       "locked": {
         "lastModified": 1789514889,
@@ -525,18 +440,9 @@
     },
     "pyproject-build-systems": {
       "inputs": {
-        "nixpkgs": [
-          "authentik-nix",
-          "nixpkgs"
-        ],
-        "pyproject-nix": [
-          "authentik-nix",
-          "pyproject-nix"
-        ],
-        "uv2nix": [
-          "authentik-nix",
-          "uv2nix"
-        ]
+        "nixpkgs": ["authentik-nix", "nixpkgs"],
+        "pyproject-nix": ["authentik-nix", "pyproject-nix"],
+        "uv2nix": ["authentik-nix", "uv2nix"]
       },
       "locked": {
         "lastModified": 1791170410,
@@ -554,10 +460,7 @@
     },
     "pyproject-nix": {
       "inputs": {
-        "nixpkgs": [
-          "authentik-nix",
-          "nixpkgs"
-        ]
+        "nixpkgs": ["authentik-nix", "nixpkgs"]
       },
       "locked": {
         "lastModified": 1791657700,
@@ -576,12 +479,10 @@
     "root": {
       "inputs": {
         "authentik-nix": "authentik-nix",
-        "cosmic-manager": "cosmic-manager",
         "crane": "crane",
         "disko": "disko",
         "hercules-ci-effects": "hercules-ci-effects",
         "hjem": "hjem",
-        "home-manager": "home-manager",
         "impermanence": "impermanence",
         "lanzaboote": "lanzaboote",
         "nixbot": "nixbot",
@@ -594,10 +495,7 @@
     },
     "rust-overlay": {
       "inputs": {
-        "nixpkgs": [
-          "lanzaboote",
-          "nixpkgs"
-        ]
+        "nixpkgs": ["lanzaboote", "nixpkgs"]
       },
       "locked": {
         "lastModified": 1789889921,
@@ -615,9 +513,7 @@
     },
     "sops-nix": {
       "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
+        "nixpkgs": ["nixpkgs"]
       },
       "locked": {
         "lastModified": 1792809984,
@@ -665,9 +561,7 @@
     },
     "tailscale-golink": {
       "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ],
+        "nixpkgs": ["nixpkgs"],
         "systems": "systems_2"
       },
       "locked": {
@@ -686,10 +580,7 @@
     },
     "treefmt-nix": {
       "inputs": {
-        "nixpkgs": [
-          "nixbot",
-          "nixpkgs"
-        ]
+        "nixpkgs": ["nixbot", "nixpkgs"]
       },
       "locked": {
         "lastModified": 1780220602,
@@ -707,14 +598,8 @@
     },
     "uv2nix": {
       "inputs": {
-        "nixpkgs": [
-          "authentik-nix",
-          "nixpkgs"
-        ],
-        "pyproject-nix": [
-          "authentik-nix",
-          "pyproject-nix"
-        ]
+        "nixpkgs": ["authentik-nix", "nixpkgs"],
+        "pyproject-nix": ["authentik-nix", "pyproject-nix"]
       },
       "locked": {
         "lastModified": 1792151315,
@@ -732,9 +617,7 @@
     },
     "yubikey-touch-detector": {
       "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
+        "nixpkgs": ["nixpkgs"]
       },
       "locked": {
         "lastModified": 1789941827,
