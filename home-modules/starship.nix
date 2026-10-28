@@ -22,6 +22,13 @@ in
       settings = {
         nix_shell.heuristic = true;
         shlvl.disabled = false;
+        vcs.order = [
+          "jj"
+          "git"
+          "hg"
+          "pijul"
+          "fossil"
+        ];
       };
     };
   };

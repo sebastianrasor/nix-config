@@ -42,7 +42,6 @@ in
         ripgrep.enable = true;
         ssh.enable = true;
         starship.enable = true;
-        tokei.enable = true;
         vim.enable = true;
         xdg-userdirs.enable = true;
         zoxide.enable = true;
@@ -53,14 +52,12 @@ in
     (lib.mkIf cfg.graphical {
       sebastianrasor = {
         atkinson-hyperlegible.enable = true;
-        browserpass.enable = true;
         cosmic.enable = true;
         discord.enable = true;
         emoji.enable = true;
         google-chrome.enable = true;
         gpg.enable = true;
         pass.enable = true;
-        passage.enable = true;
         posy-cursors.enable = true;
         tailscale-systray.enable = true;
         thunderbird.enable = true;
