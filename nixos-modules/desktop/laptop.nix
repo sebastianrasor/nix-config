@@ -39,6 +39,12 @@ in
       keyMap = "dvorak";
     };
 
+    environment.etc."geoclue/geoclue.conf".text = lib.mkAfter ''
+      [ip]
+      enable=true
+      method=ichnaea
+    '';
+
     hardware = {
       bluetooth = {
         enable = true;
