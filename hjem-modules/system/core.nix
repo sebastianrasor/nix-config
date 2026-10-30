@@ -33,6 +33,7 @@ in
         direnv.enable = lib.mkDefault true;
         fish.enable = lib.mkDefault true;
         git.enable = lib.mkDefault true;
+        helix.enable = lib.mkDefault true;
         jujutsu.enable = lib.mkDefault true;
         persistence.directories = [
           config.xdg.data.directory
@@ -40,7 +41,6 @@ in
         ];
         ssh.enable = lib.mkDefault true;
         starship.enable = lib.mkDefault true;
-        vim.enable = lib.mkDefault true;
         xdg-userdirs.enable = lib.mkDefault true;
       };
     })
@@ -64,7 +64,6 @@ in
         ];
         posy-cursors.enable = lib.mkDefault true;
         yubikey-touch-detector.enable = lib.mkDefault true;
-        zed.enable = lib.mkDefault true;
       };
 
       systemd.services.tailscale-systray = {

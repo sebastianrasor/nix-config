@@ -1,0 +1,9 @@
+theme = "modus_operandi"
+
+[editor]
+mouse = false
+
+[editor.cursor-shape]
+insert = "bar"
+normal = "block"
+select = "underline"
