@@ -1,0 +1,20 @@
+{
+  "agentMode": "auto",
+  "altScreenMode": "always",
+  "artifactReviewPolicy": "agent-decides",
+  "enableTerminalSandbox": true,
+  "model": "Gemini 4 Argon (High)",
+  "permissions": {
+    "allow": [
+      "read_file(/nix/store)",
+      "read_url(docs.rs)",
+      "read_url(nixos.org)",
+      "read_url(hjem.feel-co.org)",
+      "read_url(github.com)"
+    ]
+  },
+  "queuedMessages": "send-immediately",
+  "trustedWorkspaces": [
+    "/home/sebastian/desktop/nix-config"
+  ]
+}

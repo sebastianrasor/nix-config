@@ -29,6 +29,7 @@ in
       ];
 
       sebastianrasor = {
+        antigravity.enable = lib.mkDefault true;
         bash.enable = lib.mkDefault true;
         direnv.enable = lib.mkDefault true;
         fish.enable = lib.mkDefault true;
