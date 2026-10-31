@@ -12,8 +12,10 @@
 let
   cfg = config.sebastianrasor.headscale;
   carbonProxyDomains = lib.optionals (self ? nixosConfigurations.carbon) (
-    map (p: p.domain) (
-      builtins.attrValues self.nixosConfigurations.carbon.config.sebastianrasor.reverse-proxy.proxies
+    lib.filter (lib.hasSuffix ".ts.${constants.domain}") (
+      map (p: p.domain) (
+        builtins.attrValues self.nixosConfigurations.carbon.config.sebastianrasor.reverse-proxy.proxies
+      )
     )
   );
   extraCarbonDomains = map (subdomain: "${subdomain}.ts.${constants.domain}") [

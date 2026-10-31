@@ -1,4 +1,4 @@
-_:
+{ constants, ... }:
 {
   config,
   lib,
@@ -13,11 +13,19 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    services.immich = {
-      accelerationDevices = null;
-      enable = true;
+    services = {
+      immich = {
+        accelerationDevices = null;
+        enable = true;
 
-      mediaLocation = "/srv/immich";
+        mediaLocation = "/srv/immich";
+      };
+
+      immich-public-proxy = {
+        enable = true;
+        port = 3001;
+        immichUrl = "http://[::1]:${toString config.services.immich.port}";
+      };
     };
 
     users.users.immich.extraGroups = [
@@ -39,7 +47,13 @@ in
     };
 
     sebastianrasor = {
-      reverse-proxy.proxies."immich" = "http://[::1]:${toString config.services.immich.port}";
+      reverse-proxy.proxies = {
+        "immich" = "http://[::1]:${toString config.services.immich.port}";
+        "immich.${constants.domain}" = {
+          public = true;
+          target = "http://127.0.0.1:${toString config.services.immich-public-proxy.port}";
+        };
+      };
 
       unas.mounts."Immich" = "/media/immich";
     };

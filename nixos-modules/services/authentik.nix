@@ -33,6 +33,7 @@ in
     networking.hosts."127.0.0.1" = [ "authentik.${constants.domain}" ];
 
     sebastianrasor.reverse-proxy.proxies."authentik" = {
+      public = true;
       aliases = [ "authentik.${constants.domain}" ];
     };
 

@@ -1,9 +1,5 @@
 { constants, ... }:
-{
-  config,
-  ...
-}:
-{
+_: {
   networking.hostName = "nephele";
 
   sebastianrasor = {
@@ -16,22 +12,16 @@
       enable = true;
       baseDomainName = constants.domain;
       openFirewall = true;
-      proxies = {
-        "authentik" = "https://authentik.ts.${constants.domain}";
-        "immich" = "http://127.0.0.1:${toString config.services.immich-public-proxy.port}";
-      };
+      passthroughHost = "carbon";
     };
     sshd.publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIISaqWRMez2mFczqhMmiYe0KzNeENKsqEQw/AsOC+Ay+";
     tailscale.exitNode = true;
     systemd-networkd.interfacesRequiredForOnline."enp1s0" = "routable";
-    www-sebastianrasor-com.enable = true;
-  };
-
-  services = {
-    immich-public-proxy = {
+    wireguard = {
       enable = true;
-      port = 3001;
-      immichUrl = "https://immich.ts.${constants.domain}";
+      address = "10.100.0.1/24";
+      listenPort = 51820;
+      publicKey = "OUZdlRDtvsgRhfMrVgMsFtF4Sa70pSVH5hJ6RF3G4yU=";
     };
   };
 

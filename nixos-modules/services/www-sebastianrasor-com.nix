@@ -33,7 +33,10 @@ in
       };
     };
 
-    sebastianrasor.reverse-proxy.proxies."www.sebastianrasor.com" = "http://127.0.0.1:2002";
+    sebastianrasor.reverse-proxy.proxies."www.sebastianrasor.com" = {
+      public = true;
+      target = "http://127.0.0.1:2002";
+    };
 
     sops.secrets = {
       "mxroute/smtpConnectionUrl" = { };

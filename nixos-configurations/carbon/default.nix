@@ -33,6 +33,12 @@ _: {
       host = "10.0.0.103";
     };
     vaultwarden.enable = true;
+    wireguard = {
+      enable = true;
+      address = "10.100.0.2/24";
+      publicKey = "o16hcIqhoWUYUxdQzmhpygf/5noF9ovkn1McQmPICFA=";
+    };
+    www-sebastianrasor-com.enable = true;
   };
 
   imports = [
