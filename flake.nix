@@ -141,5 +141,15 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    tangled = {
+      url = "git+https://tangled.org/tangled.org/core";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        nixpkgs-pds.follows = "nixpkgs";
+        flake-compat.follows = "";
+        gomod2nix.inputs.flake-utils.follows = "authentik-nix/flake-utils";
+      };
+    };
   };
 }

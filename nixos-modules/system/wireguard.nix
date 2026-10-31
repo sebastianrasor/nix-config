@@ -29,18 +29,24 @@ let
       peerIp = lib.head (lib.splitString "/" peer.config.sebastianrasor.wireguard.address);
       peerIp6 = lib.head (lib.splitString "/" peer.config.sebastianrasor.wireguard.ipv6Address);
     in
-    lib.concatMap (fwd: [
-      {
-        sourcePort = fwd.port;
-        destination = "${peerIp}:${toString fwd.port}";
-        inherit (fwd) proto;
-      }
-      {
-        sourcePort = fwd.port;
-        destination = "[${peerIp6}]:${toString fwd.port}";
-        inherit (fwd) proto;
-      }
-    ]) peer.config.sebastianrasor.wireguard.forwardPorts
+    lib.concatMap (
+      fwd:
+      let
+        destPort = toString (if fwd.destinationPort != null then fwd.destinationPort else fwd.port);
+      in
+      [
+        {
+          sourcePort = fwd.port;
+          destination = "${peerIp}:${destPort}";
+          inherit (fwd) proto;
+        }
+        {
+          sourcePort = fwd.port;
+          destination = "[${peerIp6}]:${destPort}";
+          inherit (fwd) proto;
+        }
+      ]
+    ) peer.config.sebastianrasor.wireguard.forwardPorts
   ) peers;
 in
 {
@@ -66,6 +72,11 @@ in
           options = {
             port = lib.mkOption {
               type = lib.types.port;
+            };
+
+            destinationPort = lib.mkOption {
+              type = lib.types.nullOr lib.types.port;
+              default = null;
             };
 
             proto = lib.mkOption {
@@ -129,14 +140,29 @@ in
           ) peers
         );
 
-      nat = lib.mkIf (cfg.listenPort != null && forwardedPorts != [ ]) {
-        enable = true;
-        enableIPv6 = true;
-        externalInterface = lib.head (
-          builtins.attrNames config.sebastianrasor.systemd-networkd.interfacesRequiredForOnline
-        );
-        forwardPorts = forwardedPorts;
-      };
+      nat =
+        let
+          externalInterface = lib.head (
+            builtins.attrNames config.sebastianrasor.systemd-networkd.interfacesRequiredForOnline
+          );
+        in
+        lib.mkIf (cfg.listenPort != null && forwardedPorts != [ ]) {
+          enable = true;
+          enableIPv6 = true;
+          inherit externalInterface;
+          forwardPorts = forwardedPorts;
+          extraCommands = lib.concatMapStrings (
+            peer:
+            lib.concatMapStrings (
+              fwd:
+              lib.optionalString (fwd.destinationPort != null && fwd.destinationPort != fwd.port) ''
+                ip46tables -w -t filter -A nixos-filter-forward \
+                  -i ${externalInterface} -p ${fwd.proto} \
+                  --dport ${toString fwd.destinationPort} -j ACCEPT
+              ''
+            ) peer.config.sebastianrasor.wireguard.forwardPorts
+          ) peers;
+        };
     };
 
     systemd.network = {
