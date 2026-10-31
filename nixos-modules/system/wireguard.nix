@@ -10,6 +10,7 @@
 }:
 let
   cfg = config.sebastianrasor.wireguard;
+  localIp = lib.head (lib.splitString "/" cfg.address);
   peers = lib.pipe self.nixosConfigurations [
     builtins.attrValues
     (lib.filter (
@@ -18,6 +19,9 @@ let
       && host.config.sebastianrasor.wireguard.enable
     ))
   ];
+  hasEndpointPeers = builtins.any (
+    peer: peer.config.sebastianrasor.wireguard.listenPort != null
+  ) peers;
 in
 {
   options.sebastianrasor.wireguard = {
@@ -70,11 +74,12 @@ in
           in
           {
             PublicKey = peerCfg.publicKey;
-            AllowedIPs = [ "${peerIp}/32" ];
+            AllowedIPs = if peerCfg.listenPort != null then [ "0.0.0.0/0" ] else [ "${peerIp}/32" ];
           }
           // lib.optionalAttrs (peerCfg.listenPort != null) {
             Endpoint = "${peer.config.networking.hostName}.${constants.domain}:${toString peerCfg.listenPort}";
             PersistentKeepalive = 25;
+            RouteTable = 1000;
           }
         ) peers;
       };
@@ -84,6 +89,12 @@ in
         address = [ cfg.address ];
         networkConfig.ConfigureWithoutCarrier = true;
         linkConfig.RequiredForOnline = "no";
+        routingPolicyRules = lib.optionals hasEndpointPeers [
+          {
+            From = localIp;
+            Table = 1000;
+          }
+        ];
       };
     };
   };

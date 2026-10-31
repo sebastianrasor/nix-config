@@ -11,6 +11,7 @@ _: {
     cheaters-swear-jar.enable = true;
     forgejo.enable = true;
     harmonia.enable = true;
+    headscale.enable = true;
     homebox.enable = true;
     immich.enable = true;
     intel-arc-a380.enable = true;

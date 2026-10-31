@@ -1,6 +1,5 @@
 {
   constants,
-  self,
   ...
 }:
 {
@@ -11,12 +10,9 @@
 }:
 let
   cfg = config.sebastianrasor.headscale;
-  carbonProxyDomains = lib.optionals (self ? nixosConfigurations.carbon) (
-    lib.filter (lib.hasSuffix ".ts.${constants.domain}") (
-      map (p: p.domain) (
-        builtins.attrValues self.nixosConfigurations.carbon.config.sebastianrasor.reverse-proxy.proxies
-      )
-    )
+  localWgIp = lib.head (lib.splitString "/" config.sebastianrasor.wireguard.address);
+  carbonProxyDomains = lib.filter (lib.hasSuffix ".ts.${constants.domain}") (
+    map (p: p.domain) (builtins.attrValues config.sebastianrasor.reverse-proxy.proxies)
   );
   extraCarbonDomains = map (subdomain: "${subdomain}.ts.${constants.domain}") [
     "deploy"
@@ -32,27 +28,35 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    boot.kernel.sysctl."net.ipv4.ip_nonlocal_bind" = true;
+
     sops.secrets."oidc/clientSecrets/headscale" = lib.mkIf config.sebastianrasor.secrets.enable {
       owner = config.systemd.services.headscale.serviceConfig.User;
     };
     networking.firewall.allowedUDPPorts = [ 3478 ];
-    systemd.services.headscale-oidc-restart = {
-      after = [ "headscale.service" ];
-      wantedBy = [ "headscale.service" ];
-      serviceConfig.ExecStart = pkgs.writeShellScript "headscale-oidc-restart" ''
-        STATUS_CODE="$(${lib.getExe pkgs.curl} -o /dev/null --silent --write-out "%{http_code}" "${config.services.headscale.settings.server_url}/oidc/callback")"
+    systemd.services = {
+      headscale.after = [
+        "authentik.service"
+        "nginx.service"
+      ];
+      headscale-oidc-restart = {
+        after = [ "headscale.service" ];
+        wantedBy = [ "headscale.service" ];
+        serviceConfig.ExecStart = pkgs.writeShellScript "headscale-oidc-restart" ''
+          STATUS_CODE="$(${lib.getExe pkgs.curl} -o /dev/null --silent --write-out "%{http_code}" "${config.services.headscale.settings.server_url}/oidc/callback")"
 
-        if [ "$STATUS_CODE" = "400" ]; then
-          exit 0
-        fi
+          if [ "$STATUS_CODE" = "400" ]; then
+            exit 0
+          fi
 
-        until ${lib.getExe pkgs.curl} -o /dev/null -s "${config.services.headscale.settings.oidc.issuer}/.well-known/openid-configuration"
-        do
-          sleep 30
-        done
+          until ${lib.getExe pkgs.curl} -o /dev/null -s "${config.services.headscale.settings.oidc.issuer}/.well-known/openid-configuration"
+          do
+            sleep 30
+          done
 
-        systemctl restart headscale.service
-      '';
+          systemctl restart headscale.service
+        '';
+      };
     };
     services.headscale = {
       enable = true;
@@ -68,7 +72,7 @@ in
         derp.server = {
           enabled = true;
           verify_clients = true;
-          stun_listen_addr = "0.0.0.0:3478";
+          stun_listen_addr = "${localWgIp}:3478";
           region_id = 999;
           region_code = "headscale";
           region_name = "Headscale Embedded DERP";
@@ -98,9 +102,21 @@ in
       };
     };
 
-    sebastianrasor.persistence.directories = [ "/var/lib/headscale" ];
+    sebastianrasor.persistence.directories = [
+      {
+        directory = "/var/lib/headscale";
+        inherit (config.services.headscale) user group;
+        mode = "0750";
+      }
+    ];
 
-    sebastianrasor.reverse-proxy.proxies."headscale" =
-      "http://127.0.0.1:${toString config.services.headscale.port}";
+    systemd.tmpfiles.rules = [
+      "Z /var/lib/headscale 0750 ${config.services.headscale.user} ${config.services.headscale.group} -"
+    ];
+
+    sebastianrasor.reverse-proxy.proxies."headscale.${constants.domain}" = {
+      public = true;
+      target = "http://127.0.0.1:${toString config.services.headscale.port}";
+    };
   };
 }

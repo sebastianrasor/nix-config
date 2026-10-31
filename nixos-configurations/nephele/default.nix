@@ -5,8 +5,6 @@ _: {
   sebastianrasor = {
     core.enable = true;
 
-    acme.enable = true;
-    headscale.enable = true;
     persistence.enable = true;
     reverse-proxy = {
       enable = true;

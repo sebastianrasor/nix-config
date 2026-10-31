@@ -105,7 +105,22 @@ in
         }
       '';
       virtualHosts =
-        lib.optionalAttrs (hasPublicProxies || hasPassthrough) {
+        lib.optionalAttrs (hasPassthrough && cfg.proxies == { }) {
+          "http-redirect" = {
+            listen = [
+              {
+                addr = "0.0.0.0";
+                port = 80;
+              }
+              {
+                addr = "[::0]";
+                port = 80;
+              }
+            ];
+            locations."/".return = "301 https://$host$request_uri";
+          };
+        }
+        // lib.optionalAttrs (hasPublicProxies || hasPassthrough) {
           "_" = {
             default = true;
             rejectSSL = true;
@@ -175,8 +190,29 @@ in
         ) cfg.proxies;
     };
 
-    networking.hosts = lib.mkIf hasPassthrough {
-      ${passthroughIp} = passthroughDomains;
+    networking = {
+      hosts = lib.mkIf hasPassthrough {
+        ${passthroughIp} = passthroughDomains;
+      };
+
+      nat = lib.mkIf (hasPassthrough && passthroughConfig.sebastianrasor.headscale.enable) {
+        enable = true;
+        externalInterface = lib.head (
+          builtins.attrNames config.sebastianrasor.systemd-networkd.interfacesRequiredForOnline
+        );
+        forwardPorts = [
+          {
+            sourcePort = 3478;
+            destination = "${passthroughIp}:3478";
+            proto = "udp";
+          }
+        ];
+      };
+
+      firewall.allowedTCPPorts = lib.mkIf cfg.openFirewall [
+        80
+        443
+      ];
     };
 
     sebastianrasor.acme = {
@@ -185,10 +221,5 @@ in
         builtins.attrValues cfg.proxies
       );
     };
-
-    networking.firewall.allowedTCPPorts = lib.mkIf cfg.openFirewall [
-      80
-      443
-    ];
   };
 }
