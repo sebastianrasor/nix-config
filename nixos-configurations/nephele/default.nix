@@ -1,17 +1,10 @@
-{ constants, ... }:
-_: {
+_: _: {
   networking.hostName = "nephele";
 
   sebastianrasor = {
     core.enable = true;
 
     persistence.enable = true;
-    reverse-proxy = {
-      enable = true;
-      baseDomainName = constants.domain;
-      openFirewall = true;
-      passthroughHost = "carbon";
-    };
     sshd.publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIISaqWRMez2mFczqhMmiYe0KzNeENKsqEQw/AsOC+Ay+";
     tailscale.exitNode = true;
     systemd-networkd.interfacesRequiredForOnline."enp1s0" = "routable";

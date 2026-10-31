@@ -22,7 +22,7 @@ in
       environmentFile = config.sops.templates."authentik.env".path;
       nginx = {
         enable = true;
-        host = "authentik.ts.${constants.domain}";
+        host = "authentik.${constants.domain}";
       };
       settings = {
         disable_startup_analytics = true;
@@ -30,11 +30,8 @@ in
       };
     };
 
-    networking.hosts."127.0.0.1" = [ "authentik.${constants.domain}" ];
-
-    sebastianrasor.reverse-proxy.proxies."authentik" = {
+    sebastianrasor.reverse-proxy.proxies."authentik.${constants.domain}" = {
       public = true;
-      aliases = [ "authentik.${constants.domain}" ];
     };
 
     sops = {

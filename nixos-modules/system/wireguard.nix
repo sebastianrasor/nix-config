@@ -22,6 +22,17 @@ let
   hasEndpointPeers = builtins.any (
     peer: peer.config.sebastianrasor.wireguard.listenPort != null
   ) peers;
+  forwardedPorts = lib.concatMap (
+    peer:
+    let
+      peerIp = lib.head (lib.splitString "/" peer.config.sebastianrasor.wireguard.address);
+    in
+    map (fwd: {
+      sourcePort = fwd.port;
+      destination = "${peerIp}:${toString fwd.port}";
+      inherit (fwd) proto;
+    }) peer.config.sebastianrasor.wireguard.forwardPorts
+  ) peers;
 in
 {
   options.sebastianrasor.wireguard = {
@@ -29,6 +40,32 @@ in
 
     address = lib.mkOption {
       type = lib.types.str;
+    };
+
+    domains = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+    };
+
+    forwardPorts = lib.mkOption {
+      type = lib.types.listOf (
+        lib.types.submodule {
+          options = {
+            port = lib.mkOption {
+              type = lib.types.port;
+            };
+
+            proto = lib.mkOption {
+              type = lib.types.enum [
+                "tcp"
+                "udp"
+              ];
+              default = "tcp";
+            };
+          };
+        }
+      );
+      default = [ ];
     };
 
     listenPort = lib.mkOption {
@@ -42,15 +79,42 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    boot.kernel.sysctl."net.ipv4.ip_nonlocal_bind" = true;
+
     sops.secrets."wireguard/privateKeys/${config.networking.hostName}" =
       lib.mkIf config.sebastianrasor.secrets.enable
         {
           owner = "systemd-network";
         };
 
-    networking.firewall = {
-      allowedUDPPorts = lib.mkIf (cfg.listenPort != null) [ cfg.listenPort ];
-      trustedInterfaces = [ "wg0" ];
+    networking = {
+      firewall = {
+        allowedUDPPorts = lib.mkIf (cfg.listenPort != null) [ cfg.listenPort ];
+        trustedInterfaces = [ "wg0" ];
+      };
+
+      hosts =
+        lib.optionalAttrs (cfg.domains != [ ]) {
+          "127.0.0.1" = cfg.domains;
+        }
+        // builtins.listToAttrs (
+          lib.concatMap (
+            peer:
+            let
+              peerCfg = peer.config.sebastianrasor.wireguard;
+              peerIp = lib.head (lib.splitString "/" peerCfg.address);
+            in
+            lib.optional (peerCfg.domains != [ ]) (lib.nameValuePair peerIp peerCfg.domains)
+          ) peers
+        );
+
+      nat = lib.mkIf (cfg.listenPort != null && forwardedPorts != [ ]) {
+        enable = true;
+        externalInterface = lib.head (
+          builtins.attrNames config.sebastianrasor.systemd-networkd.interfacesRequiredForOnline
+        );
+        forwardPorts = forwardedPorts;
+      };
     };
 
     systemd.network = {

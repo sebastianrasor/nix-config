@@ -1,8 +1,4 @@
-{
-  constants,
-  self,
-  ...
-}:
+_:
 {
   config,
   lib,
@@ -12,22 +8,15 @@ let
   cfg = config.sebastianrasor.reverse-proxy;
   acmeEnabled = config.sebastianrasor.acme.enable;
   acmeBaseDomain = config.sebastianrasor.acme.baseDomainName;
-  proxyProtocolPort = 8443;
+  localWgIp = lib.head (lib.splitString "/" config.sebastianrasor.wireguard.address);
 
-  hasPassthrough = cfg.passthroughHost != null && self ? nixosConfigurations.${cfg.passthroughHost};
-  passthroughConfig = self.nixosConfigurations.${cfg.passthroughHost}.config;
-  passthroughIp = lib.head (lib.splitString "/" passthroughConfig.sebastianrasor.wireguard.address);
-  passthroughDomains = lib.optionals hasPassthrough (
-    lib.pipe passthroughConfig.sebastianrasor.reverse-proxy.proxies [
-      builtins.attrValues
-      (lib.filter (p: p.public))
-      (lib.concatMap (p: [ p.domain ] ++ p.aliases))
-      (lib.filter (d: !lib.hasSuffix ".ts.${constants.domain}" d))
-      lib.unique
-    ]
-  );
-
-  hasPublicProxies = builtins.any (p: p.public) (builtins.attrValues cfg.proxies);
+  publicDomains = lib.pipe cfg.proxies [
+    builtins.attrValues
+    (lib.filter (p: p.public))
+    (lib.concatMap (p: [ p.domain ] ++ p.aliases))
+    lib.unique
+  ];
+  hasPublicProxies = publicDomains != [ ];
 
   proxySubmodule = lib.types.submodule (
     { name, ... }:
@@ -63,11 +52,6 @@ in
 
     openFirewall = lib.mkEnableOption "opening firewall ports for the reverse proxy";
 
-    passthroughHost = lib.mkOption {
-      type = lib.types.nullOr lib.types.str;
-      default = null;
-    };
-
     proxies = lib.mkOption {
       type = lib.types.attrsOf (
         lib.types.coercedTo lib.types.str (target: { inherit target; }) proxySubmodule
@@ -83,55 +67,12 @@ in
       recommendedProxySettings = true;
       recommendedTlsSettings = true;
       resolver.addresses = [ "127.0.0.53:53" ];
-      commonHttpConfig = lib.optionalString (hasPublicProxies || hasPassthrough) ''
-        real_ip_header proxy_protocol;
-        set_real_ip_from 127.0.0.1;
-        set_real_ip_from 10.100.0.0/24;
-      '';
-      streamConfig = lib.optionalString hasPassthrough ''
-        map $ssl_preread_server_name $sni_upstream {
-          ${lib.concatMapStringsSep "\n  " (
-            domain: "${domain} ${passthroughIp}:${toString proxyProtocolPort};"
-          ) passthroughDomains}
-          default 127.0.0.1:${toString proxyProtocolPort};
-        }
-
-        server {
-          listen 0.0.0.0:443;
-          listen [::0]:443;
-          ssl_preread on;
-          proxy_protocol on;
-          proxy_pass $sni_upstream;
-        }
-      '';
       virtualHosts =
-        lib.optionalAttrs (hasPassthrough && cfg.proxies == { }) {
-          "http-redirect" = {
-            listen = [
-              {
-                addr = "0.0.0.0";
-                port = 80;
-              }
-              {
-                addr = "[::0]";
-                port = 80;
-              }
-            ];
-            locations."/".return = "301 https://$host$request_uri";
-          };
-        }
-        // lib.optionalAttrs (hasPublicProxies || hasPassthrough) {
+        lib.optionalAttrs hasPublicProxies {
           "_" = {
             default = true;
             rejectSSL = true;
-            listen = [
-              {
-                addr = if hasPassthrough then "127.0.0.1" else "0.0.0.0";
-                port = proxyProtocolPort;
-                ssl = true;
-                proxyProtocol = true;
-              }
-            ];
+            listenAddresses = [ localWgIp ];
             locations."/".return = "444";
           };
         }
@@ -141,35 +82,8 @@ in
             forceSSL = lib.mkForce acmeEnabled;
             useACMEHost = lib.mkIf acmeEnabled (lib.mkForce acmeBaseDomain);
             serverAliases = proxy.aliases;
-            listen = lib.mkIf (hasPassthrough || proxy.public) (
-              [
-                {
-                  addr = "0.0.0.0";
-                  port = 80;
-                }
-                {
-                  addr = "[::0]";
-                  port = 80;
-                }
-                {
-                  addr = if hasPassthrough then "127.0.0.1" else "0.0.0.0";
-                  port = proxyProtocolPort;
-                  ssl = true;
-                  proxyProtocol = true;
-                }
-              ]
-              ++ lib.optionals (!hasPassthrough) [
-                {
-                  addr = "0.0.0.0";
-                  port = 443;
-                  ssl = true;
-                }
-                {
-                  addr = "[::0]";
-                  port = 443;
-                  ssl = true;
-                }
-              ]
+            listenAddresses = lib.mkIf proxy.public (
+              config.services.nginx.defaultListenAddresses ++ [ localWgIp ]
             );
             locations = lib.mkIf (proxy.target != null) {
               "/" = {
@@ -190,36 +104,32 @@ in
         ) cfg.proxies;
     };
 
-    networking = {
-      hosts = lib.mkIf hasPassthrough {
-        ${passthroughIp} = passthroughDomains;
+    networking.firewall.allowedTCPPorts = lib.mkIf cfg.openFirewall [
+      80
+      443
+    ];
+
+    sebastianrasor = {
+      acme = {
+        inherit (config.services.nginx) group;
+        extraDomainNames = lib.concatMap (proxy: [ proxy.domain ] ++ proxy.aliases) (
+          builtins.attrValues cfg.proxies
+        );
       };
 
-      nat = lib.mkIf (hasPassthrough && passthroughConfig.sebastianrasor.headscale.enable) {
-        enable = true;
-        externalInterface = lib.head (
-          builtins.attrNames config.sebastianrasor.systemd-networkd.interfacesRequiredForOnline
-        );
+      wireguard = lib.mkIf hasPublicProxies {
+        domains = publicDomains;
         forwardPorts = [
           {
-            sourcePort = 3478;
-            destination = "${passthroughIp}:3478";
-            proto = "udp";
+            port = 80;
+            proto = "tcp";
+          }
+          {
+            port = 443;
+            proto = "tcp";
           }
         ];
       };
-
-      firewall.allowedTCPPorts = lib.mkIf cfg.openFirewall [
-        80
-        443
-      ];
-    };
-
-    sebastianrasor.acme = {
-      inherit (config.services.nginx) group;
-      extraDomainNames = lib.concatMap (proxy: [ proxy.domain ] ++ proxy.aliases) (
-        builtins.attrValues cfg.proxies
-      );
     };
   };
 }

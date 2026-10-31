@@ -5,7 +5,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 let
@@ -28,42 +27,19 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    boot.kernel.sysctl."net.ipv4.ip_nonlocal_bind" = true;
-
     sops.secrets."oidc/clientSecrets/headscale" = lib.mkIf config.sebastianrasor.secrets.enable {
       owner = config.systemd.services.headscale.serviceConfig.User;
     };
     networking.firewall.allowedUDPPorts = [ 3478 ];
-    systemd.services = {
-      headscale.after = [
-        "authentik.service"
-        "nginx.service"
-      ];
-      headscale-oidc-restart = {
-        after = [ "headscale.service" ];
-        wantedBy = [ "headscale.service" ];
-        serviceConfig.ExecStart = pkgs.writeShellScript "headscale-oidc-restart" ''
-          STATUS_CODE="$(${lib.getExe pkgs.curl} -o /dev/null --silent --write-out "%{http_code}" "${config.services.headscale.settings.server_url}/oidc/callback")"
-
-          if [ "$STATUS_CODE" = "400" ]; then
-            exit 0
-          fi
-
-          until ${lib.getExe pkgs.curl} -o /dev/null -s "${config.services.headscale.settings.oidc.issuer}/.well-known/openid-configuration"
-          do
-            sleep 30
-          done
-
-          systemctl restart headscale.service
-        '';
-      };
-    };
+    systemd.services.headscale.after = [
+      "authentik.service"
+      "nginx.service"
+    ];
     services.headscale = {
       enable = true;
       settings = {
         server_url = "https://headscale.${constants.domain}";
         oidc = lib.mkIf config.sebastianrasor.secrets.enable {
-          only_start_if_oidc_is_available = false;
           issuer = "https://authentik.${constants.domain}/application/o/headscale/";
           client_id = "t5tdQYkn2zReh1DCHhTwMNiZnSIq5nvLMjsT13nQ";
           client_secret_path = config.sops.secrets."oidc/clientSecrets/headscale".path;
@@ -102,21 +78,30 @@ in
       };
     };
 
-    sebastianrasor.persistence.directories = [
-      {
-        directory = "/var/lib/headscale";
-        inherit (config.services.headscale) user group;
-        mode = "0750";
-      }
-    ];
+    sebastianrasor = {
+      persistence.directories = [
+        {
+          directory = "/var/lib/headscale";
+          inherit (config.services.headscale) user group;
+          mode = "0750";
+        }
+      ];
+
+      reverse-proxy.proxies."headscale.${constants.domain}" = {
+        public = true;
+        target = "http://127.0.0.1:${toString config.services.headscale.port}";
+      };
+
+      wireguard.forwardPorts = [
+        {
+          port = 3478;
+          proto = "udp";
+        }
+      ];
+    };
 
     systemd.tmpfiles.rules = [
       "Z /var/lib/headscale 0750 ${config.services.headscale.user} ${config.services.headscale.group} -"
     ];
-
-    sebastianrasor.reverse-proxy.proxies."headscale.${constants.domain}" = {
-      public = true;
-      target = "http://127.0.0.1:${toString config.services.headscale.port}";
-    };
   };
 }
