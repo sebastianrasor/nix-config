@@ -29,6 +29,7 @@ _: {
     sshd.publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAGdZ/fyPx7w2GsbE337H0kNst+GWL/gN4piJizkWj/9";
     systemd-networkd.interfacesRequiredForOnline."enp10s0f0np0" = "routable";
     tailscale-golink.enable = true;
+    tranquil-pds.enable = true;
     unas = {
       enable = true;
       host = "10.0.0.103";
@@ -37,6 +38,7 @@ _: {
     wireguard = {
       enable = true;
       address = "10.100.0.2/24";
+      ipv6Address = "fd00::2/64";
       publicKey = "o16hcIqhoWUYUxdQzmhpygf/5noF9ovkn1McQmPICFA=";
     };
     www-sebastianrasor-com.enable = true;

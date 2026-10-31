@@ -11,6 +11,7 @@ _: _: {
     wireguard = {
       enable = true;
       address = "10.100.0.1/24";
+      ipv6Address = "fd00::1/64";
       listenPort = 51820;
       publicKey = "OUZdlRDtvsgRhfMrVgMsFtF4Sa70pSVH5hJ6RF3G4yU=";
     };

@@ -11,6 +11,7 @@
 let
   cfg = config.sebastianrasor.wireguard;
   localIp = lib.head (lib.splitString "/" cfg.address);
+  localIp6 = lib.head (lib.splitString "/" cfg.ipv6Address);
   peers = lib.pipe self.nixosConfigurations [
     builtins.attrValues
     (lib.filter (
@@ -26,12 +27,20 @@ let
     peer:
     let
       peerIp = lib.head (lib.splitString "/" peer.config.sebastianrasor.wireguard.address);
+      peerIp6 = lib.head (lib.splitString "/" peer.config.sebastianrasor.wireguard.ipv6Address);
     in
-    map (fwd: {
-      sourcePort = fwd.port;
-      destination = "${peerIp}:${toString fwd.port}";
-      inherit (fwd) proto;
-    }) peer.config.sebastianrasor.wireguard.forwardPorts
+    lib.concatMap (fwd: [
+      {
+        sourcePort = fwd.port;
+        destination = "${peerIp}:${toString fwd.port}";
+        inherit (fwd) proto;
+      }
+      {
+        sourcePort = fwd.port;
+        destination = "[${peerIp6}]:${toString fwd.port}";
+        inherit (fwd) proto;
+      }
+    ]) peer.config.sebastianrasor.wireguard.forwardPorts
   ) peers;
 in
 {
@@ -39,6 +48,10 @@ in
     enable = lib.mkEnableOption "WireGuard";
 
     address = lib.mkOption {
+      type = lib.types.str;
+    };
+
+    ipv6Address = lib.mkOption {
       type = lib.types.str;
     };
 
@@ -79,7 +92,10 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    boot.kernel.sysctl."net.ipv4.ip_nonlocal_bind" = true;
+    boot.kernel.sysctl = {
+      "net.ipv4.ip_nonlocal_bind" = true;
+      "net.ipv6.ip_nonlocal_bind" = true;
+    };
 
     sops.secrets."wireguard/privateKeys/${config.networking.hostName}" =
       lib.mkIf config.sebastianrasor.secrets.enable
@@ -96,6 +112,7 @@ in
       hosts =
         lib.optionalAttrs (cfg.domains != [ ]) {
           "127.0.0.1" = cfg.domains;
+          "::1" = cfg.domains;
         }
         // builtins.listToAttrs (
           lib.concatMap (
@@ -103,13 +120,18 @@ in
             let
               peerCfg = peer.config.sebastianrasor.wireguard;
               peerIp = lib.head (lib.splitString "/" peerCfg.address);
+              peerIp6 = lib.head (lib.splitString "/" peerCfg.ipv6Address);
             in
-            lib.optional (peerCfg.domains != [ ]) (lib.nameValuePair peerIp peerCfg.domains)
+            lib.optionals (peerCfg.domains != [ ]) [
+              (lib.nameValuePair peerIp peerCfg.domains)
+              (lib.nameValuePair peerIp6 peerCfg.domains)
+            ]
           ) peers
         );
 
       nat = lib.mkIf (cfg.listenPort != null && forwardedPorts != [ ]) {
         enable = true;
+        enableIPv6 = true;
         externalInterface = lib.head (
           builtins.attrNames config.sebastianrasor.systemd-networkd.interfacesRequiredForOnline
         );
@@ -135,10 +157,21 @@ in
           let
             peerCfg = peer.config.sebastianrasor.wireguard;
             peerIp = lib.head (lib.splitString "/" peerCfg.address);
+            peerIp6 = lib.head (lib.splitString "/" peerCfg.ipv6Address);
           in
           {
             PublicKey = peerCfg.publicKey;
-            AllowedIPs = if peerCfg.listenPort != null then [ "0.0.0.0/0" ] else [ "${peerIp}/32" ];
+            AllowedIPs =
+              if peerCfg.listenPort != null then
+                [
+                  "0.0.0.0/0"
+                  "::/0"
+                ]
+              else
+                [
+                  "${peerIp}/32"
+                  "${peerIp6}/128"
+                ];
           }
           // lib.optionalAttrs (peerCfg.listenPort != null) {
             Endpoint = "${peer.config.networking.hostName}.${constants.domain}:${toString peerCfg.listenPort}";
@@ -150,12 +183,19 @@ in
 
       networks."50-wg0" = {
         matchConfig.Name = "wg0";
-        address = [ cfg.address ];
+        address = [
+          cfg.address
+          cfg.ipv6Address
+        ];
         networkConfig.ConfigureWithoutCarrier = true;
         linkConfig.RequiredForOnline = "no";
         routingPolicyRules = lib.optionals hasEndpointPeers [
           {
             From = localIp;
+            Table = 1000;
+          }
+          {
+            From = localIp6;
             Table = 1000;
           }
         ];

@@ -9,6 +9,7 @@ let
   acmeEnabled = config.sebastianrasor.acme.enable;
   acmeBaseDomain = config.sebastianrasor.acme.baseDomainName;
   localWgIp = lib.head (lib.splitString "/" config.sebastianrasor.wireguard.address);
+  localWgIp6 = "[${lib.head (lib.splitString "/" config.sebastianrasor.wireguard.ipv6Address)}]";
 
   publicDomains = lib.pipe cfg.proxies [
     builtins.attrValues
@@ -72,7 +73,10 @@ in
           "_" = {
             default = true;
             rejectSSL = true;
-            listenAddresses = [ localWgIp ];
+            listenAddresses = [
+              localWgIp
+              localWgIp6
+            ];
             locations."/".return = "444";
           };
         }
@@ -83,7 +87,11 @@ in
             useACMEHost = lib.mkIf acmeEnabled (lib.mkForce acmeBaseDomain);
             serverAliases = proxy.aliases;
             listenAddresses = lib.mkIf proxy.public (
-              config.services.nginx.defaultListenAddresses ++ [ localWgIp ]
+              config.services.nginx.defaultListenAddresses
+              ++ [
+                localWgIp
+                localWgIp6
+              ]
             );
             locations = lib.mkIf (proxy.target != null) {
               "/" = {
