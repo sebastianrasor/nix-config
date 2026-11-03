@@ -43,6 +43,7 @@ in
             invite_code_required = true;
             disable_account_verification_gate = true;
           };
+          database.max_connections = 20;
           sso.oidc = {
             client_id = "sFglPtSStjbfjQMtxFXH4N3K5pcGEnNrqPyjt8OP";
             display_name = "authentik";
