@@ -16,7 +16,6 @@ _: {
     immich.enable = true;
     intel-arc-a380.enable = true;
     jellyfin.enable = true;
-    knot.enable = true;
     nixbot.enable = true;
     paperless.enable = true;
     persistence.enable = true;
