@@ -12,6 +12,7 @@ _: {
     harmonia.enable = true;
     headscale.enable = true;
     homebox.enable = true;
+    hydra.enable = true;
     immich.enable = true;
     intel-arc-a380.enable = true;
     jellyfin.enable = true;

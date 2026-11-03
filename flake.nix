@@ -64,6 +64,8 @@
 
       hjemModules = import ./hjem-modules inputsWithConstants;
 
+      hydraJobs = import ./hydra-jobs.nix inputsWithConstants;
+
       nixosConfigurations = import ./nixos-configurations inputsWithConstants;
 
       nixosModules = import ./nixos-modules inputsWithConstants;

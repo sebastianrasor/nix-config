@@ -1,0 +1,24 @@
+{
+  "enabled": 1,
+  "hidden": true,
+  "description": "Declarative jobsets for nix-config",
+  "nixexprinput": "src",
+  "nixexprpath": "nixos-modules/services/hydra/jobsets.nix",
+  "checkinterval": 3600,
+  "schedulingshares": 100,
+  "enableemail": false,
+  "emailoverride": "",
+  "keepnr": 1,
+  "inputs": {
+    "src": {
+      "type": "git",
+      "value": "https://github.com/sebastianrasor/nix-config.git main",
+      "emailresponsible": false
+    },
+    "pulls": {
+      "type": "githubpulls",
+      "value": "sebastianrasor nix-config",
+      "emailresponsible": false
+    }
+  }
+}
