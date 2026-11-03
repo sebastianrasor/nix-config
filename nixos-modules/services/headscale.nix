@@ -13,13 +13,6 @@ let
   carbonProxyDomains = lib.filter (lib.hasSuffix ".ts.${constants.domain}") (
     map (p: p.domain) (builtins.attrValues config.sebastianrasor.reverse-proxy.proxies)
   );
-  extraCarbonDomains = map (subdomain: "${subdomain}.ts.${constants.domain}") [
-    "deploy"
-    "frigate"
-    "hydra"
-    "ollama"
-    "open-webui"
-  ];
 in
 {
   options.sebastianrasor.headscale = {
@@ -66,7 +59,7 @@ in
               inherit name;
               type = "A";
               value = "100.64.0.3";
-            }) (lib.unique (carbonProxyDomains ++ extraCarbonDomains))
+            }) carbonProxyDomains
             ++ [
               {
                 name = "homeassistant.ts.${constants.domain}";
