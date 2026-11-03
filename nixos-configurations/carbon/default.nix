@@ -9,14 +9,12 @@ _: {
     actual.enable = true;
     authentik.enable = true;
     cheaters-swear-jar.enable = true;
-    forgejo.enable = true;
     harmonia.enable = true;
     headscale.enable = true;
     homebox.enable = true;
     immich.enable = true;
     intel-arc-a380.enable = true;
     jellyfin.enable = true;
-    nixbot.enable = true;
     paperless.enable = true;
     persistence.enable = true;
     postgresql.enable = true;

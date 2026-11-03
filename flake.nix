@@ -60,13 +60,9 @@
 
       formatter = forAllSystems (pkgs: pkgs.nixfmt-tree);
 
-      herculesCI = import ./hercules-ci.nix inputsWithConstants;
-
       hjemConfigurations = import ./hjem-configurations inputsWithConstants;
 
       hjemModules = import ./hjem-modules inputsWithConstants;
-
-      nixbotJobs = import ./nixbot-jobs.nix inputsWithConstants;
 
       nixosConfigurations = import ./nixos-configurations inputsWithConstants;
 
@@ -85,11 +81,9 @@
     authentik-nix.url = "github:nix-community/authentik-nix";
     crane.url = "github:ipetkov/crane";
     disko.url = "github:nix-community/disko";
-    hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
     hjem.url = "github:feel-co/hjem";
     impermanence.url = "github:nix-community/impermanence";
     lanzaboote.url = "github:nix-community/lanzaboote/v1.2.0";
-    nixbot.url = "github:Mic92/nixbot";
     sops-nix.url = "github:Mic92/sops-nix";
   };
 }
