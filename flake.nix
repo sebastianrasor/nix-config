@@ -81,65 +81,15 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     # TODO(sebastianrasor): Go back to main when this PR is merged
-    nixos-hardware = {
-      url = "github:NixOS/nixos-hardware/pull/1994/head";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    authentik-nix = {
-      url = "github:nix-community/authentik-nix";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-parts.follows = "hercules-ci-effects/flake-parts";
-        flake-compat.follows = "";
-      };
-    };
-
+    nixos-hardware.url = "github:NixOS/nixos-hardware/pull/1994/head";
+    authentik-nix.url = "github:nix-community/authentik-nix";
     crane.url = "github:ipetkov/crane";
-
-    disko = {
-      url = "github:nix-community/disko";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    hercules-ci-effects = {
-      url = "github:hercules-ci/hercules-ci-effects";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    hjem = {
-      url = "github:feel-co/hjem";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    impermanence = {
-      url = "github:nix-community/impermanence";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        home-manager.follows = "";
-      };
-    };
-
-    lanzaboote = {
-      url = "github:nix-community/lanzaboote/v1.2.0";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        crane.follows = "crane";
-        pre-commit.follows = "";
-      };
-    };
-
-    nixbot = {
-      url = "github:Mic92/nixbot";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        treefmt-nix.follows = "";
-      };
-    };
-
-    sops-nix = {
-      url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    disko.url = "github:nix-community/disko";
+    hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
+    hjem.url = "github:feel-co/hjem";
+    impermanence.url = "github:nix-community/impermanence";
+    lanzaboote.url = "github:nix-community/lanzaboote/v1.2.0";
+    nixbot.url = "github:Mic92/nixbot";
+    sops-nix.url = "github:Mic92/sops-nix";
   };
 }
