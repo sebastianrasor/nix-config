@@ -15,6 +15,7 @@ in
 
   config = lib.mkIf cfg.enable {
     sebastianrasor = {
+      deploy.client.enable = lib.mkDefault true;
       hjem.enable = lib.mkDefault true;
       nh.enable = lib.mkDefault true;
       nix.enable = lib.mkDefault true;

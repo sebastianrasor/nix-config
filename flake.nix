@@ -64,6 +64,13 @@
 
       hjemModules = import ./hjem-modules inputsWithConstants;
 
+      hydraJobs = {
+        inherit (self) packages;
+        nixosConfigurations = nixpkgs.lib.mapAttrs (
+          _: nixosConfiguration: nixosConfiguration.config.system.build.toplevel
+        ) self.nixosConfigurations;
+      };
+
       nixosConfigurations = import ./nixos-configurations inputsWithConstants;
 
       nixosModules = import ./nixos-modules inputsWithConstants;
