@@ -28,33 +28,7 @@
       forAllSystems = f: nixpkgs.lib.mapAttrs (_: f) pkgsFor;
     in
     {
-      checks = forAllSystems (
-        pkgs:
-        self.packages.${pkgs.stdenv.hostPlatform.system}
-        // {
-          formatting =
-            pkgs.runCommand "check-formatting"
-              {
-                nativeBuildInputs = with pkgs; [
-                  fd
-                  nixfmt
-                ];
-              }
-              ''
-                fd -e nix -E hardware-configuration.nix -X nixfmt --check ${self}
-                touch "$out"
-              '';
-          statix =
-            pkgs.runCommand "check-statix"
-              {
-                nativeBuildInputs = [ pkgs.statix ];
-              }
-              ''
-                statix check -i '**/hardware-configuration.nix' ${self}
-                touch "$out"
-              '';
-        }
-      );
+      checks = forAllSystems (pkgs: import ./checks.nix pkgs);
 
       devShells = forAllSystems (pkgs: import ./devshells.nix pkgs);
 
