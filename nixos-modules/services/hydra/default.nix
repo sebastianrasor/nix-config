@@ -1,4 +1,4 @@
-{ constants, self, ... }:
+{ constants, ... }:
 {
   config,
   lib,
@@ -20,55 +20,109 @@ let
       pkgs.natscli
     ];
     text = ''
-      read -r build_id host store_path < <(
-        jq -r '
-          select(.buildStatus == 0)
-          | [(.build // .id), (.job | ltrimstr("nixosConfigurations.")), (.outputs[] | select(.name == "out") | .path)]
-          | @tsv
-        ' "$HYDRA_JSON"
-      ) || exit 0
+      put_config() {
+        local host="$1" value="$2"
+        for _ in {1..15}; do
+          if nats --server="${natsUrl}" kv put configs "$host" "$value" >/dev/null; then
+            return 0
+          fi
+          sleep 2
+        done
+        return 1
+      }
 
-      read -r current_path _ < <(
-        nats --server="${natsUrl}" kv get configs "$host" --raw 2>/dev/null || true
-      ) || true
-      if [ "$current_path" = "$store_path" ]; then
-        echo "Skipping $host: $store_path already published to NATS"
-        exit 0
-      fi
+      req_build_id=$(
+        jq -r 'select(.buildStatus == 0) | (.build // .id) // empty' "$HYDRA_JSON"
+      )
+      [ -n "$req_build_id" ] || exit 0
 
       eval_id=$(
-        curl --retry 3 -fsSL -H "Accept: application/json" "${hydraApi}/build/$build_id" \
+        curl --retry 5 --retry-connrefused -fsSL -H "Accept: application/json" \
+          "${hydraApi}/build/$req_build_id" \
           | jq -r '.jobsetevals | max // empty'
-      ) || eval_id=""
-
-      rev=""
-      if [ -n "$eval_id" ]; then
-        rev=$(
-          curl --retry 3 -fsSL -H "Accept: application/json" "${hydraApi}/eval/$eval_id" \
-            | jq -r '(.flake // "" | try capture("(?<rev>[0-9a-f]{40})").rev) // empty'
-        ) || rev=""
+      )
+      if [ -z "$eval_id" ]; then
+        echo "Failed to resolve evaluation ID for build $req_build_id" >&2
+        exit 1
       fi
 
-      deployment_id=$(
-        jq -n \
-          --arg ref "''${rev:-main}" \
-          --arg env "$host" \
-          --arg desc "$store_path" \
-          '{ref: $ref, environment: $env, auto_merge: false, required_contexts: [], description: $desc}' \
-        | curl --retry 3 -fsSL -X POST -H "@${ghHeaders}" "${ghDeploymentsUrl}" -d @- \
-        | jq -r '.id // empty'
-      ) || deployment_id=""
+      rev=$(
+        curl --retry 5 --retry-connrefused -fsSL -H "Accept: application/json" \
+          "${hydraApi}/eval/$eval_id" \
+          | jq -r '(.flake // "" | try capture("(?<rev>[0-9a-f]{40})").rev) // empty'
+      ) || rev=""
 
-      if [ -n "$deployment_id" ]; then
-        jq -n --arg url "${config.services.hydra.hydraURL}/build/$build_id" \
-          '{state: "queued", log_url: $url}' \
-        | curl --retry 3 -fsSL -X POST -H "@${ghHeaders}" \
-            "${ghDeploymentsUrl}/$deployment_id/statuses" -d @- >/dev/null || true
-      fi
+      builds_json=$(
+        curl --retry 5 --retry-connrefused -fsSL -H "Accept: application/json" \
+          "${hydraApi}/eval/$eval_id/builds"
+      )
 
-      nats --server="${natsUrl}" kv put configs "$host" \
-        "$store_path''${deployment_id:+ $deployment_id $build_id}"$'\n' >/dev/null
-      echo "Published $host -> $store_path (ref=''${rev:-main}, deployment=''${deployment_id:-none})"
+      failed=0
+      while IFS=$'\t' read -r host build_id store_path; do
+        [ -n "$host" ] || continue
+
+        current_path=""
+        read -r current_path _ < <(
+          nats --server="${natsUrl}" kv get configs "$host" --raw 2>/dev/null || true
+        ) || true
+        if [ "$current_path" = "$store_path" ]; then
+          echo "Skipping $host: $store_path already published to NATS"
+          continue
+        fi
+
+        deployment_id=$(
+          jq -n \
+            --arg ref "''${rev:-main}" \
+            --arg env "$host" \
+            --arg desc "$store_path" \
+            '{ref: $ref, environment: $env, auto_merge: false, required_contexts: [], description: $desc}' \
+          | curl --retry 3 --retry-connrefused -fsSL -X POST -H "@${ghHeaders}" "${ghDeploymentsUrl}" -d @- \
+          | jq -r '.id // empty'
+        ) || deployment_id=""
+
+        if [ -n "$deployment_id" ]; then
+          jq -n --arg url "${config.services.hydra.hydraURL}/build/$build_id" \
+            '{state: "queued", log_url: $url}' \
+          | curl --retry 3 --retry-connrefused -fsSL -X POST -H "@${ghHeaders}" \
+              "${ghDeploymentsUrl}/$deployment_id/statuses" -d @- >/dev/null || true
+        fi
+
+        if ! put_config "$host" "$store_path''${deployment_id:+ $deployment_id $build_id}"$'\n'; then
+          echo "Failed to publish $host -> $store_path to NATS" >&2
+          if [ -n "$deployment_id" ]; then
+            jq -n --arg url "${config.services.hydra.hydraURL}/build/$build_id" \
+              '{state: "error", log_url: $url}' \
+            | curl --retry 3 --retry-connrefused -fsSL -X POST -H "@${ghHeaders}" \
+                "${ghDeploymentsUrl}/$deployment_id/statuses" -d @- >/dev/null || true
+          fi
+          failed=1
+          continue
+        fi
+
+        echo "Published $host -> $store_path (ref=''${rev:-main}, deployment=''${deployment_id:-none})"
+      done < <(
+        jq -r '
+          [
+            .[]
+            | select(
+                .buildstatus == 0
+                and (.job | startswith("nixosConfigurations."))
+                and (.buildoutputs.out.path // "" | startswith("/nix/store/"))
+              )
+            | {
+                host: (.job | ltrimstr("nixosConfigurations.")),
+                build_id: .id,
+                store_path: .buildoutputs.out.path
+              }
+          ]
+          | sort_by(.host == "carbon", .host)
+          | .[]
+          | [.host, .build_id, .store_path]
+          | @tsv
+        ' <<< "$builds_json"
+      )
+
+      exit "$failed"
     '';
   };
 in
@@ -116,12 +170,10 @@ in
             excludeBuildFromContext = 1
             useShortContext = 1
           </githubstatus>
-          ${lib.concatMapStringsSep "\n" (host: ''
-            <runcommand>
-              job = nix-config:main:nixosConfigurations.${host}
-              command = ${lib.getExe notifyDeploy}
-            </runcommand>
-          '') (builtins.attrNames self.nixosConfigurations)}
+          <runcommand>
+            job = nix-config:main:required
+            command = ${lib.getExe notifyDeploy}
+          </runcommand>
         '';
       };
 
@@ -153,7 +205,10 @@ in
         ];
         requires = [ "hydra-init.service" ];
       };
-      hydra-server.after = [ "authentik.service" ];
+      hydra-server.after = [
+        "authentik.service"
+        "nginx.service"
+      ];
       hydra-notify.after = [ "nats.service" ];
 
       hydra-deploy-status = {
@@ -173,33 +228,36 @@ in
         ];
 
         script = ''
-          while IFS= read -r line; do
-            read -r state _ deployment_id build_id <<< "$line" || true
-            [[ "$deployment_id" =~ ^[0-9]+$ ]] || continue
+          while :; do
+            while IFS= read -r line; do
+              read -r state _ deployment_id build_id <<< "$line" || true
+              [[ "$deployment_id" =~ ^[0-9]+$ ]] || continue
 
-            case "$state" in
-              in_progress) gh_state="in_progress" ;;
-              succeeded)   gh_state="success" ;;
-              failed)      gh_state="failure" ;;
-              *)           continue ;;
-            esac
+              case "$state" in
+                in_progress) gh_state="in_progress" ;;
+                succeeded)   gh_state="success" ;;
+                failed)      gh_state="failure" ;;
+                *)           continue ;;
+              esac
 
-            last_state=$(
-              curl --retry 3 -fsSL -H "@${ghHeaders}" \
-                "${ghDeploymentsUrl}/$deployment_id/statuses?per_page=100" \
-              | jq -r '(max_by(.id) | .state) // empty'
-            ) || continue
-            [ "$last_state" != "$gh_state" ] || continue
+              last_state=$(
+                curl --retry 3 --retry-connrefused -fsSL -H "@${ghHeaders}" \
+                  "${ghDeploymentsUrl}/$deployment_id/statuses?per_page=100" \
+                | jq -r '(max_by(.id) | .state) // empty'
+              ) || continue
+              [ "$last_state" != "$gh_state" ] || continue
 
-            log_url="${config.services.hydra.hydraURL}''${build_id:+/build/$build_id}"
-            jq -n --arg state "$gh_state" --arg url "$log_url" \
-              '{state: $state, log_url: $url}' \
-            | curl --retry 3 -fsSL -X POST -H "@${ghHeaders}" \
-                "${ghDeploymentsUrl}/$deployment_id/statuses" -d @- >/dev/null || true
-          done < <(
-            nats --server="${natsUrl}" sub "\$KV.status.*" \
-              --stream=KV_status --last-per-subject --raw
-          )
+              log_url="${config.services.hydra.hydraURL}''${build_id:+/build/$build_id}"
+              jq -n --arg state "$gh_state" --arg url "$log_url" \
+                '{state: $state, log_url: $url}' \
+              | curl --retry 3 --retry-connrefused -fsSL -X POST -H "@${ghHeaders}" \
+                  "${ghDeploymentsUrl}/$deployment_id/statuses" -d @- >/dev/null || true
+            done < <(
+              nats --server="${natsUrl}" sub "\$KV.status.*" \
+                --stream=KV_status --last-per-subject --wait=5m --raw || true
+            )
+            sleep 2
+          done
         '';
 
         serviceConfig = {
