@@ -13,4 +13,5 @@ pkgs.craneLib.devShell {
 
   MP_SMTP_AUTH = "noreply:password1";
   MP_SMTP_AUTH_ALLOW_INSECURE = true;
+  WWW_ASSETS_DIR = pkgs.www-sebastianrasor-com.assets;
 }

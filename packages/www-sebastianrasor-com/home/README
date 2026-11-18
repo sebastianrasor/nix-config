@@ -1,0 +1,9 @@
+Howdy, I'm Sebastian.
+
+I'm a ]8;;https://www.google.com/about/datacenters/\data center technician at Google]8;;\.
+
+You can find ]8;;https://github.com/sebastianrasor/nix-config/tree/main/packages/www-sebastianrasor-com\the source to this website]8;;\ on ]8;;https://github.com/sebastianrasor\my GitHub profile]8;;\.
+
+This website is a live Linux system running in your browser. Type a
+command and press Enter to run it, starting with `]8;;sh:ls\ls]8;;\` to list files,
+`cd` to open a directory, and `cat` to read a file.

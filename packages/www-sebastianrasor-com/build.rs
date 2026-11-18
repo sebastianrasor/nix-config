@@ -21,8 +21,7 @@ use handlebars::{
 use sha2::{Digest, Sha256};
 use walkdir::WalkDir;
 
-const ASSETS_DIR: &str = "assets";
-
+const DEFAULT_ASSETS_DIR: &str = "assets";
 const DIGEST_PREFIX: &str = "/by-digest/";
 
 const BROTLI_BUFFER_SIZE: usize = 4096;
@@ -47,9 +46,19 @@ impl AssetTable {
         }
     }
 
-    fn add(&mut self, path: &Path, bytes: &[u8], headers: &[(String, String)]) -> io::Result<()> {
+    fn add(
+        &mut self,
+        base_dir: &Path,
+        path: &Path,
+        bytes: &[u8],
+        headers: &[(String, String)],
+    ) -> io::Result<()> {
         let identity = self.write_blob(bytes)?;
-        let compressed = self.write_compressed(bytes)?;
+        let compressed = if is_precompressed(path) {
+            Vec::new()
+        } else {
+            self.write_compressed(bytes)?.into()
+        };
         let content_type = mime_guess::from_path(path).first_or_text_plain();
 
         let asset_ref = format!("&CONST_ASSETS[{}]", self.assets.len());
@@ -60,7 +69,7 @@ impl AssetTable {
             headers,
         ));
 
-        let url_path = url_path(path);
+        let url_path = url_path(base_dir, path);
         let digest_path = format!("{DIGEST_PREFIX}{identity}{url_path}");
         self.map.entry(url_path.clone(), asset_ref.clone());
         self.map.entry(digest_path.clone(), asset_ref);
@@ -124,15 +133,23 @@ impl AssetTable {
     }
 }
 
+fn is_precompressed(path: &Path) -> bool {
+    matches!(
+        path.extension().and_then(|ext| ext.to_str()),
+        Some("woff2" | "img")
+    ) || path.file_name().is_some_and(|name| name == "bzImage")
+}
+
 fn const_asset(
     content_type: &str,
     identity: &str,
-    compressed: &[(&str, String); 4],
+    compressed: &[(&str, String)],
     headers: &[(String, String)],
 ) -> String {
     let compressed = compressed
-        .each_ref()
+        .iter()
         .map(|(encoding, digest)| encoded_asset(encoding, digest))
+        .collect::<Vec<_>>()
         .join(", ");
     format!(
         "ConstAsset {{ content_type: {content_type:?}, identity: {}, compressed: &[{compressed}], headers: &{headers:?} }}",
@@ -150,10 +167,10 @@ fn encoded_asset(encoding: &str, digest: &str) -> String {
     )
 }
 
-fn url_path(path: &Path) -> String {
+fn url_path(base_dir: &Path, path: &Path) -> String {
     let path = path
-        .strip_prefix(ASSETS_DIR)
-        .expect("asset must be in ASSETS_DIR")
+        .strip_prefix(base_dir)
+        .expect("asset must be in assets directory")
         .to_str()
         .expect("asset paths must be valid UTF-8");
     let path = match path.strip_suffix("index.html") {
@@ -164,12 +181,15 @@ fn url_path(path: &Path) -> String {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    println!("cargo::rerun-if-changed={ASSETS_DIR}");
+    println!("cargo::rerun-if-env-changed=WWW_ASSETS_DIR");
+    let assets_dir = env::var_os("WWW_ASSETS_DIR")
+        .map_or_else(|| PathBuf::from(DEFAULT_ASSETS_DIR), PathBuf::from);
+    println!("cargo::rerun-if-changed={}", assets_dir.display());
 
     let mut table = AssetTable::new(PathBuf::from(env::var("OUT_DIR")?));
     let mut templates = Vec::new();
 
-    for entry in WalkDir::new(ASSETS_DIR) {
+    for entry in WalkDir::new(&assets_dir) {
         let entry = entry?;
         if !entry.file_type().is_file() {
             continue;
@@ -179,13 +199,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         if path.extension().is_some_and(|ext| ext == "hbs") {
             templates.push(path);
         } else {
-            table.add(&path, &fs::read(&path)?, &[])?;
+            table.add(&assets_dir, &path, &fs::read(&path)?, &[])?;
         }
     }
 
     let template_headers = Mutex::new(Vec::new());
     let mut handlebars = Handlebars::new();
-    handlebars.set_strict_mode(true);
+    handlebars.set_strict_mode(env::var_os("CARGO_CFG_DEBUG_ASSERTIONS").is_none());
     handlebars.register_helper(
         "header",
         Box::new(
@@ -199,36 +219,25 @@ fn main() -> Result<(), Box<dyn Error>> {
                 let name = params
                     .next()
                     .ok_or(RenderErrorReason::ParamNotFoundForIndex("header", 0))?;
-                template_headers.lock().unwrap().push((name, params.collect()));
+                template_headers
+                    .lock()
+                    .unwrap()
+                    .push((name, params.collect()));
                 Ok(())
             },
         ),
     );
 
-    // Templates may reference each other's output, so render in passes until none are left.
-    while !templates.is_empty() {
-        let template_data = HashMap::from([("assets", to_json(&table.digest_paths))]);
-        let pending = templates.len();
-        let mut error = None;
-        for path in mem::take(&mut templates) {
-            let result = handlebars.render_template(&fs::read_to_string(&path)?, &template_data);
-            let headers = mem::take(&mut *template_headers.lock().unwrap());
-            match result {
-                Ok(rendered) => table.add(&path.with_extension(""), rendered.as_bytes(), &headers)?,
-                Err(e) => {
-                    templates.push(path);
-                    error = Some(e);
-                }
-            }
-        }
-        if templates.len() == pending {
-            // No progress: fail in release, fall back to lenient rendering in debug.
-            let is_debug = env::var_os("CARGO_CFG_DEBUG_ASSERTIONS").is_some();
-            if !(is_debug && handlebars.strict_mode()) {
-                return Err(error.unwrap().into());
-            }
-            handlebars.set_strict_mode(false);
-        }
+    let template_data = HashMap::from([("assets", to_json(&table.digest_paths))]);
+    for path in templates {
+        let rendered = handlebars.render_template(&fs::read_to_string(&path)?, &template_data)?;
+        let headers = mem::take(&mut *template_headers.lock().unwrap());
+        table.add(
+            &assets_dir,
+            &path.with_extension(""),
+            rendered.as_bytes(),
+            &headers,
+        )?;
     }
 
     table.write()?;

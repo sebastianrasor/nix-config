@@ -3764,7 +3764,6 @@ dependencies = [
  "flate2",
  "handlebars",
  "hex",
- "hostname 0.4.2",
  "http_encoding_headers",
  "lettre",
  "mime_guess",

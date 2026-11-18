@@ -1,45 +1,58 @@
-{{~header 'Link' '<' (lookup assets '/stylesheet.css') '>; rel=preload; as=style; fetchpriority=high'~}}
-{{~header 'Link' '<' (lookup assets '/AtkinsonHyperlegibleNextVF-Variable.woff2') '>; rel=preload; as="font"; type="font/woff2"; fetchpriority=high; crossorigin'~}}
+{{~header 'Link' '<' (lookup assets '/AtkinsonHyperlegibleMono.woff2') '>; rel=preload; as="fetch"; crossorigin'~}}
+{{~header 'Link' '<' (lookup assets '/app.js') '>; rel=modulepreload'~}}
+{{~header 'Link' '<' (lookup assets '/v86.wasm') '>; rel=preload; as="fetch"; crossorigin'~}}
+{{~header 'Link' '<' (lookup assets '/seabios.bin') '>; rel=preload; as="fetch"; crossorigin'~}}
+{{~header 'Link' '<' (lookup assets '/bzImage') '>; rel=preload; as="fetch"; crossorigin'~}}
+{{~header 'Link' '<' (lookup assets '/initramfs.img') '>; rel=preload; as="fetch"; crossorigin'~}}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <meta name="color-scheme" content="dark light">
-    <meta name="description"
-          content="This is the personal website of Sebastian Rasor. You can find up-to-date information here, or securely contact Sebastian Rasor.">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="#0b0f14">
+    <meta name="description" content="Personal website of Sebastian Rasor.">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, interactive-widget=resizes-content"
+    >
     <link rel="canonical" href="https://www.sebastianrasor.com">
-    <link rel="prefetch" href="/contact">
-    <link rel="prefetch" href="/targets">
-    <link rel="stylesheet" href="{{lookup assets '/stylesheet.css'}}">
+    <link rel="preload" href="{{lookup assets '/AtkinsonHyperlegibleMono.woff2'}}" as="fetch" crossorigin>
+    <link rel="modulepreload" href="{{lookup assets '/app.js'}}">
+    <link rel="preload" href="{{lookup assets '/v86.wasm'}}" as="fetch" crossorigin>
+    <link rel="preload" href="{{lookup assets '/seabios.bin'}}" as="fetch" crossorigin>
+    <link rel="preload" href="{{lookup assets '/bzImage'}}" as="fetch" crossorigin>
+    <link rel="preload" href="{{lookup assets '/initramfs.img'}}" as="fetch" crossorigin>
     <title>Sebastian Rasor</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #0b0f14;
+      }
+
+      #terminal {
+        position: fixed;
+        inset: 0;
+        width: 100dvw;
+        height: 100dvh;
+      }
+    </style>
+    <script type="module" src="{{lookup assets '/app.js'}}"></script>
   </head>
   <body>
-    <main>
-      <article>
-        <hgroup>
-          <h1>Howdy, I'm Sebastian.</h1>
-          <p>
-            I'm a
-            <a href="https://www.google.com/about/datacenters/">Data Center
-              Technician at Google</a>.
-          </p>
-        </hgroup>
-        <p>
-          To prevent spam I don't share my email address publicly. You can reach
-          me through my
-          <a href="/contact">contact form</a>, though.
-        </p>
-        <p>
-          You can find the source to this website on my
-          <a href="https://github.com/sebastianrasor">GitHub profile</a>.
-        </p>
-      </article>
-    </main>
-    <nav aria-label="Primary">
-      <a class="button" href="/" aria-current="page">Home</a>
-      <a class="button" href="/contact">Contact</a>
-      <a class="button" href="/targets">Targets</a>
-    </nav>
+    <div
+      id="terminal"
+      role="application"
+      aria-label="Interactive Linux terminal"
+      data-font-url="{{lookup assets '/AtkinsonHyperlegibleMono.woff2'}}"
+      data-wasm-url="{{lookup assets '/v86.wasm'}}"
+      data-bios-url="{{lookup assets '/seabios.bin'}}"
+      data-bzimage-url="{{lookup assets '/bzImage'}}"
+      data-initrd-url="{{lookup assets '/initramfs.img'}}"
+    ></div>
   </body>
 </html>

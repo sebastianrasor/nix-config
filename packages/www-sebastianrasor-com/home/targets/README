@@ -1,0 +1,22 @@
+Make sure to set scaling to 100% when printing, and remove margins.
+
+Download any PDF to your machine with:
+  hterm-show-file.sh ~/targets/<filename>.pdf
+
+4"x6" Cards:
+  ]8;;sh:hterm-show-file.sh ~/targets/4x6-2x-ibs-50.pdf\4x6-2x-ibs-50.pdf]8;;\             4"x6" 2x IBS 50 Yard Rimfire
+  ]8;;sh:hterm-show-file.sh ~/targets/4x6-2x-ibs-100.pdf\4x6-2x-ibs-100.pdf]8;;\            4"x6" 2x IBS 100 Yard Rimfire
+  ]8;;sh:hterm-show-file.sh ~/targets/4x6-6x-ara-factory.pdf\4x6-6x-ara-factory.pdf]8;;\        4"x6" 6x ARA Factory
+  ]8;;sh:hterm-show-file.sh ~/targets/4x6-6x-ara-unlimited.pdf\4x6-6x-ara-unlimited.pdf]8;;\      4"x6" 6x ARA Unlimited
+  ]8;;sh:hterm-show-file.sh ~/targets/4x6-6x-usbr.pdf\4x6-6x-usbr.pdf]8;;\               4"x6" 6x USBR (Reduced 4 Ring)
+  ]8;;sh:hterm-show-file.sh ~/targets/4x6-10x-ara-factory.pdf\4x6-10x-ara-factory.pdf]8;;\       4"x6" 10x ARA Factory
+  ]8;;sh:hterm-show-file.sh ~/targets/4x6-10x-ara-unlimited.pdf\4x6-10x-ara-unlimited.pdf]8;;\     4"x6" 10x ARA Unlimited
+
+8.5"x11" Sheets:
+  ]8;;sh:hterm-show-file.sh ~/targets/8.5x11-10x-ibs-50.pdf\8.5x11-10x-ibs-50.pdf]8;;\         8.5"x11" 10x IBS 50 Yard Rimfire
+  ]8;;sh:hterm-show-file.sh ~/targets/8.5x11-10x-ibs-100.pdf\8.5x11-10x-ibs-100.pdf]8;;\        8.5"x11" 10x IBS 100 Yard Rimfire (Reduced 5 Ring)
+  ]8;;sh:hterm-show-file.sh ~/targets/8.5x11-25x-ara-factory.pdf\8.5x11-25x-ara-factory.pdf]8;;\    8.5"x11" 25x ARA Factory Class Bullseye
+  ]8;;sh:hterm-show-file.sh ~/targets/8.5x11-25x-ara-unlimited.pdf\8.5x11-25x-ara-unlimited.pdf]8;;\  8.5"x11" 25x ARA Unlimited Class Bullseye
+  ]8;;sh:hterm-show-file.sh ~/targets/8.5x11-25x-usbr.pdf\8.5x11-25x-usbr.pdf]8;;\           8.5"x11" 25x USBR (Reduced 4 Ring)
+  ]8;;sh:hterm-show-file.sh ~/targets/8.5x11-b-8.pdf\8.5x11-b-8.pdf]8;;\                8.5"x11" B-8
+  ]8;;sh:hterm-show-file.sh ~/targets/8.5x11-b-16.pdf\8.5x11-b-16.pdf]8;;\               8.5"x11" B-16

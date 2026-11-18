@@ -43,5 +43,5 @@ struct Config {
 }
 
 const fn default_bind_addr() -> SocketAddr {
-    SocketAddr::new(IpAddr::V4(Ipv4Addr::UNSPECIFIED), 2002)
+    SocketAddr::new(IpAddr::V4(Ipv4Addr::LOCALHOST), 2002)
 }

@@ -28,8 +28,27 @@ in
           "smtpConnectionUrl:${config.sops.secrets."mxroute/smtpConnectionUrl".path}"
           "toMailbox:${config.sops.secrets."www-sebastianrasor-com/toMailbox".path}"
         ];
+        LockPersonality = true;
+        MemoryDenyWriteExecute = true;
+        NoNewPrivileges = true;
+        PrivateDevices = true;
+        PrivateTmp = true;
+        ProtectControlGroups = true;
+        ProtectHome = true;
+        ProtectHostname = true;
+        ProtectKernelLogs = true;
+        ProtectKernelModules = true;
+        ProtectKernelTunables = true;
+        ProtectSystem = "strict";
         Restart = "on-failure";
+        RestrictAddressFamilies = [
+          "AF_INET"
+          "AF_INET6"
+        ];
+        RestrictNamespaces = true;
+        RestrictSUIDSGID = true;
         RuntimeDirectory = "www-sebastianrasor-com";
+        SystemCallArchitectures = "native";
       };
     };
 
