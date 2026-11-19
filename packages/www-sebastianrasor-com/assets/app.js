@@ -241,16 +241,16 @@ const terminalReady = new Promise((resolve) => {
 });
 
 term.decorate(terminalEl);
+// Upstream hterm's Firefox branch attaches its iframe `load` listener after
+// `appendChild`, missing synchronous initial `about:blank` load in Firefox 135+.
+if (!term.scrollPort_.screen_ && term.scrollPort_.iframe_) {
+  term.scrollPort_.iframe_.dispatchEvent(new Event("load"));
+}
 if (term.scrollPort_?.iframe_) {
   term.scrollPort_.iframe_.title = "Interactive Linux terminal";
 }
 
 await terminalReady;
-if (!term.cursorNode_ && term.scrollPort_?.iframe_) {
-  await new Promise((resolve) => {
-    term.scrollPort_.iframe_.addEventListener("load", resolve, { once: true });
-  });
-}
 if (term.document_?.documentElement) {
   term.document_.documentElement.lang = "en";
 }
