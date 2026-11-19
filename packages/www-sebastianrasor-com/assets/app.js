@@ -200,6 +200,7 @@ hterm.messageManager.addMessages(htermMessages);
 
 const storage = new lib.Storage.Memory();
 const term = new hterm.Terminal({ storage });
+term.bellAudio_.preload = "none";
 
 const origOpenUrl = hterm.openUrl.bind(hterm);
 hterm.openUrl = (url) => {
@@ -258,7 +259,7 @@ if (term.document_?.documentElement) {
 const isCompactViewport = window.innerWidth < 640;
 const prefs = term.getPrefs();
 
-prefs.set("audible-bell-sound", "");
+term.bellAudio_.removeAttribute("src");
 prefs.set("allow-images-inline", true);
 prefs.set("enable-clipboard-notice", false);
 prefs.set("background-color", "#0b0f14");
