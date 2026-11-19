@@ -23,6 +23,9 @@ let
   hasEndpointPeers = builtins.any (
     peer: peer.config.sebastianrasor.wireguard.listenPort != null
   ) peers;
+  hasPeerOutboundPorts = builtins.any (
+    peer: peer.config.sebastianrasor.wireguard.outboundPorts != [ ]
+  ) peers;
   forwardedPorts = lib.concatMap (
     peer:
     let
@@ -97,6 +100,27 @@ in
       default = null;
     };
 
+    outboundPorts = lib.mkOption {
+      type = lib.types.listOf (
+        lib.types.submodule {
+          options = {
+            port = lib.mkOption {
+              type = lib.types.port;
+            };
+
+            proto = lib.mkOption {
+              type = lib.types.enum [
+                "tcp"
+                "udp"
+              ];
+              default = "tcp";
+            };
+          };
+        }
+      );
+      default = [ ];
+    };
+
     publicKey = lib.mkOption {
       type = lib.types.str;
     };
@@ -146,10 +170,11 @@ in
             builtins.attrNames config.sebastianrasor.systemd-networkd.interfacesRequiredForOnline
           );
         in
-        lib.mkIf (cfg.listenPort != null && forwardedPorts != [ ]) {
+        lib.mkIf (cfg.listenPort != null && (forwardedPorts != [ ] || hasPeerOutboundPorts)) {
           enable = true;
           enableIPv6 = true;
           inherit externalInterface;
+          internalInterfaces = lib.optional hasPeerOutboundPorts "wg0";
           forwardPorts = forwardedPorts;
           extraCommands = lib.concatMapStrings (
             peer:
@@ -215,16 +240,24 @@ in
         ];
         networkConfig.ConfigureWithoutCarrier = true;
         linkConfig.RequiredForOnline = "no";
-        routingPolicyRules = lib.optionals hasEndpointPeers [
-          {
-            From = localIp;
+        routingPolicyRules = lib.optionals hasEndpointPeers (
+          [
+            {
+              From = localIp;
+              Table = 1000;
+            }
+            {
+              From = localIp6;
+              Table = 1000;
+            }
+          ]
+          ++ map (out: {
+            DestinationPort = out.port;
+            Family = "both";
+            IPProtocol = out.proto;
             Table = 1000;
-          }
-          {
-            From = localIp6;
-            Table = 1000;
-          }
-        ];
+          }) cfg.outboundPorts
+        );
       };
     };
   };
