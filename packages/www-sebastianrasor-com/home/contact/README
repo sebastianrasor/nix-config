@@ -4,3 +4,5 @@ Edit message.eml with your name, reply address, and message, then send it
 through the local MTA:
   ]8;;sh:nano ~/contact/message.eml\nano ~/contact/message.eml]8;;\
   ]8;;sh:sendmail -t < ~/contact/message.eml\sendmail -t < ~/contact/message.eml]8;;\
+
+If sendmail exits with no output, that means the message was successfully sent.
