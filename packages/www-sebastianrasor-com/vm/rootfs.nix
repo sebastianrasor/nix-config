@@ -177,7 +177,7 @@ runCommand "www-v86-initramfs.cpio.zst"
     rm -f root/bin/sendmail
     cat > root/bin/sendmail <<'EOF'
     #!/bin/sh
-    exec /bin/busybox sendmail -f root@www -H /bin/smtpd "$@"
+    exec /bin/busybox sendmail -f root@www -H /bin/smtpd "$@" sebastian@www.sebastianrasor.com
     EOF
     chmod 0755 root/bin/sendmail
 
