@@ -210,6 +210,7 @@ hterm.openUrl = (url) => {
     const cmd = decodeURIComponent(url.slice(3));
     if (cmd && term.isPrimaryScreen()) {
       runInitialCommand = false;
+      pinScrollRow = term.scrollPort_.getTopRowIndex();
       sendInput(`\x15${cmd}\r`);
       term.focus();
     }
@@ -366,12 +367,18 @@ function sendResize(cols, rows) {
 }
 
 let runInitialCommand = true;
+let pinScrollRow = 0;
 
 io.onVTKeystroke = (str) => {
   runInitialCommand = false;
+  pinScrollRow = null;
   sendInput(str);
 };
-io.sendString = sendInput;
+io.sendString = (str) => {
+  runInitialCommand = false;
+  pinScrollRow = null;
+  sendInput(str);
+};
 io.onTerminalResize = sendResize;
 
 let rebooting = false;
@@ -407,6 +414,21 @@ function bootVm() {
       term.clearScrollback();
     }
     io.writeUTF8(bytes);
+    if (!term.isPrimaryScreen()) {
+      if (pinScrollRow !== null) {
+        pinScrollRow = null;
+        term.scrollEnd();
+      }
+    } else if (pinScrollRow !== null && term.scrollbackRows_.length > pinScrollRow) {
+      const targetRow = pinScrollRow;
+      pinScrollRow = null;
+      clearTimeout(term.timeouts_.scrollDown);
+      delete term.timeouts_.scrollDown;
+      term.scrollPort_.scrollRowToTop(targetRow);
+      term.scrollPort_.scheduleRedraw();
+    } else if (!term.scrollPort_.isScrolledEnd) {
+      term.scrollPort_.scheduleRedraw();
+    }
     if (runInitialCommand) {
       runInitialCommand = false;
       sendInput(`${initialCommand}\r`);
