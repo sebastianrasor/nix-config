@@ -6,7 +6,9 @@
   esbuild,
   fetchgit,
   fetchurl,
+  groff,
   jq,
+  man-pages,
   openssl,
   pkg-config,
   runCommand,
@@ -27,12 +29,36 @@ let
   };
 
   qemuBios = (seabios.override { ___build-type = "qemu"; }).firmware;
-  homeDir = runCommand "www-sebastianrasor-com-home" { } ''
-    mkdir -p "$out/targets"
-    cp -r --no-preserve=mode ${./home}/. "$out/"
-    chmod -R u+w "$out"
-    install -Dm644 -t "$out/targets" ${targets}/*.pdf
-  '';
+  homeDir =
+    runCommand "www-sebastianrasor-com-home"
+      {
+        nativeBuildInputs = [ groff ];
+      }
+      ''
+        mkdir -p "$out/targets"
+        cp -r --no-preserve=mode ${./home}/. "$out/"
+        chmod -R u+w "$out"
+        install -Dm644 -t "$out/targets" ${targets}/*.pdf
+        gzip -dc ${lib.getMan man-pages}/share/man/man0/intro.0.gz \
+          | awk '
+            /^\.TH intro / { sub(/^\.TH intro 0 /, ".TH intro 1 ") }
+            /^intro \\- / { $0 = "intro \\- introduction to user commands" }
+            /^\.(SH|SS) / {
+              skip = ($0 ~ /^\.SS (Login|Disks and filesystems|Getting information)$/ || $0 == ".SH SEE ALSO")
+              drop = 0
+            }
+            skip { next }
+            /^\.P$/ { drop = 0 }
+            /^See also$/ || /^Large searches on a multi-GB disk/ { drop = 1 }
+            drop { next }
+            /^You can change your shell,$/ || /^and everybody has their own favorite one\.$/ { next }
+            /^\.RB "(knuth login|Password): "/ { next }
+            /sent to "standard output"$/ { $0 = $0 "," }
+            /^\(see$/ || /^\.BR stdout / { next }
+            { print }
+          ' \
+          | groff -man -rHY=0 -dAD=l -Tutf8 -P -cbou > "$out/linux-intro"
+      '';
   vmKernel = callPackage ./vm/kernel.nix { };
   vmRootfs = callPackage ./vm/rootfs.nix {
     inherit
