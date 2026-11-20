@@ -111,9 +111,19 @@ stdenv.mkDerivation {
       --enable VIRTIO_MENU \
       --enable VIRTIO_PCI \
       --enable VIRTIO_PCI_LEGACY \
-      --enable VIRTIO_CONSOLE
+      --enable VIRTIO_CONSOLE \
+      --enable NET \
+      --disable WIRELESS \
+      --disable ETHTOOL_NETLINK \
+      --enable NET_9P \
+      --enable NET_9P_VIRTIO \
+      --enable 9P_FS
 
     make $makeFlags olddefconfig
+
+    grep -q '^CONFIG_NET_9P=y$' .config
+    grep -q '^CONFIG_NET_9P_VIRTIO=y$' .config
+    grep -q '^CONFIG_9P_FS=y$' .config
 
     runHook postConfigure
   '';

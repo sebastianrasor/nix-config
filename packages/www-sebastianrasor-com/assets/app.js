@@ -83,6 +83,8 @@ const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
 const terminalEl = document.getElementById("terminal");
+const initialCommand = terminalEl.dataset.initialCommand || "cat README";
+const homeFs = terminalEl.dataset.homeFs ? JSON.parse(terminalEl.dataset.homeFs) : null;
 const fontUrl = terminalEl.dataset.fontUrl || "/AtkinsonHyperlegibleMono.woff2";
 const wasmUrl = terminalEl.dataset.wasmUrl || "/v86.wasm";
 const biosUrl = terminalEl.dataset.biosUrl || "/seabios.bin";
@@ -386,6 +388,7 @@ function bootVm() {
     bios: { url: biosUrl },
     bzimage: { url: bzImageUrl },
     initrd: { url: initrdUrl },
+    filesystem: { baseurl: "/" },
     cmdline: "console=hvc0 rdinit=/bin/init HOME=/root TERM=xterm-256color lpj=1000000 noapic nolapic quiet",
     virtio_console: true,
     disable_keyboard: true,
@@ -406,7 +409,7 @@ function bootVm() {
     io.writeUTF8(bytes);
     if (runInitialCommand) {
       runInitialCommand = false;
-      sendInput("cat README\r");
+      sendInput(`${initialCommand}\r`);
     }
   });
 
@@ -435,6 +438,10 @@ function bootVm() {
 
   instance.add_listener("emulator-started", () => {
     if (vm !== instance) return;
+
+    if (homeFs && instance.fs9p) {
+      instance.fs9p.load_from_json(homeFs);
+    }
 
     // When booted via `bzimage`, Linux overwrites 0x100000 in RAM, so a guest hardware
     // reset (`reboot`) needs a fresh V86 instance.

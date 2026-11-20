@@ -27,11 +27,17 @@ let
   };
 
   qemuBios = (seabios.override { ___build-type = "qemu"; }).firmware;
+  homeDir = runCommand "www-sebastianrasor-com-home" { } ''
+    mkdir -p "$out/targets"
+    cp -r --no-preserve=mode ${./home}/. "$out/"
+    chmod -R u+w "$out"
+    install -Dm644 -t "$out/targets" ${targets}/*.pdf
+  '';
   vmKernel = callPackage ./vm/kernel.nix { };
   vmRootfs = callPackage ./vm/rootfs.nix {
     inherit
+      homeDir
       libappsSrc
-      targets
       ;
   };
 
@@ -130,7 +136,10 @@ let
 
   packageArgs = commonArgs // {
     inherit cargoArtifacts;
-    env.WWW_ASSETS_DIR = assets;
+    env = {
+      WWW_ASSETS_DIR = assets;
+      WWW_HOME_DIR = homeDir;
+    };
   };
 in
 craneLib.buildPackage (
@@ -139,6 +148,7 @@ craneLib.buildPackage (
     passthru = {
       inherit
         assets
+        homeDir
         vmKernel
         vmRootfs
         ;

@@ -4,13 +4,14 @@
   ncurses,
   pkg-config,
   pkgsi686Linux,
+  python3Minimal,
   runCommand,
   stdenv,
   writeShellScriptBin,
   xz,
   zstd,
+  homeDir,
   libappsSrc,
-  targets,
 }:
 let
   i686Cc = pkgsi686Linux.stdenv.cc.cc;
@@ -147,11 +148,12 @@ runCommand "www-v86-initramfs.cpio.zst"
   {
     nativeBuildInputs = [
       cpio
+      python3Minimal
       zstd
     ];
   }
   ''
-    mkdir -p root/{bin,dev,etc,proc,root/targets,sys,tmp,usr/share/nano,usr/share/terminfo}
+    mkdir -p root/{bin,dev,etc,proc,root,sys,tmp,usr/share/nano,usr/share/terminfo}
 
     cp -a ${guestBusybox}/bin/. root/bin/
     chmod u+w root/bin
@@ -183,11 +185,48 @@ runCommand "www-v86-initramfs.cpio.zst"
     ::sysinit:/bin/mount -t proc proc /proc
     ::sysinit:/bin/mount -t sysfs sysfs /sys
     ::sysinit:/bin/mount -t devtmpfs devtmpfs /dev
+    ::sysinit:/bin/sh -c '/bin/mount -t 9p -o trans=virtio,version=9p2000.L host9p /root && [ -d /usr/share/home ] && /bin/cp -a /usr/share/home/. /root/ && /bin/rm -rf /usr/share/home'
     hvc0::respawn:-/bin/sh -c 'cd && exec /bin/sh'
     EOF
 
-    cp -r --no-preserve=mode ${../home}/. root/root/
-    install -Dm644 -t root/root/targets ${targets}/*.pdf
+    python3 - "${homeDir}" root/usr/share/home <<'PY'
+    import os
+    import shutil
+    import sys
+
+    src_root, dst_root = sys.argv[1], sys.argv[2]
+    EAGER_TEXT_MAX_BYTES = 4096
+    DIRECT_MEDIA_EXTS = {
+        "pdf", "svg", "svgz", "png", "jpg", "jpeg", "gif", "webp", "avif", "ico", "bmp",
+        "mp3", "ogg", "wav", "flac", "mp4", "webm", "woff", "woff2", "ttf", "otf",
+        "zip", "gz", "tgz", "bz2", "xz", "zst", "tar", "7z", "wasm", "bin", "iso", "img",
+    }
+
+    for dirpath, _, filenames in os.walk(src_root):
+        rel_dir = os.path.relpath(dirpath, src_root)
+        dst_dir = dst_root if rel_dir == "." else os.path.join(dst_root, rel_dir)
+        os.makedirs(dst_dir, exist_ok=True)
+        for name in filenames:
+            src = os.path.join(dirpath, name)
+            if os.path.islink(src) or not os.path.isfile(src):
+                continue
+            if os.path.getsize(src) >= EAGER_TEXT_MAX_BYTES:
+                continue
+            ext = os.path.splitext(name)[1].lstrip(".").lower()
+            if ext in DIRECT_MEDIA_EXTS:
+                continue
+            with open(src, "rb") as f:
+                data = f.read()
+            if b"\x00" in data:
+                continue
+            try:
+                data.decode("utf-8")
+            except UnicodeDecodeError:
+                continue
+            dst = os.path.join(dst_dir, name)
+            shutil.copyfile(src, dst)
+            os.chmod(dst, 0o755 if (os.stat(src).st_mode & 0o111) else 0o644)
+    PY
 
     (
       cd root

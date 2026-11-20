@@ -15,7 +15,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1, interactive-widget=resizes-content"
     >
-    <link rel="canonical" href="https://www.sebastianrasor.com">
+    <link rel="canonical" href="https://www.sebastianrasor.com{{canonical_path}}">
     <link rel="preload" href="{{lookup assets '/AtkinsonHyperlegibleMono.woff2'}}" as="fetch" crossorigin>
     <link rel="modulepreload" href="{{lookup assets '/app.js'}}">
     <link rel="preload" href="{{lookup assets '/v86.wasm'}}" as="fetch" crossorigin>
@@ -48,6 +48,8 @@
       id="terminal"
       role="application"
       aria-label="Interactive Linux terminal"
+      data-initial-command="{{initial_command}}"
+      data-home-fs="{{home_fs}}"
       data-font-url="{{lookup assets '/AtkinsonHyperlegibleMono.woff2'}}"
       data-wasm-url="{{lookup assets '/v86.wasm'}}"
       data-bios-url="{{lookup assets '/seabios.bin'}}"
