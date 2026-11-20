@@ -230,6 +230,7 @@ runCommand "www-v86-initramfs.cpio.zst"
 
     (
       cd root
-      find . -print0 | sort -z | cpio --null -o -H newc -R 0:0 --reproducible | zstd -19 -T0 > "$out"
+      find . -exec touch -h -d '@0' {} +
+      find . -print0 | sort -z | cpio --null -o -H newc -R 0:0 --reproducible | zstd -19 -T1 > "$out"
     )
   ''

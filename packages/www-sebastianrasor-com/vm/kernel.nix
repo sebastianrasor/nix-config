@@ -40,6 +40,13 @@ stdenv.mkDerivation {
   hardeningDisable = [ "all" ];
   enableParallelBuilding = true;
 
+  env = {
+    KBUILD_BUILD_TIMESTAMP = "Thu Jan  1 00:00:00 UTC 1970";
+    KBUILD_BUILD_USER = "nix";
+    KBUILD_BUILD_HOST = "nix";
+    KBUILD_BUILD_VERSION = "1";
+  };
+
   makeFlags = [
     "ARCH=i386"
     "HOSTCC=${stdenv.cc}/bin/gcc"
