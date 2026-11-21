@@ -1,3 +1,4 @@
+{{~header 'Content-Security-Policy' "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; font-src 'self' data:; media-src 'self' data:; connect-src 'self'; frame-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"~}}
 {{~header 'Link' '<' (lookup assets '/AtkinsonHyperlegibleMono.woff2') '>; rel=preload; as="fetch"; crossorigin'~}}
 {{~header 'Link' '<' (lookup assets '/app.js') '>; rel=modulepreload'~}}
 {{~header 'Link' '<' (lookup assets '/v86.wasm') '>; rel=preload; as="fetch"; crossorigin'~}}

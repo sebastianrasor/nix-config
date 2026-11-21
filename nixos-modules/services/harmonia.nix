@@ -19,8 +19,11 @@ in
       signKeyPaths = [ config.sops.secrets."nix/binaryCacheSecretKey".path ];
     };
 
-    sebastianrasor.reverse-proxy.proxies."cache" =
-      "http://${config.services.harmonia.cache.settings.bind}";
+    sebastianrasor.reverse-proxy.proxies."cache" = {
+      target = "http://${config.services.harmonia.cache.settings.bind}";
+      proxyBuffering = false;
+      timeout = "600s";
+    };
 
     sops.secrets."nix/binaryCacheSecretKey" = { };
   };

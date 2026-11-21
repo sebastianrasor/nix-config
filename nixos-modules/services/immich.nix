@@ -48,10 +48,17 @@ in
 
     sebastianrasor = {
       reverse-proxy.proxies = {
-        "immich" = "http://[::1]:${toString config.services.immich.port}";
+        "immich" = {
+          target = "http://[::1]:${toString config.services.immich.port}";
+          maxBodySize = "50000m";
+          proxyBuffering = false;
+          timeout = "600s";
+        };
         "immich.${constants.domain}" = {
           public = true;
           target = "http://127.0.0.1:${toString config.services.immich-public-proxy.port}";
+          proxyBuffering = false;
+          timeout = "600s";
         };
       };
 

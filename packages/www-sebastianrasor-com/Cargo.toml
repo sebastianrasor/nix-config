@@ -10,20 +10,26 @@ nursery = "warn"
 [dependencies]
 axum = "0.8.9"
 axum-extra = { version = "0.12.6", features = ["typed-header"] }
-check-if-email-exists = "0.11.11"
 fernet = "0.2.2"
 figment = { version = "0.10.19", features = ["env"] }
 figment_file_provider_adapter = "0.1.1"
+governor = "0.10.4"
+hickory-resolver = "0.24.4"
 http_encoding_headers = "0.2.0"
+ipnet = "2.12.2"
+itoa = "1.0.18"
 lettre = { version = "0.11.23", features = ["serde", "tokio1", "tokio1-native-tls"] }
+mail-parser = "1.0.1"
+mailchecker = "6.0.21"
 moka = { version = "0.12.16", features = ["sync"] }
 phf = "0.14.0"
 problem_details = { version = "0.11.0", features = ["axum"] }
+scopeguard = "1.2.0"
 serde = { version = "1.0.229", features = ["derive"] }
 sha2 = "0.11.1"
 thiserror = "2.0.21"
 tokio = { version = "1.54.1", features = ["macros", "rt-multi-thread", "sync", "time"] }
-tower-http = { version = "0.7.1", features = ["trace"] }
+tower-http = { version = "0.7.1", features = ["set-header", "trace"] }
 tower_governor = { version = "0.8.0", default-features = false, features = ["axum"] }
 tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
@@ -36,5 +42,6 @@ hex = "0.4.3"
 mime_guess = "2.0.5"
 phf_codegen = "0.14.0"
 sha2 = "0.11.1"
+shlex = "2.0.1"
 walkdir = "2.5.0"
 zstd = "0.14.3"

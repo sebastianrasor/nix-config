@@ -18,6 +18,7 @@ in
       description = "My personal website";
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
+        CapabilityBoundingSet = "";
         DynamicUser = true;
         Environment = [
           "WWW_SMTP_CONNECTION_URL_FILE=%d/smtpConnectionUrl"
@@ -46,23 +47,24 @@ in
           "AF_INET6"
         ];
         RestrictNamespaces = true;
+        RestrictRealtime = true;
         RestrictSUIDSGID = true;
         RuntimeDirectory = "www-sebastianrasor-com";
         SystemCallArchitectures = "native";
+        SystemCallFilter = [
+          "@system-service"
+          "~@privileged"
+          "~@resources"
+        ];
+        UMask = "0077";
       };
     };
 
-    sebastianrasor = {
-      reverse-proxy.proxies."www.sebastianrasor.com" = {
-        public = true;
-        target = "http://127.0.0.1:2002";
-      };
-      wireguard.outboundPorts = [
-        {
-          port = 25;
-          proto = "tcp";
-        }
-      ];
+    sebastianrasor.reverse-proxy.proxies."www.sebastianrasor.com" = {
+      public = true;
+      target = "http://127.0.0.1:2002";
+      maxBodySize = "128k";
+      timeout = "30s";
     };
 
     sops.secrets = {

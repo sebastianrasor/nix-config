@@ -96,6 +96,7 @@ in
         "tranquil.${constants.domain}" = {
           public = true;
           target = "http://127.0.0.1:${toString config.services.tranquil-pds.settings.server.port}";
+          maxBodySize = "100m";
         };
       };
     };

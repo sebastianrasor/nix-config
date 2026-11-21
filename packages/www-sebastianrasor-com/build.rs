@@ -363,19 +363,6 @@ fn url_path(base_dir: &Path, path: &Path) -> String {
     format!("/{path}")
 }
 
-fn shell_quote(arg: &str) -> String {
-    if !arg.is_empty()
-        && !arg.starts_with('-')
-        && arg
-            .bytes()
-            .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'/' | b'.' | b'_' | b'-'))
-    {
-        arg.to_owned()
-    } else {
-        format!("'{}'", arg.replace('\'', "'\\''"))
-    }
-}
-
 fn load_static_assets(
     assets_dir: &Path,
     table: &mut AssetTable,
@@ -447,13 +434,13 @@ fn discover_home(
                     format!("{rel}/README")
                 };
                 (
-                    format!("cat {}", shell_quote(&readme_rel)),
+                    format!("cat {}", shlex::try_quote(&readme_rel)?),
                     vec![format!("/{readme_rel}")],
                 )
             } else if rel.is_empty() {
                 ("ls".to_owned(), Vec::new())
             } else {
-                (format!("ls {}", shell_quote(&rel)), Vec::new())
+                (format!("ls {}", shlex::try_quote(&rel)?), Vec::new())
             };
             routes.push(HomeRoute {
                 canonical_path,
@@ -478,7 +465,7 @@ fn discover_home(
                 routes.push(HomeRoute {
                     canonical_path: url,
                     aliases: Vec::new(),
-                    initial_command: format!("cat {}", shell_quote(&rel)),
+                    initial_command: format!("cat {}", shlex::try_quote(&rel)?),
                 });
             }
         } else {

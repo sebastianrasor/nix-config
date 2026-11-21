@@ -136,8 +136,8 @@ prepareChallenge();
 async function takeChallenge() {
   let ticket = readyChallengePromise ? await readyChallengePromise : null;
   readyChallengePromise = null;
-  // Refresh if missing or older than 50 minutes (server TTL is 60 minutes)
-  if (!ticket || Date.now() - ticket.createdAt > 50 * 60_000) {
+  // Refresh if missing or older than 10 minutes (server TTL is 15 minutes)
+  if (!ticket || Date.now() - ticket.createdAt > 10 * 60_000) {
     ticket = await prepareChallenge();
     readyChallengePromise = null;
   }

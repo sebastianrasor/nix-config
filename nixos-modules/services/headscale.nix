@@ -83,6 +83,8 @@ in
       reverse-proxy.proxies."headscale.${constants.domain}" = {
         public = true;
         target = "http://127.0.0.1:${toString config.services.headscale.port}";
+        proxyBuffering = false;
+        timeout = "600s";
       };
 
       wireguard.forwardPorts = [

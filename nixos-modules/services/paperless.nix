@@ -60,7 +60,10 @@ in
       }
     ];
 
-    sebastianrasor.reverse-proxy.proxies."paperless" =
-      "http://127.0.0.1:${toString config.services.paperless.port}";
+    sebastianrasor.reverse-proxy.proxies."paperless" = {
+      target = "http://127.0.0.1:${toString config.services.paperless.port}";
+      maxBodySize = "200m";
+      timeout = "300s";
+    };
   };
 }

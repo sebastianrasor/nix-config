@@ -141,6 +141,7 @@ mod tests {
     async fn serves_home_routes_and_readme_aliases() {
         let (status, root_headers, root_body) = get_uri("/").await;
         assert_eq!(status, StatusCode::OK);
+        assert!(root_headers.contains_key(header::CONTENT_SECURITY_POLICY));
         assert!(root_body.contains(r#"data-initial-command="cat README""#));
         assert!(root_body.contains("data-home-fs="));
         assert!(root_body.contains(r#"href="https://www.sebastianrasor.com/""#));

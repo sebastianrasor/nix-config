@@ -36,7 +36,12 @@ in
     ];
 
     sebastianrasor = {
-      reverse-proxy.proxies."jellyfin" = "http://127.0.0.1:8096";
+      reverse-proxy.proxies."jellyfin" = {
+        target = "http://127.0.0.1:8096";
+        maxBodySize = "100m";
+        proxyBuffering = false;
+        timeout = "600s";
+      };
 
       # Need to transcode on disk since tmpfs root usually doesn't have the space for transcodes
       persistence.directories = [

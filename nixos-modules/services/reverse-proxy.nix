@@ -39,6 +39,21 @@ let
         };
 
         public = lib.mkEnableOption "exposing this proxy publicly";
+
+        maxBodySize = lib.mkOption {
+          type = lib.types.str;
+          default = "16m";
+        };
+
+        proxyBuffering = lib.mkOption {
+          type = lib.types.bool;
+          default = true;
+        };
+
+        timeout = lib.mkOption {
+          type = lib.types.str;
+          default = "60s";
+        };
       };
     }
   );
@@ -98,13 +113,13 @@ in
                 proxyPass = lib.mkForce proxy.target;
                 proxyWebsockets = lib.mkForce true;
                 extraConfig = lib.mkForce ''
-                  client_max_body_size 50000M;
-                  proxy_buffering off;
+                  client_max_body_size ${proxy.maxBodySize};
+                  proxy_buffering ${if proxy.proxyBuffering then "on" else "off"};
                   proxy_pass_header Authorization;
-                  proxy_read_timeout 600s;
-                  proxy_send_timeout 600s;
+                  proxy_read_timeout ${proxy.timeout};
+                  proxy_send_timeout ${proxy.timeout};
                   proxy_ssl_server_name on;
-                  send_timeout 600s;
+                  send_timeout ${proxy.timeout};
                 '';
               };
             };
