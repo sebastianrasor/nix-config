@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="#0b0f14">
+    <meta
+      name="description"
+      content="Personal website of Sebastian Rasor — an interactive Linux system running in your browser."
+    >
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, interactive-widget=resizes-content"
+    >
+    <title>Sebastian Rasor</title>
+    <link
+      rel="preload"
+      href="{{ font }}"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    >
+    <link rel="preload" href="{{ wasm }}" as="fetch" crossorigin>
+    {%- if let Some(state_url) = state %}
+    <link rel="preload" href="{{ state_url }}" as="fetch" crossorigin>
+    {%- endif %}
+    <style>
+      @font-face {
+        font-family: "Atkinson Hyperlegible Mono";
+        src: url("{{ font }}") format("woff2");
+        font-weight: 200 800;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #0b0f14;
+        color: #e6edf3;
+      }
+
+      #terminal {
+        position: fixed;
+        inset: 0;
+        width: 100dvw;
+        height: 100dvh;
+      }
+
+      .noscript-fallback {
+        position: fixed;
+        inset: 0;
+        padding: 18px;
+        font: 15px/1.45 "Atkinson Hyperlegible Mono", ui-monospace, monospace;
+      }
+    </style>
+    <script type="module" src="{{ app_js }}"></script>
+  </head>
+  <body>
+    <div id="terminal" role="application" aria-label="Interactive Linux terminal"
+      data-bell-url="{{ bell }}"
+      data-font-url="{{ font }}"
+      data-wasm-url="{{ wasm }}"
+      {%- if let Some(state_url) = state %}
+      data-state-url="{{ state_url }}"
+      {%- endif %}
+    ></div>
+    <noscript>
+      <main class="noscript-fallback">
+        JavaScript and WebAssembly are required to boot the interactive Linux terminal.
+      </main>
+    </noscript>
+  </body>
+</html>

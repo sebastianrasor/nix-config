@@ -1,0 +1,11 @@
+{
+  "libapps": {
+    "url": "https://chromium.googlesource.com/apps/libapps",
+    "rev": "36a229521ce03f008d32c91f2063a1088e31f0a9",
+    "hash": "sha256-GJ8dDUiR58iDUfGHjiJfxAt4j8LFeq93XuIFZgPBu3c="
+  },
+  "v86": {
+    "url": "https://registry.npmjs.org/v86/-/v86-0.5.473.tgz",
+    "hash": "sha256-dlplItk/GLDBPhTZmhOsGcRVSY+VAvgICpnWGDxYUXk="
+  }
+}

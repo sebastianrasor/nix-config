@@ -16,6 +16,7 @@ in
   config = lib.mkIf cfg.enable {
     systemd.services.www-sebastianrasor-com = {
       description = "My personal website";
+      after = [ "network.target" ];
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
         CapabilityBoundingSet = "";
@@ -49,7 +50,6 @@ in
         RestrictNamespaces = true;
         RestrictRealtime = true;
         RestrictSUIDSGID = true;
-        RuntimeDirectory = "www-sebastianrasor-com";
         SystemCallArchitectures = "native";
         SystemCallFilter = [
           "@system-service"

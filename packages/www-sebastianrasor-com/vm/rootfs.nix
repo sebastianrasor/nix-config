@@ -1,159 +1,92 @@
 {
   cpio,
-  nano,
   ncurses,
-  pkg-config,
   pkgsi686Linux,
-  python3Minimal,
   runCommand,
-  stdenv,
-  writeShellScriptBin,
-  xz,
-  zstd,
-  homeDir,
+  writeShellScript,
   libappsSrc,
 }:
 let
-  i686Cc = pkgsi686Linux.stdenv.cc.cc;
-  i686Binutils = pkgsi686Linux.stdenv.cc.bintools.bintools;
-  i686Musl = pkgsi686Linux.musl;
-
-  muslCc = writeShellScriptBin "i686-musl-gcc" ''
-    exec ${i686Cc}/bin/gcc \
-      -B${i686Binutils}/bin \
+  muslCc = writeShellScript "i686-musl-cc" ''
+    exec ${pkgsi686Linux.stdenv.cc.cc}/bin/gcc \
+      -B${pkgsi686Linux.stdenv.cc.bintools.bintools}/bin \
       -isystem ${pkgsi686Linux.linuxHeaders}/include \
-      -L${i686Cc}/lib \
-      -static \
-      "$@" \
-      -specs ${i686Musl.dev}/lib/musl-gcc.specs
+      -L${pkgsi686Linux.stdenv.cc.cc}/lib \
+      -static "$@" -specs ${pkgsi686Linux.musl.dev}/lib/musl-gcc.specs
   '';
 
-  guestNcurses = stdenv.mkDerivation {
-    pname = "ncurses-i686-musl-static";
-    inherit (ncurses) src version;
+  muslStatic =
+    pkg: extraFlags:
+    pkg.overrideAttrs (old: {
+      configureFlags =
+        (old.configureFlags or [ ])
+        ++ [
+          "CC=${muslCc}"
+          "CFLAGS=-Os -ffunction-sections -fdata-sections"
+          "LDFLAGS=-Wl,--gc-sections"
+        ]
+        ++ extraFlags;
+      dontPatchELF = true;
+      stripAllList = [ "bin" ];
+      __structuredAttrs = true;
+    });
 
-    nativeBuildInputs = [
-      i686Binutils
-      muslCc
-      pkg-config
-    ];
+  guestNcurses = muslStatic (pkgsi686Linux.ncurses.override {
+    enableStatic = true;
+    withCxx = false;
+  }) [ ];
 
-    hardeningDisable = [ "all" ];
-    dontPatchELF = true;
-    dontStrip = true;
-    enableParallelBuilding = true;
-
-    postPatch = ''
-      sed -i '1i #include <stdbool.h>' include/curses.h.in
-    '';
-
-    configurePhase = ''
-      runHook preConfigure
-      CC=i686-musl-gcc \
-      AR=${i686Binutils}/bin/ar \
-      RANLIB=${i686Binutils}/bin/ranlib \
-      LD=${i686Binutils}/bin/ld \
-      NM=${i686Binutils}/bin/nm \
-      CFLAGS="-Os -ffunction-sections -fdata-sections" \
-      ./configure \
-        --prefix="$out" \
-        --without-shared \
-        --without-debug \
-        --without-ada \
-        --without-cxx \
-        --without-cxx-binding \
-        --without-progs \
-        --without-tests \
-        --without-manpages \
-        --enable-widec \
-        --enable-pc-files \
-        --with-pkg-config-libdir="$out/lib/pkgconfig" \
-        --with-terminfo-dirs="/etc/terminfo:/usr/share/terminfo"
-      runHook postConfigure
-    '';
-
-    buildPhase = ''
-      runHook preBuild
-      make -j"$NIX_BUILD_CORES" -C include
-      make -j"$NIX_BUILD_CORES" -C ncurses
-      runHook postBuild
-    '';
-
-    installPhase = ''
-      runHook preInstall
-      make -C include install
-      make -C ncurses install.libs
-      make -C misc install.libs || true
-      runHook postInstall
-    '';
-  };
-
-  guestNano = stdenv.mkDerivation {
-    pname = "nano-i686-musl-static";
-    inherit (nano) src version;
-
-    nativeBuildInputs = [
-      i686Binutils
-      muslCc
-      pkg-config
-      xz
-    ];
-
-    hardeningDisable = [ "all" ];
-    dontPatchELF = true;
-    dontStrip = true;
-    enableParallelBuilding = true;
-
-    configurePhase = ''
-      runHook preConfigure
-      PKG_CONFIG_PATH="${guestNcurses}/lib/pkgconfig" \
-      CC=i686-musl-gcc \
-      AR=${i686Binutils}/bin/ar \
-      RANLIB=${i686Binutils}/bin/ranlib \
-      LD=${i686Binutils}/bin/ld \
-      NM=${i686Binutils}/bin/nm \
-      CFLAGS="-Os -ffunction-sections -fdata-sections -Wno-error=format-security" \
-      CPPFLAGS="-I${guestNcurses}/include -I${guestNcurses}/include/ncursesw" \
-      LDFLAGS="-L${guestNcurses}/lib -Wl,--gc-sections" \
-      ./configure \
-        --prefix=/usr \
-        --sysconfdir=/etc \
-        --disable-nls \
-        --disable-speller
-      runHook postConfigure
-    '';
-
-    buildPhase = ''
-      runHook preBuild
-      make -j"$NIX_BUILD_CORES" -C lib
-      make -j"$NIX_BUILD_CORES" -C src
-      ${i686Binutils}/bin/strip -s src/nano
-      runHook postBuild
-    '';
-
-    installPhase = ''
-      runHook preInstall
-      install -Dm755 src/nano "$out/bin/nano"
-      install -Dm644 -t "$out/share/nano" syntax/*.nanorc
-      runHook postInstall
-    '';
-  };
+  guestNano =
+    muslStatic
+      (pkgsi686Linux.nano.override {
+        ncurses = guestNcurses;
+        enableNls = false;
+        file = null;
+      })
+      [
+        "CPPFLAGS=-I${guestNcurses.dev}/include -I${guestNcurses.dev}/include/ncursesw"
+        "LIBS=-L${guestNcurses}/lib -lncursesw"
+        "--disable-histories"
+        "--disable-mouse"
+        "--disable-operatingdir"
+        "--disable-speller"
+      ];
 
   guestBusybox = pkgsi686Linux.busybox.override {
     enableStatic = true;
     useMusl = true;
   };
+
+  guestMsmtp =
+    (muslStatic
+      (pkgsi686Linux.msmtp.override {
+        withScripts = false;
+        withKeyring = false;
+      })
+      [
+        "--without-tls"
+        "--without-libgsasl"
+        "--without-libidn"
+        "--disable-nls"
+      ]
+    ).overrideAttrs
+      { buildInputs = [ ]; };
+
+  guestSocat =
+    (muslStatic pkgsi686Linux.socat [
+      "--disable-openssl"
+      "--disable-readline"
+      "--disable-libwrap"
+      "--disable-fips"
+    ]).overrideAttrs
+      { buildInputs = [ ]; };
 in
-runCommand "www-v86-initramfs.cpio.zst"
+runCommand "www-v86-initramfs.cpio"
   {
-    nativeBuildInputs = [
-      cpio
-      python3Minimal
-      zstd
-    ];
+    nativeBuildInputs = [ cpio ];
   }
   ''
-    mkdir -p root/{bin,dev,etc,proc,root,sys,tmp,usr/share/nano,usr/share/terminfo}
+    mkdir -p root/{bin,dev,etc/init.d,proc,root,run,sys,tmp,usr/share/nano,usr/share/terminfo}
 
     cp -a ${guestBusybox}/bin/. root/bin/
     chmod u+w root/bin
@@ -162,7 +95,7 @@ runCommand "www-v86-initramfs.cpio.zst"
     ln -s ../bin root/usr/sbin
 
     install -Dm755 ${guestNano}/bin/nano root/bin/nano
-    install -Dm644 -t root/usr/share/nano ${guestNano}/share/nano/*.nanorc
+    install -Dm644 -t root/usr/share/nano "${guestNano}"/share/nano/{default,email,nanorc,sh}.nanorc
     printf 'include "/usr/share/nano/*.nanorc"\n' > root/etc/nanorc
 
     for term in d/dumb l/linux v/vt100 x/xterm x/xterm-256color; do
@@ -172,65 +105,57 @@ runCommand "www-v86-initramfs.cpio.zst"
     install -Dm755 -t root/bin \
       "${libappsSrc}/hterm/etc/hterm-show-file.sh" \
       "${libappsSrc}/hterm/etc/osc52.sh"
-    install -Dm755 ${./smtpd.sh} root/bin/smtpd
 
     rm -f root/bin/sendmail
-    cat > root/bin/sendmail <<'EOF'
-    #!/bin/sh
-    exec /bin/busybox sendmail -f root@www -H /bin/smtpd "$@" sebastian@www.sebastianrasor.com
+    install -Dm755 ${guestMsmtp}/bin/msmtp root/bin/msmtp
+    ln -s msmtp root/bin/sendmail
+    install -Dm755 ${guestSocat}/bin/socat root/bin/socat
+
+    printf 'default: sebastian@www.sebastianrasor.com\n' > root/etc/aliases
+    cat > root/etc/msmtprc <<'EOF'
+    account default
+    socket /run/smtp.sock
+    from root@www
+    set_from_header off
+    aliases /etc/aliases
+    timeout 30
+    logfile -
+    logfile_time_format none
     EOF
-    chmod 0755 root/bin/sendmail
+
+    printf 'root:x:0:0:root:/root:/bin/sh\n' > root/etc/passwd
+    printf 'root:x:0:\n' > root/etc/group
+    cat > root/etc/profile <<'EOF'
+    export HISTFILE=/tmp/.ash_history
+    export EDITOR=nano
+    export VISUAL=nano
+    export PAGER=less
+    cd "$HOME" 2>/dev/null || true
+    EOF
+
+    cat > root/etc/init.d/rcS <<'EOF'
+    #!/bin/sh
+    /bin/mount -t proc proc /proc
+    /bin/mount -t sysfs sysfs /sys
+    /bin/mount -t devtmpfs devtmpfs /dev
+    /bin/mount -t 9p -o trans=virtio,version=9p2000.L,msize=131072,cache=loose host9p /root
+    free_mb=$(/bin/awk '/^MemFree:/ { m = int($2 / 1024) - 4; print (m > 0 ? m : 0) }' /proc/meminfo)
+    if [ "$free_mb" -gt 0 ]; then
+      /bin/dd if=/dev/zero of=/tmp/.zero bs=1M count="$free_mb" 2>/dev/null || true
+      /bin/rm -f /tmp/.zero
+    fi
+    EOF
+    chmod 0755 root/etc/init.d/rcS
 
     cat > root/etc/inittab <<'EOF'
-    ::sysinit:/bin/mount -t proc proc /proc
-    ::sysinit:/bin/mount -t sysfs sysfs /sys
-    ::sysinit:/bin/mount -t devtmpfs devtmpfs /dev
-    ::sysinit:/bin/sh -c '/bin/mount -t 9p -o trans=virtio,version=9p2000.L host9p /root && [ -d /usr/share/home ] && /bin/cp -a /usr/share/home/. /root/ && /bin/rm -rf /usr/share/home'
-    hvc0::respawn:-/bin/sh -c 'cd && exec /bin/sh'
+    ::sysinit:/etc/init.d/rcS
+    ::respawn:/bin/socat UNIX-LISTEN:/run/smtp.sock,mode=0666,fork,max-children=1,unlink-early 'SYSTEM:exec 3<>/dev/ttyS0; stty raw -echo min 0 time 0 <&3; cat <&3 >/dev/null; stty min 1 <&3; dd if=/dev/zero bs=1 count=1 >&3 2>/dev/null; exec socat -T 35 - /proc/self/fd/3 2>/dev/null' 2>/dev/null
+    hvc0::respawn:-/bin/sh
     EOF
-
-    python3 - "${homeDir}" root/usr/share/home <<'PY'
-    import os
-    import shutil
-    import sys
-
-    src_root, dst_root = sys.argv[1], sys.argv[2]
-    EAGER_TEXT_MAX_BYTES = 4096
-    DIRECT_MEDIA_EXTS = {
-        "pdf", "svg", "svgz", "png", "jpg", "jpeg", "gif", "webp", "avif", "ico", "bmp",
-        "mp3", "ogg", "wav", "flac", "mp4", "webm", "woff", "woff2", "ttf", "otf",
-        "zip", "gz", "tgz", "bz2", "xz", "zst", "tar", "7z", "wasm", "bin", "iso", "img",
-    }
-
-    for dirpath, _, filenames in os.walk(src_root):
-        rel_dir = os.path.relpath(dirpath, src_root)
-        dst_dir = dst_root if rel_dir == "." else os.path.join(dst_root, rel_dir)
-        os.makedirs(dst_dir, exist_ok=True)
-        for name in filenames:
-            src = os.path.join(dirpath, name)
-            if os.path.islink(src) or not os.path.isfile(src):
-                continue
-            if os.path.getsize(src) >= EAGER_TEXT_MAX_BYTES:
-                continue
-            ext = os.path.splitext(name)[1].lstrip(".").lower()
-            if ext in DIRECT_MEDIA_EXTS:
-                continue
-            with open(src, "rb") as f:
-                data = f.read()
-            if b"\x00" in data:
-                continue
-            try:
-                data.decode("utf-8")
-            except UnicodeDecodeError:
-                continue
-            dst = os.path.join(dst_dir, name)
-            shutil.copyfile(src, dst)
-            os.chmod(dst, 0o755 if (os.stat(src).st_mode & 0o111) else 0o644)
-    PY
 
     (
       cd root
       find . -exec touch -h -d '@0' {} +
-      find . -print0 | sort -z | cpio --null -o -H newc -R 0:0 --reproducible | zstd -19 -T1 > "$out"
+      find . -print0 | sort -z | cpio --null -o -H newc -R 0:0 --reproducible > "$out"
     )
   ''

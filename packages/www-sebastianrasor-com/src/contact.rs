@@ -1,215 +1,176 @@
 mod message;
-mod proof;
-mod rate_limit;
+mod smtp;
 
-use std::sync::Arc;
+use std::{
+    future::{Future, ready},
+    net::{IpAddr, SocketAddr},
+    num::{NonZeroU32, NonZeroU64},
+    sync::Arc,
+    time::Duration,
+};
 
 use axum::{
     Router,
-    extract::{DefaultBodyLimit, FromRef, State, rejection::JsonRejection},
-    http::{StatusCode, header},
-    response::{IntoResponse, NoContent, Response},
-    routing::post,
+    extract::{ConnectInfo, FromRequestParts, State, WebSocketUpgrade},
+    http::{StatusCode, request::Parts},
+    response::IntoResponse,
+    routing::any,
 };
+use governor::{DefaultKeyedRateLimiter, Quota, RateLimiter, clock::Clock};
 use hickory_resolver::{
-    TokioAsyncResolver,
-    config::{ResolverConfig, ResolverOpts},
-    error::ResolveError,
+    TokioResolver,
+    config::{CLOUDFLARE, ResolverConfig},
+    net::{NetError, runtime::TokioRuntimeProvider},
 };
-use lettre::{
-    Address, AsyncSmtpTransport, AsyncTransport, Tokio1Executor, message::Mailbox,
-    transport::smtp::AsyncSmtpTransportBuilder,
-};
-use problem_details::ProblemDetails;
-use serde::{Deserialize, Deserializer};
+use lettre::{Address, AsyncSmtpTransport, AsyncTransport, Tokio1Executor, message::Mailbox};
+use serviceconf::ServiceConf;
 
-use self::{
-    message::ContactMessage,
-    proof::{Challenger, VerifiedProof},
-    rate_limit::{ClientSubnet, GlobalQuota, SendCooldowns},
-};
+use self::message::{ParseError, Submission};
 
-const MAX_BODY_LIMIT_BYTES: usize = 64 * 1024;
+const DEFAULT_FROM_ADDRESS: &str = "noreply@www.sebastianrasor.com";
+#[cfg(any(debug_assertions, test))]
+const DEFAULT_SMTP_URL: &str = "smtp://noreply:password1@localhost:1025";
+#[cfg(any(debug_assertions, test))]
+const DEFAULT_TO_MAILBOX: &str = "Sebastian Rasor <sebastian@test>";
 
-#[derive(Deserialize)]
-#[cfg_attr(debug_assertions, serde(default))]
+type SmtpSender = AsyncSmtpTransport<Tokio1Executor>;
+
+fn parse_smtp_url(url: &str) -> Result<SmtpSender, lettre::transport::smtp::Error> {
+    SmtpSender::from_url(url).map(|b| b.timeout(Some(Duration::from_secs(15))).build())
+}
+
+#[derive(ServiceConf)]
+#[conf(prefix = "WWW_")]
 pub struct Config {
-    #[serde(default = "default_from_address")]
+    #[conf(from_file, default = DEFAULT_FROM_ADDRESS.parse().expect("static address is valid"))]
     from_address: Address,
-    #[serde(
-        rename = "smtp_connection_url",
-        deserialize_with = "deserialize_smtp_transport"
+    #[conf(
+        name = "SMTP_CONNECTION_URL",
+        from_file,
+        deserializer = "parse_smtp_url"
     )]
-    sender: AsyncSmtpTransport<Tokio1Executor>,
+    #[cfg_attr(any(debug_assertions, test), conf(default = parse_smtp_url(DEFAULT_SMTP_URL).expect("static SMTP URL is valid")))]
+    sender: SmtpSender,
+    #[conf(from_file)]
+    #[cfg_attr(any(debug_assertions, test), conf(default = DEFAULT_TO_MAILBOX.parse().expect("static mailbox is valid")))]
     to_mailbox: Mailbox,
 }
 
-fn default_from_address() -> Address {
-    Address::new_dangerous("noreply", "www.sebastianrasor.com")
-}
-
-fn deserialize_smtp_transport<'de, D>(
-    deserializer: D,
-) -> Result<AsyncSmtpTransport<Tokio1Executor>, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    let url = String::deserialize(deserializer)?;
-    AsyncSmtpTransport::<Tokio1Executor>::from_url(&url)
-        .map(AsyncSmtpTransportBuilder::build)
-        .map_err(serde::de::Error::custom)
-}
-
-#[cfg(debug_assertions)]
+#[cfg(test)]
 impl Default for Config {
     fn default() -> Self {
         Self {
-            from_address: default_from_address(),
-            sender: AsyncSmtpTransport::<Tokio1Executor>::from_url(
-                "smtp://noreply:password1@localhost:1025",
-            )
-            .expect("default debug SMTP URL is valid")
-            .build(),
-            to_mailbox: Mailbox::new(
-                Some("Sebastian Rasor".to_string()),
-                Address::new_dangerous("sebastian", "test"),
-            ),
+            from_address: DEFAULT_FROM_ADDRESS
+                .parse()
+                .expect("static address is valid"),
+            sender: parse_smtp_url(DEFAULT_SMTP_URL).expect("static SMTP URL is valid"),
+            to_mailbox: DEFAULT_TO_MAILBOX.parse().expect("static mailbox is valid"),
         }
     }
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
-enum Field {
-    #[error("From header")]
-    From,
-    #[error("From display name")]
-    FromName,
-    #[error("Subject header")]
-    Subject,
-    #[error("message body")]
-    Body,
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+struct ClientIp(IpAddr);
+
+impl<S: Send + Sync> FromRequestParts<S> for ClientIp {
+    type Rejection = StatusCode;
+
+    fn from_request_parts(
+        parts: &mut Parts,
+        _state: &S,
+    ) -> impl Future<Output = Result<Self, Self::Rejection>> + Send {
+        let mut real_ip = parts.headers.get_all("x-real-ip").iter();
+        let res = match (real_ip.next(), real_ip.next()) {
+            (Some(v), None) => v
+                .to_str()
+                .ok()
+                .and_then(|s| s.trim().parse::<IpAddr>().ok())
+                .ok_or(StatusCode::BAD_REQUEST),
+            (Some(_), Some(_)) => Err(StatusCode::BAD_REQUEST),
+            (None, _) => parts
+                .extensions
+                .get::<ConnectInfo<SocketAddr>>()
+                .map(|c| c.ip())
+                .ok_or(StatusCode::INTERNAL_SERVER_ERROR),
+        };
+        ready(res.map(|ip| Self(ip.to_canonical())))
+    }
 }
 
 #[derive(Debug, thiserror::Error)]
-enum ContactError {
-    #[error("Mail challenge expired or invalid. Please try sending again.")]
-    InvalidChallenge,
-    #[error("Too many messages received recently. Please try again later.")]
-    RateLimited,
+enum Error {
     #[error(transparent)]
-    Json(#[from] JsonRejection),
-    #[error("The {0} is required.")]
-    MissingField(Field),
-    #[error("Multiple {0}s are not allowed.")]
-    DuplicateHeader(Field),
-    #[error("The {0} exceeds the maximum allowed length.")]
-    FieldTooLong(Field),
-    #[error("Invalid sender email address.")]
-    InvalidEmail,
-    #[error(transparent)]
+    Invalid(#[from] ParseError),
+    #[error("Too many messages sent recently. Please try again in {0}s.")]
+    RateLimited(NonZeroU64),
+    #[error("Unable to verify sender email domain via DNS. Please try again later.")]
+    Dns(#[source] NetError),
+    #[error("The server was unable to complete your request. Please try again later.")]
     Smtp(#[from] lettre::transport::smtp::Error),
-    #[error(transparent)]
-    DnsLookup(#[from] Box<ResolveError>),
-    #[error(transparent)]
-    DnsTimeout(#[from] tokio::time::error::Elapsed),
-}
-
-impl IntoResponse for ContactError {
-    fn into_response(self) -> Response {
-        let (status, detail) = match self {
-            Self::InvalidChallenge => (StatusCode::FORBIDDEN, self.to_string()),
-            Self::RateLimited => (StatusCode::TOO_MANY_REQUESTS, self.to_string()),
-            Self::Json(rejection) => (rejection.status(), rejection.body_text()),
-            Self::MissingField(_)
-            | Self::DuplicateHeader(_)
-            | Self::FieldTooLong(_)
-            | Self::InvalidEmail => (StatusCode::UNPROCESSABLE_ENTITY, self.to_string()),
-            Self::Smtp(_) | Self::DnsLookup(_) | Self::DnsTimeout(_) => {
-                tracing::error!(error = %self, "failed to process mail submission");
-                (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    "The server was unable to complete your request. Please try again later."
-                        .to_string(),
-                )
-            }
-        };
-
-        ProblemDetails::from_status_code(status)
-            .with_detail(detail)
-            .into_response()
-    }
 }
 
 struct AppState {
     config: Config,
-    resolver: TokioAsyncResolver,
-    challenger: Challenger,
-    cooldowns: SendCooldowns,
-    global_quota: GlobalQuota,
+    resolver: TokioResolver,
+    limiter: DefaultKeyedRateLimiter<ClientIp>,
 }
 
-impl FromRef<Arc<AppState>> for Challenger {
-    fn from_ref(state: &Arc<AppState>) -> Self {
-        state.challenger.clone()
-    }
-}
-
-impl AppState {
-    async fn deliver(&self, msg: ContactMessage) -> Result<NoContent, ContactError> {
-        if !msg.sender_domain().accepts_mail(&self.resolver).await? {
-            return Err(ContactError::InvalidEmail);
-        }
-
-        self.global_quota.acquire()?;
-        let email = msg.into_email(
-            self.config.from_address.clone(),
-            self.config.to_mailbox.clone(),
-        );
-        self.config.sender.send(email).await?;
-        Ok(NoContent)
-    }
-}
-
-pub fn app(config: Config) -> Router {
-    let resolver = TokioAsyncResolver::tokio_from_system_conf().unwrap_or_else(|_| {
-        TokioAsyncResolver::tokio(ResolverConfig::default(), ResolverOpts::default())
+pub fn app(config: Config) -> Result<Router, NetError> {
+    let mut resolver_builder = TokioResolver::builder_tokio().unwrap_or_else(|_| {
+        TokioResolver::builder_with_config(
+            ResolverConfig::udp_and_tcp(&CLOUDFLARE),
+            TokioRuntimeProvider::default(),
+        )
     });
+    resolver_builder.options_mut().timeout = Duration::from_secs(5);
+    resolver_builder.options_mut().attempts = 1;
 
+    let quota = Quota::per_hour(const { NonZeroU32::new(12).unwrap() })
+        .allow_burst(const { NonZeroU32::new(2).unwrap() });
     let state = Arc::new(AppState {
         config,
-        resolver,
-        challenger: Challenger::new(),
-        cooldowns: SendCooldowns::new(),
-        global_quota: GlobalQuota::new(),
+        resolver: resolver_builder.build()?,
+        limiter: RateLimiter::keyed(quota),
     });
 
-    let router = Router::new()
-        .route(
-            "/contact",
-            post(submit).get(issue_challenge).with_state(state),
-        )
-        .layer(DefaultBodyLimit::max(MAX_BODY_LIMIT_BYTES));
-
-    rate_limit::apply_governors(router)
+    Ok(Router::new()
+        .route("/contact", any(ws_contact))
+        .with_state(state))
 }
 
-async fn issue_challenge(
-    State(challenger): State<Challenger>,
-    subnet: ClientSubnet,
-) -> impl IntoResponse {
-    (
-        [(header::CACHE_CONTROL, "no-store")],
-        challenger.issue(subnet),
-    )
-}
-
-async fn submit(
+#[allow(clippy::unused_async)]
+async fn ws_contact(
     State(state): State<Arc<AppState>>,
-    proof: VerifiedProof,
-    msg: ContactMessage,
-) -> Result<NoContent, ContactError> {
+    ws: WebSocketUpgrade,
+    client_ip: ClientIp,
+) -> impl IntoResponse {
+    ws.max_message_size(smtp::MAX_WS_FRAME_BYTES)
+        .max_frame_size(smtp::MAX_WS_FRAME_BYTES)
+        .on_upgrade(move |socket| smtp::serve(socket, state, client_ip))
+}
+
+async fn deliver(state: &AppState, client_ip: ClientIp, raw_msg: &[u8]) -> Result<(), Error> {
+    let submission = Submission::parse(raw_msg)?;
+
+    if state.limiter.len() > 1024 {
+        state.limiter.retain_recent();
+    }
+    state.limiter.check_key(&client_ip).map_err(|not_until| {
+        let wait = not_until.wait_time_from(state.limiter.clock().now());
+        let secs = wait
+            .as_secs()
+            .saturating_add(u64::from(wait.subsec_nanos() > 0));
+        Error::RateLimited(NonZeroU64::new(secs).unwrap_or(NonZeroU64::MIN))
+    })?;
+
+    let message = submission
+        .verify_dns(&state.resolver, &state.config)
+        .await?;
     state
-        .cooldowns
-        .run(proof.subnet(), state.deliver(msg))
+        .config
+        .sender
+        .send(message)
         .await
+        .inspect_err(|err| tracing::error!(error = %err, "failed to process mail submission"))?;
+    Ok(())
 }

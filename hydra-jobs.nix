@@ -8,9 +8,9 @@ let
   inherit (nixpkgs) lib;
   jobs = {
     inherit (self) packages;
-    checks.x86_64-linux = {
-      inherit (self.checks.x86_64-linux) formatting statix;
-    };
+    checks.x86_64-linux = lib.filterAttrs (
+      name: _: !(self.packages.x86_64-linux ? ${name})
+    ) self.checks.x86_64-linux;
     nixosConfigurations = lib.mapAttrs (
       _: nixosConfiguration: nixosConfiguration.config.system.build.toplevel
     ) self.nixosConfigurations;
