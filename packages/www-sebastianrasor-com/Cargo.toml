@@ -14,7 +14,7 @@ fernet = "0.2.2"
 figment = { version = "0.10.19", features = ["env"] }
 figment_file_provider_adapter = "0.1.1"
 governor = "0.10.4"
-hickory-resolver = "0.24.4"
+hickory-resolver = "0.26.2"
 http_encoding_headers = "0.2.0"
 ipnet = "2.12.2"
 itoa = "1.0.18"
