@@ -2,6 +2,7 @@
   lib,
   atkinson-hyperlegible-mono,
   callPackage,
+  cargo,
   craneLib,
   curl,
   esbuild,
@@ -15,6 +16,7 @@
   nix-prefetch-git,
   nodejs,
   runCommand,
+  rustc,
   seabios,
   targets ? callPackage ../targets { },
   woff2,
@@ -203,16 +205,19 @@ let
   updateScript = writeShellApplication {
     name = "update-www-sebastianrasor-com";
     runtimeInputs = [
+      cargo
       curl
       git
       jq
       nix
       nix-prefetch-git
+      rustc
     ];
     text = ''
       sources_file="packages/www-sebastianrasor-com/vm/sources.json"
-      if [ ! -f "$sources_file" ]; then
-        echo "Run from the repository root containing $sources_file" >&2
+      manifest="packages/www-sebastianrasor-com/Cargo.toml"
+      if [ ! -f "$sources_file" ] || [ ! -f "$manifest" ]; then
+        echo "Run from the repository root containing $sources_file and $manifest" >&2
         exit 1
       fi
 
@@ -227,6 +232,8 @@ let
           libapps: ($libapps | { url, rev, hash }),
           v86: { url: $v86_url, hash: $v86_prefetch.hash }
         }' > "$sources_file"
+
+      cargo update --manifest-path "$manifest"
     '';
   };
 in

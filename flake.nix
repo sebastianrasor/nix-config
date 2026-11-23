@@ -28,6 +28,8 @@
       forAllSystems = f: nixpkgs.lib.mapAttrs (_: f) pkgsFor;
     in
     {
+      apps = forAllSystems (pkgs: import ./apps.nix pkgs);
+
       checks = forAllSystems (pkgs: import ./checks.nix pkgs);
 
       devShells = forAllSystems (pkgs: import ./devshells.nix pkgs);
